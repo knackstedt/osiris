@@ -1,0 +1,65 @@
+<div class="root taskbar-left">
+    <div class="taskbar">
+        <div class="task-button" 
+            #button 
+            *ngFor="let item of taskbarData"
+            >
+            <div class="dots">
+                <div class="dot"></div>
+                <div class="dot" *ngIf="item.windows.length > 1"></div>
+                <div class="dot" *ngIf="item.windows.length > 2"></div>
+                <div class="dot" *ngIf="item.windows.length > 3"></div>
+                <div class="dot" *ngIf="item.windows.length > 4"></div>
+            </div>
+            <div class="icon">
+                <img [src]="item.windows[0].icon" />
+            </div>
+
+            <div class="tooltip">
+                <div>
+                    {{item.windows[0].description}}
+                </div>
+            </div>
+            <!-- {{item.app}} -->
+            <!-- {{item.windows.length}} -->
+        </div>
+    </div>
+    <div class="windowManager">
+        <div class="cdk-drag-boundary"></div>
+        <div class="cdk-overlay-pane">
+            <div 
+                *ngFor="let window of windowData"
+                class="window draggable" 
+                cdkDrag 
+                cdkDragBoundary=".cdk-drag-boundary" 
+                [cdkDragFreeDragPosition]="window._dragPosition"
+                (cdkDragReleased)="onDragEnd(window, $event)"
+    
+                [style.width]="window.width + 'px'"
+                [style.height]="window.height + 'px'"
+                [class.active]="window._isActive"
+                (mousedown)="activateWindow(window, $event)"
+                >
+                <div cdkDragHandle class="titlebar" >
+                    <div class="other">
+                        <!-- <ng-container *ngIf="titlebarTemplate; else defaultTitlebar">
+                            <ng-container *ngTemplateOutlet="titlebarTemplate"></ng-container>
+                        </ng-container> -->
+            
+                        <div *ngIf="window.title">{{window.title}}</div>
+                        <!-- <ng-template #defaultTitlebar>
+                        </ng-template> -->
+                    </div>
+                    <div class="controls">
+                        <button (click)="minimizeWindow(window, $event)"><img src="assets/icons/window-minimize-symbolic.svg" /></button>
+                        <button (click)="maximizeWindow(window, $event)"><img src="assets/icons/window-maximize-symbolic.svg" /></button>
+                        <button class="close" (click)="closeWindow(window, $event)"><img src="assets/icons/window-close-symbolic.svg" /></button>
+                    </div>
+                </div>
+                <div class="content">
+                    CONTENT
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
