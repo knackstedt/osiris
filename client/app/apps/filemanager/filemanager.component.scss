@@ -47,14 +47,38 @@
     overflow-x: hidden;
     
     .file {
-        height: 100px;
         width: 80px;
+        opacity: 0.9;
+
+        transition: opacity 50ms ease-in-out;
+
+        &:hover,
+        &.selected {
+            opacity: 1;
+        }
+        &.selected {
+            p {
+                background-color: #8ad9d9;
+                color: black;
+            }
+        }
 
         img {
-
+            user-select: none;
         }
         p {
+            height: 50px;
             margin: 0;
+            padding: 2px;
+            font-size: 14px;
+            border-radius: 4px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            overflow-wrap: break-word;
+            transition: background-color 50ms ease-in-out, color 50ms ease-in-out;
         }
     }
 }

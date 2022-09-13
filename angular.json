@@ -28,7 +28,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "client/favicon.ico",
-              "client/assets"
+              "client/assets", 
+              {
+                "glob": "**/*",
+                "input": "node_modules/material-icon-theme/icons",
+                "output": "assets/lib/mit"
+              }
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",

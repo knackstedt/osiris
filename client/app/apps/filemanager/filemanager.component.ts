@@ -1,9 +1,12 @@
 import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { WindowOptions } from '../../services/window-manager.service';
 import { Fetch } from '../../services/fetch.service';
+import { resolveIcon } from './icon-resolver';
+// import * as MimeTypeBase from "./mimetypes-base.json";
+// import * as MimeTypes from "./mimetypes.json";
+import { MatDialog } from '@angular/material/dialog';
+import { FileViewerComponent } from '../../components/file-viewer/file-viewer.component';
 
-import * as MimeTypeBase from "./mimetypes-base.json";
-import * as MimeTypes from "./mimetypes.json";
 
 // const CustomMimeTypes = {};
 // Object.keys(MimeTypes).forEach(key => {
@@ -18,11 +21,15 @@ import * as MimeTypes from "./mimetypes.json";
 })
 export class FilemanagerComponent implements OnInit {
     
+    selected: string = "";
+
+    resolveIcon = resolveIcon;
+
     @Input() windowData: WindowOptions;
 
     directoryContents: string[];    
 
-    constructor(private fetch: Fetch) {
+    constructor(private fetch: Fetch, private dialog: MatDialog) {
     }
 
     ngOnInit(): void {
@@ -43,21 +50,16 @@ export class FilemanagerComponent implements OnInit {
             .catch(err => console.error(err));
     }
 
-    getIcon(file: string) {
-        // i.thumbnail || mimeTypes[i.mimeType] || 'default'
 
-        if (file.endsWith('/'))
-            return "assets/icons/places/folder.svg";
+    openFile(file: string, evt: MouseEvent) {
+        this.dialog.open(FileViewerComponent, {
+            data: {
+                file,
+            }
+        });
+    }
 
-        const ext = file.split('.').splice(-1, 1)[0];
-
-        const mimeType = 
-            MimeTypeBase[ext]
-            // MimeTypes[ext] ||
-            // .includes(MimeTypeBase[ext])
-                // ? MimeTypeBase[ext] 
-                || "application-x-generic";
-
-        return `assets/icons/mimetypes/${mimeType}.svg`;
+    dbg(evt) {
+        debugger;
     }
 }
