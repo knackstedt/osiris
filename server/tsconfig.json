@@ -1,0 +1,26 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "baseUrl": "./server",
+        "sourceRoot": "./server",
+        "outDir": "./dist/",
+        "forceConsistentCasingInFileNames": true,
+        "strict": false,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "downlevelIteration": false,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "es2020",
+        "module": "commonjs",
+        "lib": [
+            "es2020"
+        ]
+    }
+}
