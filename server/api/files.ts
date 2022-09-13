@@ -1,9 +1,10 @@
 import * as express from "express";
 import { environment } from "../environment";
 import { route, getFilesInFolder } from '../util';
-import {  } from "fs-extra";
-import { fstat } from "fs";
-import { catchError } from 'rxjs/operators';
+import fs from 'fs';
+import { readFile, stat, access } from "fs-extra";
+import { isText, isBinary, getEncoding } from 'istextorbinary';
+import { getHeapStatistics } from "v8";
 
 const router = express.Router();
 
@@ -15,13 +16,6 @@ const generateThumbnail = (path: string) => {
     //     .toBuffer()
 }
 
-/**
- * Get the list of pages (menu-items) that the user has access to.
- * These are also used as a basic ACL using the user's groups for the portal reverse proxy.
- */
-
-const shareDir = "/home/knackstedt";
-
 // router.use('/dir', route(async (req, res, next) => {
 //     res.send(pages);
 // }));
@@ -29,17 +23,82 @@ const shareDir = "/home/knackstedt";
 
 //     res.send(pages);
 // }));
+router.use('/save', route(async (req, res, next) => {
+    // TODO: save file
+    const { path } = req.body;
+
+    res.setHeader("content-type", "some/type");
+    fs.createReadStream(path).pipe(res);
+
+    res.send("null");
+}));
+
 router.use('/', route(async (req, res, next) => {
     const { path, showHidden } = req.body;
-    let {dirs, files} = await getFilesInFolder(path);
 
-    if (!showHidden) {
-        dirs = dirs.filter(d => !d.startsWith('.'));
-        files = files.filter(f => !f.startsWith('.'));
+    // If the file doesn't exist
+    let hasAccess = await access(path, fs.constants.F_OK | fs.constants.W_OK | fs.constants.R_OK)
+        .then(r => true)
+        .catch(e => {
+            res.send(e);
+        })
+    
+    if (!hasAccess) return;
+
+    let stats = await stat(path);
+
+    if (stats.isDirectory()) {
+        let {dirs, files} = await getFilesInFolder(path);
+    
+        if (!showHidden) {
+            dirs = dirs.filter(d => !d.startsWith('.'));
+            files = files.filter(f => !f.startsWith('.'));
+        }
+    
+        res.send({dirs, files});
+        return;
     }
+    else if (stats.isFile()) {
+        if (isText(path)) {
+            let data = await readFile(path, { encoding: "utf-8" });
 
-    res.send({dirs, files});
-    // res.send(pages);
+            res.send({
+                meta: stats,
+                content: data
+            })
+        }
+        else if (stats.size < 2 * 1024 * 1024) {
+            let buf = await readFile(path);
+            if (isText(null, buf)) {
+                res.send({
+                    meta: stats,
+                    content: buf.toString()
+                });
+            }
+            else {
+                res.send({
+                    meta: stats
+                });
+            }
+        }
+        else {
+            res.send({
+                meta: stats
+            });
+        }
+    }
+    else {
+        const type = stats.isBlockDevice() && "block device" ||
+            stats.isCharacterDevice() && "character device" ||
+            stats.isFIFO() && "pipe/fifo" ||
+            stats.isSocket() && "socket" ||
+            stats.isSymbolicLink() && "symlink" || 
+            "unknown";
+        next({
+            status: 400,
+            message: `Unsupported file type [${type}]`,
+        })
+    }
 }));
 
 /**

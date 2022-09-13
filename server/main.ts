@@ -1,12 +1,11 @@
 import { SecureServer } from "@dt-esa/secure-webserver";
 
-import * as express from 'express';
-import { Express } from 'express';
+import express, { Express } from 'express';
 import session from 'express-session';
 import Redis from 'ioredis';
 import connectRedis from "connect-redis";
 import helmet from 'helmet';
-import * as morgan from 'morgan';
+import morgan from 'morgan';
 
 import { environment } from './environment';
 
