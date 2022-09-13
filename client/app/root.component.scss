@@ -4,13 +4,6 @@
     display: flex;
 }
 
-
-.draggable {
-    position: relative;
-    z-index: 1;
-}
-
-
 .cdk-drag-boundary {
     position: absolute;
     top: 0;
@@ -97,18 +90,26 @@
     overflow: hidden;
 }
 
+.draggable {
+    position: absolute;
+    z-index: 1;
+    min-width: 300px;
+    min-height: 200px;
+    max-width: 200vw;
+    max-height: 150vh;
+    will-change: transform;
+}
+
 .window {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 4px;
 
-    min-width: 300px;
-    min-height: 200px;
-    max-width: 200vw;
-    max-height: 150vh;
+    height: 100%;
+    width: 100%;
 
     transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
     box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
@@ -125,36 +126,23 @@
     
     .titlebar {
         width: 100%;
-        height: 64px;
-        display: flex;
         flex: 1 0 47px;
         color: #797979;
         border-top: 1px solid #434343;
         border-bottom: 1px solid #262626;
         background-color: #363636;
         transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
-    
+        position: relative;
+
+        
         .other {
-            flex: 1;
+            // flex: 1;
+            width: 100%;
         }
     
         button {
             transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
             background-color: transparent;
-            border: 1px solid #434343;
-            border-radius: 5px;
-            width: 20px;
-            height: 20px;
-            margin: 0 8px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-    
-            img {
-                width: 18px;
-                height: 18px;
-                padding: 1.5px;
-            }
     
             &:hover {
                 background-color: #5f5f5f;
@@ -165,6 +153,10 @@
             display: flex;
             align-items: center;
             padding-right: 1.5px;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            top: 0;
     
             button {
                 transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
@@ -177,7 +169,7 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-    
+
                 img {
                     width: 18px;
                     height: 18px;
@@ -208,6 +200,9 @@
                 &.close {
                     background-color: #f18c2c;
                 }
+                &:hover {
+                    background-color: #5f5f5f;
+                }
             }
         }
     
@@ -222,12 +217,12 @@
     }
     
     .content {
-        padding: 14px;
         background-color: #303030;
         color: #757574;
         flex: 100%;
         width: 100%;
         transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
+        overflow: hidden;
     
         // ...
         li:active {
@@ -239,6 +234,78 @@
     .content .sidepanel {
         background-color: #323232;
         border-right: 1px solid #1c1c1c;
+    }
+}
+
+.resizeHandles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+
+    .resize-handle-left,
+    .resize-handle-right,
+    .resize-handle-top,
+    .resize-handle-bottom,
+    .resize-handle-top-left,
+    .resize-handle-top-right,
+    .resize-handle-bottom-left,
+    .resize-handle-bottom-right {
+        pointer-events: all;
+        position: absolute;
+    }
+
+    .resize-handle-top,
+    .resize-handle-bottom {
+        height: 5px;
+        cursor: row-resize;
+        width: 100%;
+    }
+
+    .resize-handle-left,
+    .resize-handle-right {
+        height: 100%;
+        cursor: col-resize;
+        width: 5px;
+    }
+    .resize-handle-top-left,
+    .resize-handle-top-right,
+    .resize-handle-bottom-left,
+    .resize-handle-bottom-right {
+        width: 5px;
+        height: 5px;
+        cursor: ne-resize;
+        z-index: 2;
+    }
+    .resize-handle-top-left,
+    .resize-handle-bottom-right {
+        cursor: nw-resize;
+    }
+
+    .resize-handle-top,
+    .resize-handle-top-left,
+    .resize-handle-top-right {
+        top: -2.5px;
+    }
+
+    .resize-handle-bottom,
+    .resize-handle-bottom-left,
+    .resize-handle-bottom-right {
+        bottom: -2.5px;
+    }
+
+    .resize-handle-top-left,
+    .resize-handle-bottom-left,
+    .resize-handle-left {
+        left: -2.5px;
+    }
+
+    .resize-handle-top-right,
+    .resize-handle-bottom-right,
+    .resize-handle-right {
+        right: -2.5px;
     }
 }
 
@@ -319,5 +386,14 @@
     left: 0;
     .tooltip {
         left: 100%;
+    }
+}
+
+
+.draggedOver { 
+    backdrop-filter: blur(20px);
+    opacity: .3;
+    .content {
+        background-color: red!important;
     }
 }

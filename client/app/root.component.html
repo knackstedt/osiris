@@ -2,7 +2,7 @@
     <div class="taskbar">
         <div class="task-button" 
             #button 
-            *ngFor="let item of taskbarData"
+            *ngFor="let item of taskbarItems"
             >
             <div class="dots">
                 <div class="dot"></div>
@@ -28,38 +28,80 @@
         <div class="cdk-drag-boundary"></div>
         <div class="cdk-overlay-pane">
             <div 
-                *ngFor="let window of windowData"
-                class="window draggable" 
+                #window
+                *ngFor="let window of managedWindows"
+                class="draggable" 
                 cdkDrag 
                 cdkDragBoundary=".cdk-drag-boundary" 
-                [cdkDragFreeDragPosition]="window._dragPosition"
                 (cdkDragReleased)="onDragEnd(window, $event)"
-    
+                [cdkDragData]="{dragWindow: window, managedWindows, snapPx}"
+                [cdkDragFreeDragPosition]="{x: window.x-64, y: window.y}"
+
+                mwlResizable
+                (resizeEnd)="onResizeEnd(window, $event)"
+                (resizing)="onResizing(window, $event)"
+                
+                [class.active]="window._isActive"
+                [class.draggedOver]="window._isDraggedOver"
+                (mousedown)="activateWindow(window, $event)"
+                [style.z-index]="window._index"
                 [style.width]="window.width + 'px'"
                 [style.height]="window.height + 'px'"
-                [class.active]="window._isActive"
-                (mousedown)="activateWindow(window, $event)"
                 >
-                <div cdkDragHandle class="titlebar" >
-                    <div class="other">
-                        <!-- <ng-container *ngIf="titlebarTemplate; else defaultTitlebar">
-                            <ng-container *ngTemplateOutlet="titlebarTemplate"></ng-container>
-                        </ng-container> -->
-            
-                        <div *ngIf="window.title">{{window.title}}</div>
-                        <!-- <ng-template #defaultTitlebar>
-                        </ng-template> -->
+                <!-- [style]="window._initialStyle" -->
+            <!-- Collapsed windows will not render their contents
+                -- to minimize the number of active DOM elements.
+                -->
+                <ng-container *ngIf="!window._isCollapsed">
+                    <div class="window">
+                        <div cdkDragHandle class="titlebar" >
+                            <div class="other">
+                                <!-- <ng-container *ngIf="titlebarTemplate; else defaultTitlebar">
+                                    <ng-container *ngTemplateOutlet="titlebarTemplate"></ng-container>
+                                </ng-container> -->
+                    
+                                <div *ngIf="window.title">{{window.title}}</div>
+                                <div>
+                                    x: {{window.x}}, 
+                                    y: {{window.y}},
+                                    width: {{window.width}},
+                                    height: {{window.height}},
+                                </div>
+                                <!-- <ng-template #defaultTitlebar>
+                                </ng-template> -->
+                            </div>
+                            <div class="controls">
+                                <button (click)="minimizeWindow(window, $event)"><img src="assets/icons/window-minimize-symbolic.svg" /></button>
+                                <button (click)="maximizeWindow(window, $event)"><img src="assets/icons/window-maximize-symbolic.svg" /></button>
+                                <button class="close" (click)="closeWindow(window, $event)"><img src="assets/icons/window-close-symbolic.svg" /></button>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <!-- CONTENT -->
+                            <!-- {{window._isDraggedOver}} -->
+                            <ng-template *ngIf="!window._isLoading" [cdkPortalOutlet]="window._portal" (attached)="injectPortal($event, window)" class="active"></ng-template>
+
+                            <div *ngIf="window._isLoading">spinner...</div>
+                        </div>
                     </div>
-                    <div class="controls">
-                        <button (click)="minimizeWindow(window, $event)"><img src="assets/icons/window-minimize-symbolic.svg" /></button>
-                        <button (click)="maximizeWindow(window, $event)"><img src="assets/icons/window-maximize-symbolic.svg" /></button>
-                        <button class="close" (click)="closeWindow(window, $event)"><img src="assets/icons/window-close-symbolic.svg" /></button>
+
+                    <div class="resizeHandles">
+                        <div class="resize-handle-top"    mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+                        <div class="resize-handle-left"   mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+                        <div class="resize-handle-right"  mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+                        <div class="resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+
+
+                        <div class="resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+                        <div class="resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+                        <div class="resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+                        <div class="resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+
                     </div>
-                </div>
-                <div class="content">
-                    CONTENT
-                </div>
+                </ng-container>
             </div>
         </div>
     </div>
 </div>
+
+<div id="e" style="position: absolute; background: white; width: 5px; height: 5px; z-index: 90000; pointer-events: none;"></div>

@@ -33,7 +33,7 @@ if (process.argv) {
         FileName: outFileName
     });
 
-    const outDir = __dirname + '/src/app/' + targetPath + '/';
+    const outDir = __dirname + '/client/app/' + targetPath + '/';
 
     try {
         fs.mkdirSync(outDir + outFileName + '/');

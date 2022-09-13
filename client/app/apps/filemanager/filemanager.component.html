@@ -1,0 +1,28 @@
+<div class="sidebar">
+    <ul>
+        <li>Recent</li>
+        <li>Starred</li>
+        <li>Home</li>
+        <li #li (hover)="li['hover']=true" (mouseout)="li['hover']=false">
+            Desktop
+            <div class="tooltip" [class.visible]="li['hover']">/home/knackstedt/Downloads</div>
+        </li>
+    </ul>
+    <ul>
+        <li>mounted f:/</li>
+        <li>mounted disk</li>            
+    </ul>
+    <ul>
+        <li>data on ftp</li>
+        <li>data on smb</li>
+    </ul>
+    <ul>
+        <li>+ other locations</li>
+    </ul>
+</div>
+<div class="files">
+    <div class="file" *ngFor="let item of directoryContents" [title]="getIcon(item)">
+        <img [src]="getIcon(item)" />
+        <p>{{item.split('/')[0]}}</p>
+    </div>
+</div>

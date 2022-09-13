@@ -1,30 +1,26 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-// import { AppRoutingModule } from './routing.module';
 import { RootComponent } from './root.component';
-// import { FilemanagerComponent } from './webix/filemanager/filemanager.component';
-// import { CalculatorComponent } from 'client/apps/calculator/calculator.component';
-// import { SystemSettingsComponent } from 'client/apps/system-settings/system-settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { WindowComponent } from './components/window/window.component';
 import { AppLibModule } from 'client/app/app-lib.module';
 import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './material.module';
+import { AppMenuComponent } from './components/app-menu/app-menu.component';
+import { PortalModule } from '@angular/cdk/portal';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
     RootComponent,
-    WindowComponent,
-    // FilemanagerComponent,
-    // CalculatorComponent,
-    // SystemSettingsComponent
+    AppMenuComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppLibModule,
     MaterialModule,
+    PortalModule,
     HttpClientModule
   ],
   providers: [],
