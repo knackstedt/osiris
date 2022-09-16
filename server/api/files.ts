@@ -5,6 +5,13 @@ import fs from 'fs';
 import { readFile, stat, access } from "fs-extra";
 import { isText, isBinary, getEncoding } from 'istextorbinary';
 import { getHeapStatistics } from "v8";
+import mime from "mime-types";
+
+process.on('uncaughtException', function (exception) {
+    console.log(exception); // to see your exception details in the console
+    // if you are on production, maybe you can send the exception details to your
+    // email as well ?
+});
 
 const router = express.Router();
 
@@ -23,18 +30,89 @@ const generateThumbnail = (path: string) => {
 
 //     res.send(pages);
 // }));
-router.use('/save', route(async (req, res, next) => {
+router.use('/download', route(async (req, res, next) => {
+    const { dir, file } = req.query as any;
+
+    try {
+        let stats = await stat(dir + file);
+
+        if (req.headers.range) {
+            const range = req.headers.range;
+            const CHUNK_SIZE = 10 ** 6; // 1MB
+            const start = Number(range.replace(/\D/g, ""));
+            const end = Math.min(start + CHUNK_SIZE, stats.size - 1);
+            const contentLength = end - start + 1;
+
+            res.writeHead(206, {
+                "content-range": `bytes ${start}-${end}/${stats.size}`,
+                "accept-ranges": "bytes",
+                "content-length": contentLength
+            });
+            
+            const videoStream = fs.createReadStream(dir + file, { start, end });
+            videoStream.pipe(res);
+        }
+        else { // No range was specified so we just stream the response.
+            const stream = fs.createReadStream(dir + file);
+            stream.on('error', err => next(err));
+            res.setHeader("content-length", stats.size);
+    
+            stream.pipe(res);
+        }
+    }
+    catch (ex) {
+        next(ex);
+    }
+}));
+
+router.use('/file', route(async (req, res, next) => {
     // TODO: save file
-    const { path } = req.body;
+    const { dir, file } = req.body;
 
-    res.setHeader("content-type", "some/type");
-    fs.createReadStream(path).pipe(res);
+    const path = dir + file;
 
-    res.send("null");
+    const ct = mime.lookup(file) || "application/octet-stream";
+
+    res.setHeader("content-type", ct);
+    let stats = await stat(path);
+
+    if (isText(path)) {
+        let data = await readFile(path, { encoding: "utf-8" });
+
+        res.send({
+            meta: stats,
+            type: "text",
+            content: data
+        })
+    }
+    else if (stats.size < 2 * 1024 * 1024) {
+        let buf = await readFile(path);
+        if (isText(null, buf)) {
+            res.send({
+                meta: stats,
+                type: "text",
+                content: buf.toString(),
+            });
+        }
+        else {
+            res.send({
+                meta: stats,
+                type: "binary"
+            });
+        }
+    }
+    else {
+        res.send({
+            meta: stats,
+            type: "binary"
+        });
+    }
+
+
 }));
 
 router.use('/', route(async (req, res, next) => {
-    const { path, showHidden } = req.body;
+    const { dir, path, showHidden } = req.body;
 
     // If the file doesn't exist
     let hasAccess = await access(path, fs.constants.F_OK | fs.constants.W_OK | fs.constants.R_OK)
@@ -57,35 +135,6 @@ router.use('/', route(async (req, res, next) => {
     
         res.send({dirs, files});
         return;
-    }
-    else if (stats.isFile()) {
-        if (isText(path)) {
-            let data = await readFile(path, { encoding: "utf-8" });
-
-            res.send({
-                meta: stats,
-                content: data
-            })
-        }
-        else if (stats.size < 2 * 1024 * 1024) {
-            let buf = await readFile(path);
-            if (isText(null, buf)) {
-                res.send({
-                    meta: stats,
-                    content: buf.toString()
-                });
-            }
-            else {
-                res.send({
-                    meta: stats
-                });
-            }
-        }
-        else {
-            res.send({
-                meta: stats
-            });
-        }
     }
     else {
         const type = stats.isBlockDevice() && "block device" ||
