@@ -43,19 +43,19 @@ export const resolveIcon = (file: string) => {
     // ? MimeTypeBase[ext] 
     // || "application-x-generic";
     // if (mimeType)
-    //     return `assets/icons/mimetypes/${mimeType}.svg`;
+    //     return `icons/mimetypes/${mimeType}.svg`;
 
 
     
     // VS Code Material Icon Theme pack
     if (file.endsWith('/')) {
         const dirnameMatch = getBestMatch(dirnames, file);
-        return dirnameMatch ? `assets/lib/mit/${dirnameMatch}.svg` : "assets/lib/mit/folder-app.svg";
+        return dirnameMatch ? `lib/mit/${dirnameMatch}.svg` : "lib/mit/folder-app.svg";
     }
     const filenameMatch = getBestMatch(filenames, file);
     const extMatch = getBestMatch(exts, file);
 
-    return filenameMatch ? `assets/lib/mit/${filenameMatch}.svg` : 
-        extMatch ? `assets/lib/mit/${extMatch}.svg` :
-        "assets/lib/mit/file.svg";
+    return filenameMatch ? `lib/mit/${filenameMatch}.svg` : 
+        extMatch ? `lib/mit/${extMatch}.svg` :
+        "lib/mit/file.svg";
 }

@@ -1,0 +1,82 @@
+<div *ngIf="false" class="controls">
+
+    <!-- <button (click)="downloadFile()">Fullscreen</button> -->
+    <!-- <button (click)="downloadFile()">languages?</button> -->
+    <!-- <button (click)="downloadFile()"> -->
+    ...
+    <div>
+        <button>open containing folder</button>
+        <button>make available offline</button>
+        <button>aspect ratio >
+            <button>1:1</button>
+            <button>3:4</button>
+            <button>16:9</button>
+        </button>
+        <button>rotate cw</button>
+        <button>rotate ccw</button>
+        <button>switch angles</button>
+        <button>preferences</button>
+        <button>keyboard shortcuts</button>
+        <button>properties</button>
+    </div>
+    <!-- <button (click)="downloadFile()">Details</button> -->
+</div>
+<ng-template #properties>
+    <!-- grid -->
+    General
+    Title: Unknown
+    Artist: Unknown
+    Album: Unknown
+    Year: Unknown
+    Duration: 2 minutes 59 seconds
+    Comment:
+    Container: ID3 tag
+    Audio
+    Codec: MPEG-1 Layer 3 (MP3)
+    Channels: Stereo
+    Sample Rate: 44100 Hz
+    Bitrate: 229 kbps
+</ng-template>
+
+<ng-template #preferences>
+    <mat-tab-group>
+        <mat-tab label="General">
+            External Subtitles
+            [ ] - Load sustitle files when movie is loaded
+            font: <button>select subtitle font</button>
+            Encoding: <select>Unicode (UTF-8)</select>
+            Plugins:
+            <button>Plugins...</button>
+        </mat-tab>
+        <mat-tab label="Display">
+            Video:
+            [ ] - Disable deinterlacing of interlaced videos ???
+            Color Balance:
+            Brightness: <div clas="slider">50</div>
+            Contrast: <div clas="slider">50</div>
+            Saturation: <div clas="slider">50</div>
+            Hue: <div clas="slider">50</div>
+        </mat-tab>
+        <mat-tab label="Audio">
+            Audio Output
+            Audio output type: <select>Stereo</select>
+        </mat-tab>
+    </mat-tab-group>
+</ng-template>
+
+<div style="height: 100%; width: 100%; display: flex; flex-direction: column;">
+    <ng-container *ngIf="isAudioOnly()">
+        <div class="symbol">
+            <img style="height: 48px;" src="assets/icons/actions/media-playback-start-symbolic.svg" />
+        </div>
+        <!-- TODO: custom HTML controls -->
+        <audio controls>
+            <source [src]="getLink()">
+        </audio>
+    </ng-container>
+    <ng-container>
+        <video controls>
+            <source [src]="getLink()">
+        </video>
+    </ng-container>
+</div>

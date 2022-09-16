@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
     AppMenuComponent,
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppLibModule,

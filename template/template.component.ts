@@ -1,13 +1,14 @@
 // @ts-nocheck
 import { Component } from '@angular/core';
-import { WindowOptions } from '../../services/window-manager.service';
+import { OnDragEnd } from 'client/types/window';
+import { WindowOptions } from '../../../types/window';
 
 @Component({
     selector: 'app-filetemplate',
     templateUrl: './filetemplate.component.html',
     styleUrls: ['./filetemplate.component.scss']
 })
-export class TemplateComponent implements OnInit {
+export class TemplateComponent implements OnInit, OnResize, OnDragEnd, On {
 
     @Input() windowData: WindowOptions;
 

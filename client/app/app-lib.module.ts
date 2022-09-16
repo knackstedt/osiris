@@ -5,27 +5,24 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './material.module';
 import { ResizableModule } from 'angular-resizable-element';
+import { MonacoEditorComponent } from './components/monaco-editor/monaco-editor.component';
 
 
 @NgModule({
     declarations: [
-        // UrlSanitizer,
-        // ConfirmButtonComponent
+        MonacoEditorComponent
     ],
     imports: [
         CommonModule,
         ResizableModule,
-        // LayoutModule,
         MaterialModule
     ],
     exports: [
         CommonModule,
         ResizableModule,
-        // UrlSanitizer,
-        // MatButtonModule,
         FormsModule,
         ReactiveFormsModule,
-        // ConfirmButtonComponent/
+        MonacoEditorComponent
     ],
 })
 

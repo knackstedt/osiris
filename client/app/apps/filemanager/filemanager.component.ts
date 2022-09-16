@@ -1,18 +1,16 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
-import { WindowOptions } from '../../services/window-manager.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { WindowManagerService } from '../../services/window-manager.service';
 import { Fetch } from '../../services/fetch.service';
 import { resolveIcon } from './icon-resolver';
-// import * as MimeTypeBase from "./mimetypes-base.json";
-// import * as MimeTypes from "./mimetypes.json";
-import { MatDialog } from '@angular/material/dialog';
-import { FileViewerComponent } from '../../components/file-viewer/file-viewer.component';
+import { WindowOptions } from '../../../types/window';
 
-
-// const CustomMimeTypes = {};
-// Object.keys(MimeTypes).forEach(key => {
-//     MimeTypes[key].forEach(ext => CustomMimeTypes[ext] = key);
-// })
-
+// TODO:
+/**
+ * Multiple music / video / image files selected turns into a playlist
+ * Dragging music / video / image queues the file(s)
+ * Can save and edit a list of files as playlist
+ * Can "loop" "randomize"
+ */
 
 @Component({
     selector: 'app-filemanager',
@@ -29,7 +27,10 @@ export class FilemanagerComponent implements OnInit {
 
     directoryContents: string[];    
 
-    constructor(private fetch: Fetch, private dialog: MatDialog) {
+    constructor(
+        private fetch: Fetch, 
+        private windowManager: WindowManagerService
+        ) {
     }
 
     ngOnInit(): void {
@@ -52,11 +53,13 @@ export class FilemanagerComponent implements OnInit {
 
 
     openFile(file: string, evt: MouseEvent) {
-        this.dialog.open(FileViewerComponent, {
-            data: {
-                file,
-            }
-        });
+        this.windowManager.OpenWindow("file-viewer", { dir: this.windowData.data?.basePath + "/", file })
+        // this.dialog.open(FileViewerComponent, {
+        //     data: {
+        //         dir: this.windowData.data?.basePath + "/",
+        //         file,
+        //     }
+        // });
     }
 
     dbg(evt) {

@@ -36,3 +36,14 @@ $app-theme: mat.define-dark-theme((color: (primary: $app-primary,
 .mat-form-field-appearance-outline .mat-form-field-outline {
     color: transparent;
 }
+
+/*
+ * All styles below are customized overrides of the base material
+ * theme system
+ * 
+ */
+
+.mat-progress-spinner circle,
+.mat-spinner circle {
+    stroke: white;
+}
