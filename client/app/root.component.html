@@ -3,7 +3,9 @@
     <!-- <div class="taskbar" (mouseOut)="blurTaskbtn(item, $event)"> -->
         <div class="task-button" *ngFor="let item of taskbarItems"
             (click)="showMenu(item)"
-            (hover)="showMenu(item)"
+            (hover)="item._isHovered = true"
+            (blur)="item._isHovered = false"
+            [class.hover]="item._isHovered"
             >
             <!-- (click)="item.windows[item.windows.length-1]._isCollapsed = false" -->
             <div class="dots">
@@ -14,30 +16,40 @@
                 <div class="dot" *ngIf="item.windows.length > 4"></div>
             </div>
             <div class="icon">
-                <img [src]="item.windows[0].icon" />
+                <img [src]="item.windows[0].icon" />                
             </div>
-
             <div class="tooltip">
                 <div>
                     {{item.windows[0].description}}
                 </div>
             </div>
-            <div class="picker" *ngIf="item._isHovered">
-                <div class="windowPreview" *ngFor="let window of item.windows">
-                    <button class="close" (click)="closeWindow(window, $event)">
-                        <img src="assets/icons/window-close-symbolic.svg" />
-                    </button>
-                    <div class="draggable">
-                        <div class="window"
-                            [style.width]="window.width + 'px'"
-                            [style.height]="window.height + 'px'"
-                            [style.transform]="calcScale(window)"
-                            [innerHTML]="window._preview | urlSanitizer"
-                            >
+            <div 
+                class="picker count_{{item.windows.length}}" 
+                *ngIf="item._isActive"
+                (click)="hideMenu(item); $event.stopPropagation()"
+                >
+                <div class="picker_backdrop"></div>
+                <div class="contents">
+                    <div 
+                        class="windowPreview" 
+                        *ngFor="let window of item.windows"
+                        (click)="uncollapseWindow(window);"
+                        >
+                        <button class="close" (click)="closeWindow(window, $event); $event.preventDefault()">
+                            <img src="assets/icons/window-close-symbolic.svg" />
+                        </button>
+                        <div class="draggable">
+                            <div class="window"
+                                [style.width]="window.width + 'px'"
+                                [style.height]="window.height + 'px'"
+                                [style.transform]="calcScale(window)"
+                                [innerHTML]="window._preview | urlSanitizer"
+                                >
+                            </div>
                         </div>
-                    </div>
-                    <div class="label">
-                        {{window.title}}
+                        <div class="label">
+                            {{window.title}}
+                        </div>
                     </div>
                 </div>
             </div>

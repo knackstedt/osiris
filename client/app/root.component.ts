@@ -18,6 +18,7 @@ export type TaskBarData = {
     windows: ManagedWindow[],
 
     _isHovered: boolean
+    _isActive: boolean
     popupHeight?: number,
     popupWidth?: number
 }
@@ -96,7 +97,7 @@ export class RootComponent implements OnInit {
 
             // If not, create one
             if (!taskbarItem)
-                this.taskbarItems.push(taskbarItem = { app: data.appId, windows: [], _isHovered: false });
+                this.taskbarItems.push(taskbarItem = { app: data.appId, windows: [], _isActive: false, _isHovered: false });
 
             // Lastly add to the taskbar item.
             taskbarItem.windows.push(data);
@@ -104,7 +105,7 @@ export class RootComponent implements OnInit {
 
         this.windowManager.OpenWindow({
             title: "My special App",
-            description: "My Dildo Application V1.0",
+            description: "My Application V1.0",
             appId: "file-manager",
             x: 100,
             y: 100,
@@ -191,6 +192,7 @@ export class RootComponent implements OnInit {
     }
     uncollapseWindow(window: ManagedWindow, evt?: MouseEvent) {
         window._isCollapsed = false;
+        window._index = this.windowZindexCounter++;
         // Collapse from near-fullscreen
     }
 
@@ -259,14 +261,15 @@ export class RootComponent implements OnInit {
     }
 
     showMenu(menu: TaskBarData) {
-        menu._isHovered = true
+        menu._isActive = true
         menu.windows.forEach(w => {
             w._preview = this.getIHTML(w);
         });
+        console.log("show Menu")
     }
 
     hideMenu(menu: TaskBarData) {
-        menu._isHovered = false;
+        menu._isActive = false;
         this.managedWindows.forEach(w => {
             delete w._preview;
         });
@@ -274,7 +277,7 @@ export class RootComponent implements OnInit {
     blurAllWindows() {
         console.log("BAW")
         this.taskbarItems.forEach(menu => {
-            menu._isHovered = false;
+            menu._isActive = false;
         })
         this.managedWindows.forEach(w => {
             w._isActive = false;
