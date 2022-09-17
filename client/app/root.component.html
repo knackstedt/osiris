@@ -1,9 +1,11 @@
 <div class="root taskbar-left">
     <div class="taskbar">
-        <div class="task-button" 
-            #button 
-            *ngFor="let item of taskbarItems"
+    <!-- <div class="taskbar" (mouseOut)="blurTaskbtn(item, $event)"> -->
+        <div class="task-button" *ngFor="let item of taskbarItems"
+            (click)="showMenu(item)"
+            (hover)="showMenu(item)"
             >
+            <!-- (click)="item.windows[item.windows.length-1]._isCollapsed = false" -->
             <div class="dots">
                 <div class="dot"></div>
                 <div class="dot" *ngIf="item.windows.length > 1"></div>
@@ -20,11 +22,28 @@
                     {{item.windows[0].description}}
                 </div>
             </div>
-            <!-- {{item.app}} -->
-            <!-- {{item.windows.length}} -->
+            <div class="picker" *ngIf="item._isHovered">
+                <div class="windowPreview" *ngFor="let window of item.windows">
+                    <button class="close" (click)="closeWindow(window, $event)">
+                        <img src="assets/icons/window-close-symbolic.svg" />
+                    </button>
+                    <div class="draggable">
+                        <div class="window"
+                            [style.width]="window.width + 'px'"
+                            [style.height]="window.height + 'px'"
+                            [style.transform]="calcScale(window)"
+                            [innerHTML]="window._preview | urlSanitizer"
+                            >
+                        </div>
+                    </div>
+                    <div class="label">
+                        {{window.title}}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="windowManager">
+    <div class="windowManager" (click)="blurAllWindows()">
         <div class="cdk-drag-boundary"></div>
         <div class="cdk-overlay-pane">
             <div 
@@ -33,6 +52,7 @@
                 class="draggable" 
                 cdkDrag 
                 cdkDragBoundary=".cdk-drag-boundary" 
+                [id]="'window_' + window.id"
                 (cdkDragReleased)="onDragEnd(window, $event)"
                 [cdkDragData]="{dragWindow: window, managedWindows, snapPx}"
                 [cdkDragFreeDragPosition]="{x: window.x-64, y: window.y}"
@@ -40,6 +60,7 @@
                 mwlResizable
                 (resizeEnd)="onResizeEnd(window, $event)"
                 (resizing)="onResizing(window, $event)"
+                (click)="$event.preventDefault()"
                 
                 [class.active]="window._isActive"
                 [class.draggedOver]="window._isDraggedOver"
@@ -57,7 +78,7 @@
                 -->
                 <ng-container>
                     <div class="window">
-                        <div cdkDragHandle class="titlebar" >
+                        <div cdkDragHandle class="titlebar">
                             <div class="other">
                                 <!-- <ng-container *ngIf="titlebarTemplate; else defaultTitlebar">
                                     <ng-container *ngTemplateOutlet="titlebarTemplate"></ng-container>
@@ -104,5 +125,3 @@
         </div>
     </div>
 </div>
-
-<div id="e" style="position: absolute; background: white; width: 5px; height: 5px; z-index: 90000; pointer-events: none;"></div>

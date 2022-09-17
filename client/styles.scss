@@ -14,4 +14,83 @@ html, body {
 
 * {
     box-sizing: border-box;
+    user-select: none;
+}
+
+p, span {
+    user-select: all;
+}
+
+.resizeHandles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+
+    .resize-handle-left,
+    .resize-handle-right,
+    .resize-handle-top,
+    .resize-handle-bottom,
+    .resize-handle-top-left,
+    .resize-handle-top-right,
+    .resize-handle-bottom-left,
+    .resize-handle-bottom-right {
+        pointer-events: all;
+        position: absolute;
+    }
+
+    .resize-handle-top,
+    .resize-handle-bottom {
+        height: 5px;
+        cursor: row-resize;
+        width: 100%;
+    }
+
+    .resize-handle-left,
+    .resize-handle-right {
+        height: 100%;
+        cursor: col-resize;
+        width: 5px;
+    }
+
+    .resize-handle-top-left,
+    .resize-handle-top-right,
+    .resize-handle-bottom-left,
+    .resize-handle-bottom-right {
+        width: 5px;
+        height: 5px;
+        cursor: ne-resize;
+        z-index: 2;
+    }
+
+    .resize-handle-top-left,
+    .resize-handle-bottom-right {
+        cursor: nw-resize;
+    }
+
+    .resize-handle-top,
+    .resize-handle-top-left,
+    .resize-handle-top-right {
+        top: -2.5px;
+    }
+
+    .resize-handle-bottom,
+    .resize-handle-bottom-left,
+    .resize-handle-bottom-right {
+        bottom: -2.5px;
+    }
+
+    .resize-handle-top-left,
+    .resize-handle-bottom-left,
+    .resize-handle-left {
+        left: -2.5px;
+    }
+
+    .resize-handle-top-right,
+    .resize-handle-bottom-right,
+    .resize-handle-right {
+        right: -2.5px;
+    }
 }

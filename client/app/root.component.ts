@@ -1,4 +1,4 @@
-import { Component, ComponentRef, HostListener, OnInit } from '@angular/core';
+import { Component, ComponentRef, HostListener, OnInit, ViewEncapsulation } from '@angular/core';
 import { CdkDragDrop, CdkDragEnd, CdkDragRelease, DragRef, moveItemInArray, Point} from '@angular/cdk/drag-drop';
 // Observables
 import { Fetch } from 'client/app/services/fetch.service';
@@ -7,7 +7,7 @@ import { ThemeLoaderService } from 'client/app/services/themeloader.service';
 import { WindowManagerService } from './services/window-manager.service';
 import { MatDialog } from '@angular/material/dialog';
 // import { environment } from 'environments/environment';
-import { ComponentPortal, Portal } from '@angular/cdk/portal';
+import { ComponentPortal, Portal, PortalModule } from '@angular/cdk/portal';
 import { ApplicationLoaderService } from './services/application-loader.service';
 import { ResizeEvent } from 'angular-resizable-element';
 import { ManagedWindow, WindowOptions } from 'client/types/window';
@@ -15,13 +15,18 @@ import { environment } from 'client/environments/environment';
 
 export type TaskBarData = {
     app: string,
-    windows: WindowOptions[]
+    windows: ManagedWindow[],
+
+    _isHovered: boolean
+    popupHeight?: number,
+    popupWidth?: number
 }
 
 @Component({
     selector: 'app-root',
     templateUrl: './root.component.html',
-    styleUrls: ['./root.component.scss']
+    styleUrls: ['./root.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
 export class RootComponent implements OnInit {
     environment = environment;
@@ -91,7 +96,7 @@ export class RootComponent implements OnInit {
 
             // If not, create one
             if (!taskbarItem)
-                this.taskbarItems.push(taskbarItem = { app: data.appId, windows: [] });
+                this.taskbarItems.push(taskbarItem = { app: data.appId, windows: [], _isHovered: false });
 
             // Lastly add to the taskbar item.
             taskbarItem.windows.push(data);
@@ -125,18 +130,19 @@ export class RootComponent implements OnInit {
         //     this.region = data.Region;
         //     this.version = data.Version;
         // }).catch(err => { });
-        this.taskbarItems = [];
-        let apps = this.managedWindows.map(d => d.appId);
-        let _map = {};
-        apps.forEach(a => _map[a] = true);
-        apps = Object.keys(_map) as any;
-        apps.forEach(a => {
-            let windows = this.managedWindows.filter(w => w.appId == a);
-            this.taskbarItems.push({
-                app: a,
-                windows
-            });
-        })        
+        // this.taskbarItems = [];
+        // let apps = this.managedWindows.map(d => d.appId);
+        // let _map = {};
+        // apps.forEach(a => _map[a] = true);
+        // apps = Object.keys(_map) as any;
+        // apps.forEach(a => {
+        //     let windows = this.managedWindows.filter(w => w.appId == a);
+        //     this.taskbarItems.push({
+        //         app: a,
+        //         windows,
+        //         _isHovered: false
+        //     });
+        // })        
     }
 
     titleOverride = "";
@@ -159,13 +165,9 @@ export class RootComponent implements OnInit {
 
     }
 
-    blurAllWindows() {
-        this.managedWindows.forEach(w => w._isActive = false);
-    }
-
     @HostListener('window:blur', ['$event'])
     private onBlur(event?) {
-        this.blurAllWindows();
+        // this.blurAllWindows();
     }
 
     drop(evt: CdkDragDrop<string[]>) {
@@ -185,6 +187,10 @@ export class RootComponent implements OnInit {
     }
     collapseWindow(window: ManagedWindow, evt?: MouseEvent) {
         window._isCollapsed = true;
+        // Collapse from near-fullscreen
+    }
+    uncollapseWindow(window: ManagedWindow, evt?: MouseEvent) {
+        window._isCollapsed = false;
         // Collapse from near-fullscreen
     }
 
@@ -227,148 +233,55 @@ export class RootComponent implements OnInit {
         window._component?.instance['onResizeEnd'] && window._component.instance['onResizeEnd'](evt);
     }
 
-    // /**
-    //  * This method is a property assignment, so all local class references 
-    //  * must be passed through the element's cdkDragData binding.
-    //  */
-    // computeDragRenderPos(pos: Point, dragRef: DragRef) {
-    //     const e = document.getElementById("e");
-    //     // e.style.top = mousePos.y + "px";
-    //     // e.style.left = mousePos.x + "px";
-
-    //     // const { dragWindow, windowData, snapPx }: {
-    //     //     dragWindow: WindowData,
-    //     //     windowData: WindowData[],
-    //     //     snapPx: number
-    //     // } = dragRef.data.data;
-
-    //     // // const p = dragRef.getFreeDragPosition();
-    //     // // const pos = {
-    //     // //     x: p.x + 64,
-    //     // //     y: p.y
-    //     // // };
-
-    //     // const dx = mousePos.x - pos.x;
-
-    //     // const topEdges = [];
-    //     // const leftEdges = [];
-    //     // const bottomEdges = [];
-    //     // const rightEdges = [];
-
-    //     // windowData
-    //     //     .filter(w => !w._isCollapsed && w.id != dragWindow.id)
-    //     //     .forEach(w => {
-    //     //         topEdges.push(w._dragPosition.y);
-    //     //         leftEdges.push(w._dragPosition.x);
-    //     //         bottomEdges.push(w._dragPosition.y + w.height);
-    //     //         rightEdges.push(w._dragPosition.x + w.width);
-    //     //         // w._isDraggedOver = false;
-    //     //     });
-
-    //     // windowData
-    //     //     .filter(w => !w._isCollapsed && w.id != dragWindow.id)
-    //     // .filter(w => {
-
-    //     //     // const  = xRight > r.x && xRight < r.x + r.w;
-    //     //     // we know that the horizontal pos overlaps
-    //     //     const xOverlap =
-    //     //         pos.x > w._dragPosition.x && pos.x < w._dragPosition.x + w.width ||
-    //     //         pos.x + dragWindow.width > w._dragPosition.x && pos.x + dragWindow.width < w._dragPosition.x + w.width;
-
-
-    //     //         // pos.x + dragWindow.width > w._dragPosition.x &&
-    //     //         // pos.x < w._dragPosition.x + w.width;
-    //     //         //  ||
-    //     //         // x > pos.x &&
-    //     //         // x < pos.x + dragWindow.width;
-
-    //     //     // const y = w._dragPosition.y + w.height;
-    //     //     const yOverlap = true
-    //     //         // y > pos.y &&
-    //     //         // y < pos.y + dragWindow.height;
-
-    //     //     console.log("Overlap state", xOverlap)
-
-    //     //     // If we overlap both on X and Y, then there is some overlap of the windows.
-    //     //     return xOverlap && yOverlap;
-    //     // })
-    //     //     .forEach(w => {
-    //     //         w._isDraggedOver = true;
-    //     //         console.log("overlap", w.title)
-    //     //     })
-
-    //     // // const topEdge = pos.y;
-    //     // const leftEdge = pos.x;
-    //     // const rightEdge = pos.x + dragWindow.width;
-    //     // const bottomEdge = pos.y + dragWindow.height;
-
-    //     // // Check all right window edges against the moving left edge
-
-    //     // const checkEdge = (currentPosEdge, dragBoundEdge) => {
-    //     //     const check = (edge) => {
-    //     //         let left = currentPosEdge - snapPx;
-    //     //         let right = currentPosEdge + snapPx;
-
-    //     //         return edge > left && edge < right;
-
-    //     //         return edge
-    //     //         if (
-    //     //             currentPosEdge - snapPx < edge &&
-    //     //             currentPosEdge + snapPx > edge
-    //     //             )
-    //     //         return true;
-    //     //         return false;
-    //     //     }
-    //     //     return function(staticEdge) {
-    //     //         return check(dragBoundEdge) || check(staticEdge) || null;
-    //     //     }
-    //     // }
-
-    //     // // We snap to the opposite edges of other windows.
-    //     // const snapTopPx = bottomEdges.find(checkEdge(topEdge, 0));
-    //     // const snapLeftPx = rightEdges.find(checkEdge(leftEdge, 0));
-    //     // const snapBottomPx = topEdges.find(checkEdge(bottomEdge, window.innerHeight));
-    //     // const snapRightPx = leftEdges.find(checkEdge(rightEdge, window.innerWidth));
-
-    //     // if (snapTopPx) console.log("snapping to top", snapTopPx);
-    //     // if (snapLeftPx) console.log("snapping to left", snapLeftPx);
-    //     // if (snapBottomPx) console.log("snapping to bottom", snapBottomPx);
-    //     // if (snapRightPx) console.log("snapping to right", snapRightPx);
-
-
-    //     // if (x == null) ? snapLeftPx : 0) || (snapRightPx ? snapRightPx + dragWindow.width : 0
-    //     // return {
-    //     //     x: () || pos.x,
-    //     //     y: (snapTopPx ? snapTopPx : 0) || (snapBottomPx ? snapBottomPx + dragWindow.height : 0) || pos.y
-    //     // };
-
-    //     // return {
-    //     //     x: pos.x < 0 ? -pos.x + dx : mousePos.x,
-    //     //     y: mousePos.y
-    //     // };
-
-    //     const div = dragRef.getFreeDragPosition();
-    //     let tx = (div.x + (pos.x - div.x));
-    //     let x = tx;
-    //     // if (div.x + 300 + 64 < pos.x)
-    //     // x = pos.x;
-    //     if (div.x <= 0)
-    //         tx -=
-    //         // pos.x = (div.x + (pos.x - div.x)) + (pos.x + -div.x);
-    //         // x = -div.x + 64;
-    //         // x = (pos.x - div.x);
-        
-    //     // px = 57
-    //     // dvx = -20
-
-    //     console.log(pos.x, div.x, x);
-            
-    //     return { x: x, y: pos.y };
-    // }
-
     injectPortal(ref, data: ManagedWindow) {
         const component = ref as ComponentRef<any>;
         component.instance["windowData"] = data;
         data._component = component;
+    }
+
+    calcScale(window: ManagedWindow) {
+        const xMax = 250;
+        const dxMax = 280;
+        const yMax = 135;
+        const dyMax = 181;
+        const xScale = xMax / window.width;
+        const yScale = yMax / window.height;
+        
+        const scale = Math.min(xScale, yScale);
+
+        const cWidth  = window.width * scale;
+        const cHeight = window.width * scale;
+
+        const xTx = xScale > yScale ? ((xMax - cWidth ) / 2 / scale) : 0;
+        const yTx = yScale > xScale ? ((yMax - cHeight) / 2 / scale) : 0;
+
+        return `scale3d(${scale}, ${scale}, 1) translate3d(${xTx}px, ${yTx}px, 0px)`;
+    }
+
+    showMenu(menu: TaskBarData) {
+        menu._isHovered = true
+        menu.windows.forEach(w => {
+            w._preview = this.getIHTML(w);
+        });
+    }
+
+    hideMenu(menu: TaskBarData) {
+        menu._isHovered = false;
+        this.managedWindows.forEach(w => {
+            delete w._preview;
+        });
+    }
+    blurAllWindows() {
+        console.log("BAW")
+        this.taskbarItems.forEach(menu => {
+            menu._isHovered = false;
+        })
+        this.managedWindows.forEach(w => {
+            w._isActive = false;
+        });
+    }
+
+    getIHTML(window: ManagedWindow) {
+        return document.querySelector("#window_" + window.id + " .window")?.innerHTML;
     }
 }

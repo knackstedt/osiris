@@ -58,6 +58,21 @@ export type ManagedWindow = WindowOptions & {
     _component?: ComponentRef<any> // the loaded component
     _initialStyle: string,
 
+
+    _preview: string,
+    // _isTaskbarPreview?: boolean,
+    // _previewTransform: string
+    // _dialogTransform: string,
+    // _preview?: {
+    //     windowWidth: string,
+    //     windowHeight: string,
+    //     margin: string,
+    //     windowPadding: string,
+    //     isFirst: boolean
+    //     isLast: boolean,
+    //     scale: number
+    // }
+
     // Temp vars for handling resize events
     _x: number,
     _y: number
