@@ -6,6 +6,8 @@ import { readFile, stat, access } from "fs-extra";
 import { isText, isBinary, getEncoding } from 'istextorbinary';
 import { getHeapStatistics } from "v8";
 import mime from "mime-types";
+import AdmZip from "adm-zip";
+import tar from "tar";
 
 process.on('uncaughtException', function (exception) {
     console.log(exception); // to see your exception details in the console
@@ -30,6 +32,70 @@ const generateThumbnail = (path: string) => {
 
 //     res.send(pages);
 // }));
+
+// https://www.npmjs.com/package/adm-zip
+router.use('/zip', route(async (req, res, next) => {
+    const { dir, file } = req.body;
+
+    let zip = new AdmZip(dir + file);
+    let zipEntries = zip.getEntries();
+
+    // zipEntries.forEach(function (zipEntry) {
+    //     console.log(zipEntry.toString());
+    //     if (zipEntry.entryName == "my_file.txt") {
+    //         console.log(zipEntry.getData().toString("utf8"));
+    //     }
+    // });
+    res.send(zipEntries);
+}));
+
+router.use('/rar', route(async (req, res, next) => {
+    const { dir, file } = req.body;
+
+    let zip = new AdmZip(dir + file);
+    let zipEntries = zip.getEntries();
+
+    // zipEntries.forEach(function (zipEntry) {
+    //     console.log(zipEntry.toString());
+    //     if (zipEntry.entryName == "my_file.txt") {
+    //         console.log(zipEntry.getData().toString("utf8"));
+    //     }
+    // });
+    res.send(zipEntries);
+}));
+
+router.use('/7z', route(async (req, res, next) => {
+    const { dir, file } = req.body;
+
+    let zip = new AdmZip(dir + file);
+    let zipEntries = zip.getEntries();
+
+    // zipEntries.forEach(function (zipEntry) {
+    //     console.log(zipEntry.toString());
+    //     if (zipEntry.entryName == "my_file.txt") {
+    //         console.log(zipEntry.getData().toString("utf8"));
+    //     }
+    // });
+    res.send(zipEntries);
+}));
+
+router.use('/tar', route(async (req, res, next) => {
+    const { dir, file,  } = req.body;
+
+    let entries = [];
+    tar.t({
+        file: dir + file
+    })
+    .on("onentry", (entry) => {
+        entries.push(entry);
+    })
+    .on("finish", () => {
+        res.send(entries);
+    })
+    .on("error", next);
+
+}));
+
 router.use('/download', route(async (req, res, next) => {
     const { dir, file } = req.query as any;
 
@@ -48,7 +114,7 @@ router.use('/download', route(async (req, res, next) => {
                 "accept-ranges": "bytes",
                 "content-length": contentLength
             });
-            
+
             const videoStream = fs.createReadStream(dir + file, { start, end });
             videoStream.pipe(res);
         }
