@@ -1,0 +1,22 @@
+<div class="other">
+    <div *ngIf="window.title">{{window.title}}</div>
+    <div class="debug" *ngIf="true">
+        <div>x: {{window.x}}</div>
+        <div>width: {{window.width}}</div>
+        <div>y: {{window.y}}</div>
+        <div>height: {{window.height}}</div>
+    </div>
+</div>
+<ng-container *ngTemplateOutlet="template"></ng-container>
+
+<div class="controls" *ngIf="!window._isCollapsed">
+    <button (click)="window._isCollapsed = true">
+        <img src="assets/icons/window-minimize-symbolic.svg" />
+    </button>
+    <button (click)="window._isMaximized = !window._isMaximized">
+        <img src="assets/icons/window-maximize-symbolic.svg" />
+    </button>
+    <button class="close" (click)="this.onClose.emit(window)">
+        <img src="assets/icons/window-close-symbolic.svg" />
+    </button>
+</div>

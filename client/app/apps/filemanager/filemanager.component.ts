@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { WindowManagerService } from '../../services/window-manager.service';
+import { ManagedWindow, WindowManagerService } from '../../services/window-manager.service';
 import { Fetch } from '../../services/fetch.service';
 import { resolveIcon } from './icon-resolver';
-import { WindowOptions } from '../../../types/window';
 
 // TODO:
 /**
@@ -23,7 +22,7 @@ export class FilemanagerComponent implements OnInit {
 
     resolveIcon = resolveIcon;
 
-    @Input() windowData: WindowOptions;
+    @Input() windowData: ManagedWindow;
 
     directoryContents: string[];    
 
@@ -45,6 +44,7 @@ export class FilemanagerComponent implements OnInit {
             .then((data: any) => {
                 const files: string[] = data.files;
                 const dirs: string[] = data.dirs;
+                console.log("load data")
 
                 this.directoryContents = files.concat(dirs);
             })

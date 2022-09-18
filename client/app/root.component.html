@@ -1,77 +1,24 @@
 <div class="root taskbar-left">
-    <div class="taskbar">
-    <!-- <div class="taskbar" (mouseOut)="blurTaskbtn(item, $event)"> -->
-        <div class="task-button" *ngFor="let item of taskbarItems"
-            (click)="showMenu(item)"
-            (hover)="item._isHovered = true"
-            (blur)="item._isHovered = false"
-            [class.hover]="item._isHovered"
-            >
-            <!-- (click)="item.windows[item.windows.length-1]._isCollapsed = false" -->
-            <div class="dots">
-                <div class="dot"></div>
-                <div class="dot" *ngIf="item.windows.length > 1"></div>
-                <div class="dot" *ngIf="item.windows.length > 2"></div>
-                <div class="dot" *ngIf="item.windows.length > 3"></div>
-                <div class="dot" *ngIf="item.windows.length > 4"></div>
-            </div>
-            <div class="icon">
-                <img [src]="item.windows[0].icon" />                
-            </div>
-            <div class="tooltip">
-                <div>
-                    {{item.windows[0].description}}
-                </div>
-            </div>
-            <div 
-                class="picker count_{{item.windows.length}}" 
-                *ngIf="item._isActive"
-                (click)="hideMenu(item); $event.stopPropagation()"
-                >
-                <div class="picker_backdrop"></div>
-                <div class="contents">
-                    <div 
-                        class="windowPreview" 
-                        *ngFor="let window of item.windows"
-                        (click)="uncollapseWindow(window);"
-                        >
-                        <button class="close" (click)="closeWindow(window, $event); $event.preventDefault()">
-                            <img src="assets/icons/window-close-symbolic.svg" />
-                        </button>
-                        <div class="draggable">
-                            <div class="window"
-                                [style.width]="window.width + 'px'"
-                                [style.height]="window.height + 'px'"
-                                [style.transform]="calcScale(window)"
-                                [innerHTML]="window._preview | urlSanitizer"
-                                >
-                            </div>
-                        </div>
-                        <div class="label">
-                            {{window.title}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="windowManager" (click)="blurAllWindows()">
+    <app-taskbar></app-taskbar>
+
+    <div class="windowManager" (click)="windowManager.blurAllWindows()">
         <div class="cdk-drag-boundary"></div>
         <div class="cdk-overlay-pane">
-            <div 
-                #window
-                *ngFor="let window of managedWindows"
+            <app-window 
+                *ngFor="let window of windowManager.managedWindows"
+                [window]="window"
                 class="draggable" 
                 cdkDrag 
                 cdkDragBoundary=".cdk-drag-boundary" 
                 [id]="'window_' + window.id"
-                (cdkDragReleased)="onDragEnd(window, $event)"
-                [cdkDragData]="{dragWindow: window, managedWindows, snapPx}"
+                
+                (cdkDragReleased)="window.onDragEnd($event)"
+                [cdkDragData]="{dragWindow: window, managedWindows: windowManager.managedWindows, snapPx: 5}"
                 [cdkDragFreeDragPosition]="{x: window.x-64, y: window.y}"
 
                 mwlResizable
-                (resizeEnd)="onResizeEnd(window, $event)"
-                (resizing)="onResizing(window, $event)"
+                (resizeEnd)="window.onResizeEnd($event)"
+                (resizing)="window.onResizing($event)"
                 (click)="$event.preventDefault()"
                 
                 [class.active]="window._isActive"
@@ -79,7 +26,7 @@
                 [class.maximized]="window._isMaximized"
                 [class.collapsed]="window._isCollapsed"
 
-                (mousedown)="activateWindow(window, $event)"
+                (mousedown)="window.activate()"
                 [style.z-index]="window._index"
                 [style.width]="window.width + 'px'"
                 [style.height]="window.height + 'px'"
@@ -88,52 +35,7 @@
             <!-- Collapsed windows will not render their contents
                 -- to minimize the number of active DOM elements.
                 -->
-                <ng-container>
-                    <div class="window">
-                        <div cdkDragHandle class="titlebar">
-                            <div class="other">
-                                <!-- <ng-container *ngIf="titlebarTemplate; else defaultTitlebar">
-                                    <ng-container *ngTemplateOutlet="titlebarTemplate"></ng-container>
-                                </ng-container> -->
-                    
-                                <div *ngIf="window.title">{{window.title}}</div>
-                                <div class="debug" *ngIf="environment.showDebugStats">
-                                    <div>x: {{window.x}}</div>
-                                    <div>width: {{window.width}}</div>
-                                    <div>y: {{window.y}}</div>
-                                    <div>height: {{window.height}}</div>
-                                </div>
-                                <!-- <ng-template #defaultTitlebar>
-                                </ng-template> -->
-                            </div>
-                            <div class="controls" *ngIf="!window._isCollapsed">
-                                <button (click)="collapseWindow(window, $event)"><img src="assets/icons/window-minimize-symbolic.svg" /></button>
-                                <button (click)="(window._isMaximized ? minimizeWindow : maximizeWindow)(window, $event)"><img src="assets/icons/window-maximize-symbolic.svg" /></button>
-                                <button class="close" (click)="closeWindow(window, $event)"><img src="assets/icons/window-close-symbolic.svg" /></button>
-                            </div>
-                        </div>
-                        <div class="content">
-                            <!-- CONTENT -->
-                            <!-- {{window._isDraggedOver}} -->
-                            <ng-template *ngIf="!window._isCollapsed && !window._isLoading" [cdkPortalOutlet]="window._portal" (attached)="injectPortal($event, window)" class="active"></ng-template>
-
-                            <div *ngIf="window._isLoading">spinner...</div>
-                        </div>
-                    </div>
-
-                    <div class="resizeHandles">
-                        <div class="resize-handle-top"    mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-                        <div class="resize-handle-left"   mwlResizeHandle [resizeEdges]="{ left: true }"></div>
-                        <div class="resize-handle-right"  mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-                        <div class="resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
-
-                        <div class="resize-handle-top-left"     mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
-                        <div class="resize-handle-top-right"    mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-                        <div class="resize-handle-bottom-left"  mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-                        <div class="resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
-                    </div>
-                </ng-container>
-            </div>
+            </app-window>
         </div>
     </div>
 </div>

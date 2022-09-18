@@ -6,11 +6,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './material.module';
 import { ResizableModule } from 'angular-resizable-element';
 import { MonacoEditorComponent } from './components/monaco-editor/monaco-editor.component';
+import { WindowToolbarComponent } from './components/window-template/window-toolbar/window-toolbar.component';
+import { WindowTemplateComponent } from './components/window-template/window-template.component';
 
 
 @NgModule({
     declarations: [
-        MonacoEditorComponent
+        MonacoEditorComponent,
+        WindowToolbarComponent,
+        WindowTemplateComponent
     ],
     imports: [
         CommonModule,
@@ -22,7 +26,10 @@ import { MonacoEditorComponent } from './components/monaco-editor/monaco-editor.
         ResizableModule,
         FormsModule,
         ReactiveFormsModule,
-        MonacoEditorComponent
+        MonacoEditorComponent,
+        WindowToolbarComponent,
+        WindowTemplateComponent
+
     ],
 })
 

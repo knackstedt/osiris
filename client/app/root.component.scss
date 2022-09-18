@@ -1,4 +1,4 @@
-:host { 
+:host, .root { 
     height: 100%;
     width: 100%;
     display: flex;
@@ -20,227 +20,6 @@
     position: relative;
 }
 
-.root {
-    height: 100%;
-    width: 100%;
-    display: flex;
-}
-
-@keyframes slide-in {
-    from {
-        transform: translate3d(-40px, 0, 0);
-        opacity: 0;
-    }
-    to {
-        transform: translate3d(0, 0, 0);
-        opacity: 1;
-
-    }
-}
-
-.taskbar {
-    background-color: #33302f;
-    z-index: 9999;
-    position: relative;
-
-    .task-button {
-        // display: flex;
-        height: 64px;
-        width: 64px;
-        transition: background-color 100ms cubic-bezier(0, 0, 0.2, 1);
-        // justify-content: center;
-        // position: relative;
-        border-radius: 16px;
-
-        &.active, &:hover {
-            background-color: #585555;
-        }
-        &.hover .tooltip div {
-            opacity: 1;
-        }
-        .tooltip {
-            position: absolute;
-            color: white;
-            pointer-events: none;
-            width: 400px;
-            display: flex;
-
-            div {
-                text-overflow: ellipsis;
-                white-space: pre;
-                overflow: hidden;
-                background-color: #2a2a2aa0;
-                opacity: 0;
-                transition: opacity 200ms cubic-bezier(0, 0, 0.2, 1);
-                padding: 7.5px;
-                font-size: 14px;
-                border-radius: 16px;
-            }
-        }
-
-        .dots {
-            display: flex;
-            gap: 3px;
-            position: absolute;
-            place-content: center;
-            z-index: 1;
-
-            .dot {
-                width: 5px;
-                height: 5px;
-                background: white;
-                border-radius: 50%;
-            }
-        }
-        .icon {
-            display: flex;
-            position: absolute;
-            width: 64px;
-            height: 64px;
-            img {
-                width: 36px;
-                height: 36px;
-                align-self: center;
-            }
-        }
-
-        .picker {
-            position: absolute;
-            left: 100%;
-
-            margin-left: 6px;
-            margin-top: 6px;
-            max-height: calc(100vh - 12px);
-            width: 312px;
-
-            background: #33302f;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            
-            overflow: hidden;
-
-            top: 0;
-            padding: 6px 6px 6px 0;
-            z-index: 10;
-
-            border-radius: 8px;
-            animation: slide-in 200ms ease;
-
-            background-color: #33302f;
-            border: 1px solid #3f3c3b;
-            border-radius: 8px;
-            
-            .picker_backdrop {
-                position: absolute;
-                top: 6px;
-                bottom: 6px;
-                width: 330px;
-                z-index: -1;
-            }
-
-            &::before {
-                content: " ";
-                position: fixed;
-                z-index: -2;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-            }
-
-            .contents {
-                width: 100%;
-                overflow-x: hidden;
-                height: 100%;
-                overflow-y: auto;
-
-                &::-webkit-scrollbar {
-                    width: 8px;
-                    height: 8px;
-                    background-color: transparent;
-                }
-            
-                &::-webkit-scrollbar-thumb {
-                    padding-right: 6px;
-                    border-radius: 10px;
-                    background-color: #696766;
-                }
-            
-                &::-webkit-scrollbar-track {
-                    border-radius: 10px;
-                    background-color: transparent;
-                }
-            
-                &::-webkit-scrollbar-corner {
-                    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-                }
-            }
-
-            .windowPreview {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin: 6px 15px;
-                width: 280px;
-                height: 181px;
-                position: relative;
-                border-radius: 4px;
-                padding: 15px 15px 5px 15px;
-
-                .window {
-                    transform-origin: top left;
-                }
-
-                &:hover {
-                    background-color: #3e3a39;
-                    &>.close { opacity: 1;}
-                }
-
-                >.close {
-                    width: 36px;
-                    border: 0;
-                    position: absolute;
-                    top: 15px;
-                    right: 15px;
-                    border-radius: 50%;
-                    height: 36px;
-                    opacity: 0;
-                    background-color: #f28c2a;
-                    transition: opacity 400ms ease;
-                    z-index: 2;
-                }
-                >.draggable {
-                    min-width: unset;
-                    min-height: unset;
-                    max-width: unset;
-                    max-height: unset;
-                    width: 250px;
-                    height: 131px;
-                    position: relative;
-                    pointer-events: none;
-                    user-select: none;
-
-                    * {
-                        pointer-events: none;
-                        user-select: none;
-                    }
-                }
-                >.label {
-                    z-index: 1;
-                    margin-top: 10px;
-                    width: 100%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    height: 20px;
-                    text-align: center;
-                }
-            }
-        }
-
-    }
-}
-
 .windowManager {
     flex: 1;
     overflow: hidden;
@@ -248,6 +27,8 @@
     // https: //unsplash.com/photos/KNhVlMjkNjs
     background: url(https://unsplash.com/photos/KNhVlMjkNjs/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjYzMzc5ODAw&force=true);
 }
+
+
 
 @keyframes fadeOut {
     from { opacity: 1;}
@@ -311,108 +92,6 @@
             0 3px 14px 2px rgba(0, 0, 0, 0.12);
     }
     
-    .titlebar {
-        width: 100%;
-        flex: 1 0 47px;
-        color: #cccccc;
-        border-top: 1px solid #434343;
-        border-bottom: 1px solid #262626;
-        background-color: #363636;
-        transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
-        position: relative;
-
-        .debug {
-            width: 95px;
-            display: grid;
-            grid-template-columns: auto auto;
-            color: #9c9c9c;
-            font-size: 10px;
-            position: absolute;
-            top: 4px;
-            left: 2px;
-        }
-        
-        .other {
-            // flex: 1;
-            width: 100%;
-        }
-    
-        button {
-            transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
-            background-color: transparent;
-    
-            &:hover {
-                background-color: #5f5f5f;
-            }
-        }
-    
-        .controls {
-            display: flex;
-            align-items: center;
-            padding-right: 1.5px;
-            height: 100%;
-            position: absolute;
-            right: 0;
-            top: 0;
-    
-            button {
-                transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
-                background-color: transparent;
-                border: 0px;
-                border-radius: 50%;
-                width: 20px;
-                height: 20px;
-                margin: 0 8px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-
-                img {
-                    width: 18px;
-                    height: 18px;
-                    padding: 1.5px;
-                }
-    
-                &:hover {
-                    background-color: #5f5f5f;
-                }
-            }
-        }
-    }
-    
-    &.active {
-        .titlebar {
-            color: #bcbcbc;
-            border-bottom: 1px solid #242424;
-    
-            button {
-                background-color: #404040;
-                border-color: #272727;
-                border-bottom-color: #000;
-            }
-    
-            .controls button {
-                background-color: transparent;
-    
-                &.close {
-                    background-color: #f18c2c;
-                }
-                &:hover {
-                    background-color: #5f5f5f;
-                }
-            }
-        }
-    
-        .content {
-            background-color: #272727;
-            color: #9c9c9c;
-    
-            .sidepanel {
-                background-color: #2c2c2c;
-            }
-        }
-    }
-    
     .content {
         background-color: #303030;
         color: #cccccc;
@@ -420,19 +99,24 @@
         width: 100%;
         transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
         overflow: hidden;
-    
+
         // ...
         li:active {
             background-color: #94ebeb;
             color: #000
         }
+        .sidepanel {
+            background-color: #323232;
+            border-right: 1px solid #1c1c1c;
+        }
     }
-    
-    .content .sidepanel {
-        background-color: #323232;
-        border-right: 1px solid #1c1c1c;
+    .content > * {
+        display: flex;
+        flex-direction: column;
+
     }
 }
+
 
 .taskbar-left,
 .taskbar-right {
@@ -441,6 +125,7 @@
         padding: 0 4px;
         height: 64px;
     }
+
     .taskbar .task-button {
         pointer-events: all;
 
@@ -448,6 +133,7 @@
             width: 48px;
             right: 0;
         }
+
         .tooltip {
             height: 64px;
             align-items: center;
@@ -458,10 +144,12 @@
 .taskbar-top,
 .taskbar-bottom {
     flex-direction: column;
+
     .dots {
         padding: 4px 0;
         width: 64px;
     }
+
     .taskbar .task-button {
         .icon {
             height: 48px;
@@ -489,6 +177,7 @@
 
 .taskbar-top .taskbar {
     top: 0;
+
     .tooltip {
         top: 100%;
     }
@@ -496,6 +185,7 @@
 
 .taskbar-right .taskbar {
     right: 0;
+
     .tooltip {
         right: 100%;
     }
@@ -503,6 +193,7 @@
 
 .taskbar-bottom .taskbar {
     bottom: 0;
+
     .tooltip {
         bottom: 100%;
     }
@@ -510,16 +201,8 @@
 
 .taskbar-left .taskbar {
     left: 0;
+
     .tooltip {
         left: 100%;
-    }
-}
-
-
-.draggedOver { 
-    backdrop-filter: blur(20px);
-    opacity: .3;
-    .content {
-        background-color: red!important;
     }
 }

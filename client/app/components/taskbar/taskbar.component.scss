@@ -1,0 +1,226 @@
+@keyframes slide-in {
+    from {
+        transform: translate3d(-40px, 0, 0);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+
+    }
+}
+
+:host {
+    background-color: #33302f;
+    z-index: 9999;
+    position: relative;
+
+    .task-button {
+        // display: flex;
+        height: 64px;
+        width: 64px;
+        transition: background-color 100ms cubic-bezier(0, 0, 0.2, 1);
+        // justify-content: center;
+        // position: relative;
+        border-radius: 16px;
+
+        &.active,
+        &:hover {
+            background-color: #585555;
+        }
+
+        &.hover .tooltip div {
+            opacity: 1;
+        }
+
+        .tooltip {
+            position: absolute;
+            color: white;
+            pointer-events: none;
+            width: 400px;
+            display: flex;
+
+            div {
+                text-overflow: ellipsis;
+                white-space: pre;
+                overflow: hidden;
+                background-color: #2a2a2aa0;
+                opacity: 0;
+                transition: opacity 200ms cubic-bezier(0, 0, 0.2, 1);
+                padding: 7.5px;
+                font-size: 14px;
+                border-radius: 16px;
+            }
+        }
+
+        .dots {
+            display: flex;
+            gap: 3px;
+            position: absolute;
+            place-content: center;
+            z-index: 1;
+
+            .dot {
+                width: 5px;
+                height: 5px;
+                background: white;
+                border-radius: 50%;
+            }
+        }
+
+        .icon {
+            display: flex;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            justify-content: center;
+
+            img {
+                width: 36px;
+                height: 36px;
+                align-self: center;
+            }
+        }
+
+        .picker {
+            position: absolute;
+            left: 100%;
+
+            margin-left: 6px;
+            margin-top: 6px;
+            max-height: calc(100vh - 12px);
+            width: 312px;
+
+            background: #33302f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            overflow: hidden;
+
+            top: 0;
+            padding: 6px 6px 6px 0;
+            z-index: 10;
+
+            border-radius: 8px;
+            animation: slide-in 200ms ease;
+
+            background-color: #33302f;
+            border: 1px solid #3f3c3b;
+            border-radius: 8px;
+
+            .picker_backdrop {
+                position: absolute;
+                top: 6px;
+                bottom: 6px;
+                width: 330px;
+                z-index: -1;
+            }
+
+            &::before {
+                content: " ";
+                position: fixed;
+                z-index: -2;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+
+            .contents {
+                width: 100%;
+                overflow-x: hidden;
+                height: 100%;
+                overflow-y: auto;
+
+                &::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                    background-color: transparent;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    padding-right: 6px;
+                    border-radius: 10px;
+                    background-color: #696766;
+                }
+
+                &::-webkit-scrollbar-track {
+                    border-radius: 10px;
+                    background-color: transparent;
+                }
+
+                &::-webkit-scrollbar-corner {
+                    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+                }
+            }
+
+            .windowPreview {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 6px 15px;
+                width: 280px;
+                height: 181px;
+                position: relative;
+                border-radius: 4px;
+                padding: 15px 15px 5px 15px;
+
+                .window {
+                    transform-origin: top left;
+                }
+
+                &:hover {
+                    background-color: #3e3a39;
+
+                    &>.close {
+                        opacity: 1;
+                    }
+                }
+
+                >.close {
+                    width: 36px;
+                    border: 0;
+                    position: absolute;
+                    top: 15px;
+                    right: 15px;
+                    border-radius: 50%;
+                    height: 36px;
+                    opacity: 0;
+                    background-color: #f28c2a;
+                    transition: opacity 400ms ease;
+                    z-index: 2;
+                }
+
+                >.draggable {
+                    min-width: unset;
+                    min-height: unset;
+                    max-width: unset;
+                    max-height: unset;
+                    width: 250px;
+                    height: 131px;
+                    position: relative;
+                    pointer-events: none;
+                    user-select: none;
+
+                    * {
+                        pointer-events: none;
+                        user-select: none;
+                    }
+                }
+
+                >.label {
+                    z-index: 1;
+                    margin-top: 10px;
+                    width: 100%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    height: 20px;
+                    text-align: center;
+                }
+            }
+        }
+
+    }
+}

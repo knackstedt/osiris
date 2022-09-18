@@ -1,0 +1,54 @@
+<div class="task-button" 
+    *ngFor="let item of windowManager.taskbarItems"
+    (click)="showMenu(item)"
+    (hover)="item._isHovered = true"
+    (blur)="item._isHovered = false"
+    [class.hover]="item._isHovered"
+>
+    <!-- (click)="item.windows[item.windows.length-1]._isCollapsed = false" -->
+    <div class="dots">
+        <div class="dot"></div>
+        <div class="dot" *ngIf="item.windows.length > 1"></div>
+        <div class="dot" *ngIf="item.windows.length > 2"></div>
+        <div class="dot" *ngIf="item.windows.length > 3"></div>
+        <div class="dot" *ngIf="item.windows.length > 4"></div>
+    </div>
+    <div class="icon">
+        <img [src]="item.windows[0].icon" />                
+    </div>
+    <div class="tooltip">
+        <div>
+            {{item.windows[0].description}}
+        </div>
+    </div>
+    <div 
+        class="picker count_{{item.windows.length}}" 
+        *ngIf="item._isActive"
+        (click)="hideMenu(item); $event.stopPropagation()"
+        >
+        <div class="picker_backdrop"></div>
+        <div class="contents">
+            <div 
+                class="windowPreview" 
+                *ngFor="let window of item.windows"
+                (click)="window.uncollapse()"
+                >
+                <button class="close" (click)="window.close(); $event.preventDefault()">
+                    <img src="assets/icons/window-close-symbolic.svg" />
+                </button>
+                <div class="draggable">
+                    <div class="window"
+                        [style.width]="window.width + 'px'"
+                        [style.height]="window.height + 'px'"
+                        [style.transform]="calcScale(window)"
+                        [innerHTML]="window._preview | urlSanitizer"
+                        >
+                    </div>
+                </div>
+                <div class="label">
+                    {{window.title}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

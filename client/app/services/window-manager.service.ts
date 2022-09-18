@@ -1,15 +1,24 @@
-import { ComponentType, Portal } from '@angular/cdk/portal';
-import { Injectable } from '@angular/core';
+import { ComponentType, Portal, ComponentPortal } from '@angular/cdk/portal';
+import { ComponentRef, Injectable } from '@angular/core';
 import { AppId, WindowOptions } from 'client/types/window';
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
+import { ApplicationLoader } from '../applications';
+import { TaskBarData } from '../components/taskbar/taskbar.component';
+import { CdkDragRelease } from '@angular/cdk/drag-drop';
+import { ResizeEvent } from 'angular-resizable-element';
 
+const managedWindows: ManagedWindow[] = []
 
 @Injectable({
     providedIn: 'root'
 })
-export class WindowManagerService extends Subject<WindowOptions> {
+export class WindowManagerService {
 
-    constructor() { super() }
+    public managedWindows = managedWindows;
+    public taskbarItems: TaskBarData[] = [];
+
+    // public managedWindows$ = new BehaviorSubject<ManagedWindow[]>([]);
+    // public taskbarData$ = new BehaviorSubject<ManagedWindow[]>([]);
 
     public async OpenWindow(options: Partial<WindowOptions> | AppId, data?) {
         let opts: any = {};
@@ -33,6 +42,188 @@ export class WindowManagerService extends Subject<WindowOptions> {
         };
         cfg.data = data || opts.data;
 
-        this.next(cfg as WindowOptions);
+        // this.next(cfg as WindowOptions);
+
+        const window = new ManagedWindow(cfg);
+
+        // Store data in the windows array
+        this.managedWindows.push(window);
+
+        // Lookup if we already have a taskbar item
+        let taskbarItem = this.taskbarItems.find(t => t.app == cfg.appId);
+
+        // If not, create one
+        if (!taskbarItem)
+            this.taskbarItems.push(taskbarItem = { app: cfg.appId, windows: [], _isActive: false, _isHovered: false });
+
+        // Lastly add to the taskbar item.
+        taskbarItem.windows.push(window);
+    }
+
+    public blurAllWindows() {
+        managedWindows.forEach(w => {
+            w._isActive = false;
+        });
+    }
+}
+
+
+export class ManagedWindow {
+    private static windowIdCounter = 0;
+    private static windowZindexCounter = 0;
+
+    id: number;
+    x = 100;
+    y = 100;
+    width = 800;
+    height = 600;
+    data: any = {}; 
+
+    title = "Osiris Application";
+    icon = "assets/icons/dialog-information-symbolic.svg";
+    description = "";
+
+    _isCollapsed = false;
+    _isMaximized = false;
+    _isActive = false;
+    _isLoading = false;
+    _index: number; // z-index
+    _isDraggedOver = false; // is something being dragged in front of this window?
+    _portal?: Portal<any>;
+    _module?: any; // The module that gets loaded
+    _component?: ComponentRef<any> // the loaded component
+    _initialStyle: string;
+
+    _preview: string;
+
+    // Temp vars for handling resize events
+    _x: number;
+    _y: number;
+
+
+
+    constructor(config: WindowOptions) {
+        const data: any = {
+            id: ManagedWindow.windowIdCounter++,
+            _isCollapsed: false,
+            _isMaximized: false,
+            _isActive: false,
+            _index: ManagedWindow.windowZindexCounter++,
+            _isDraggedOver: false,
+            _isLoading: true,
+            ...config
+        };
+        Object.keys(data).forEach(k => this[k] = data[k]);
+
+        this._initialStyle = `width: ${data.width}px; height: ${data.height}px;`
+        this._x = this.x;
+        this._y = this.y;
+
+        ApplicationLoader.LoadApplication(config.appId)
+            .then(async module => {
+                // no module, there is no remote app to load.
+                if (!module) {
+                    this._isLoading = false;
+                    return;
+                }
+                this._module = module;
+
+                // Parse the APP id so we can do a tolerant match
+                const appId = config.appId.toLowerCase().replace(/-/g, '');
+                const component = module['ɵmod'].declarations
+                    .find(c => {
+                        const ccn = c.name.toLowerCase().replace(/-/g, '').replace(/component$/, '');
+                        return ccn == appId;
+                    });
+
+                if (!component)
+                    throw `Could not find appId ${config.appId} on module ${module.name}!`;
+
+                // Create the componentportal and render the elements.
+                this._portal = new ComponentPortal(component);
+                this._isLoading = false;
+                console.log("winload");
+            });
+    }
+
+    onDragEnd(evt?: CdkDragRelease) {
+        const bounds = evt.source.getRootElement().getBoundingClientRect();
+        this.x = this._x = bounds.x;
+        this.y = this._y = bounds.y;
+        this.width = bounds.width;
+        this.height = bounds.height;
+
+        this._component?.instance['onDragEnd'] && this._component.instance['onDragEnd'](evt);
+    }
+
+    onResizing(evt?: ResizeEvent) {
+        this.y = this._y + evt.rectangle.top;
+        this.x = this._x + evt.rectangle.left - 64;
+        this.width = evt.rectangle.width;
+        this.height = evt.rectangle.height;
+
+        this._component?.instance['onResize'] && this._component.instance['onResize'](evt);
+    }
+
+    onResizeEnd(evt?: ResizeEvent) {
+        this.height = evt.rectangle.height;
+        this.width = evt.rectangle.width;
+
+        this._y = this.y;
+        this._x = this.x;
+
+        this._component?.instance['onResizeEnd'] && this._component.instance['onResizeEnd'](evt);
+    }
+
+
+    /**
+     * Close the window.
+     */
+    close() {
+        managedWindows.splice(managedWindows.findIndex(w => w.id == this.id), 1);
+    }
+    /**
+     * Maximize the window as big as we can 
+     */    
+    maximize() {
+        this._isMaximized = false;
+    }
+    /**
+     * Restore previous window dimensions
+     */
+    unmaximize() {
+        this._isMaximized = true;
+    }
+    /**
+     * Collapse the window to the taskbar
+     */
+    collapse() {
+        this._isCollapsed = true;
+    }
+    /**
+     * Restore the window from it's collapsed state
+     */
+    uncollapse() {
+        this._isCollapsed = false;
+        this._index = ManagedWindow.windowZindexCounter++;
+    }
+
+    /**
+     * Bring this window to top && grant it context.
+     */
+    activate() {
+        this.blurAllWindows();
+        this._isActive = true;
+        this._index = ManagedWindow.windowZindexCounter++;
+
+        if (this._isCollapsed) {
+            // TODO: re-activate window
+        }
+    }
+
+    private blurAllWindows() {
+        managedWindows.forEach(w => {
+            w._isActive = false;
+        });
     }
 }

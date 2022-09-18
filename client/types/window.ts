@@ -46,37 +46,37 @@ export type WindowOptions = {
 };
 
 
-export type ManagedWindow = WindowOptions & {
-    _isCollapsed: boolean,
-    _isMaximized: boolean,
-    _isActive: boolean,
-    _isLoading: boolean,
-    _index: number, // z-index
-    _isDraggedOver: boolean, // is something being dragged in front of this window?
-    _portal?: Portal<any>,
-    _module?: any, // The module that gets loaded
-    _component?: ComponentRef<any> // the loaded component
-    _initialStyle: string,
+// export type ManagedWindow = WindowOptions & {
+//     _isCollapsed: boolean,
+//     _isMaximized: boolean,
+//     _isActive: boolean,
+//     _isLoading: boolean,
+//     _index: number, // z-index
+//     _isDraggedOver: boolean, // is something being dragged in front of this window?
+//     _portal?: Portal<any>,
+//     _module?: any, // The module that gets loaded
+//     _component?: ComponentRef<any> // the loaded component
+//     _initialStyle: string,
 
 
-    _preview: string,
-    // _isTaskbarPreview?: boolean,
-    // _previewTransform: string
-    // _dialogTransform: string,
-    // _preview?: {
-    //     windowWidth: string,
-    //     windowHeight: string,
-    //     margin: string,
-    //     windowPadding: string,
-    //     isFirst: boolean
-    //     isLast: boolean,
-    //     scale: number
-    // }
+//     _preview: string,
+//     // _isTaskbarPreview?: boolean,
+//     // _previewTransform: string
+//     // _dialogTransform: string,
+//     // _preview?: {
+//     //     windowWidth: string,
+//     //     windowHeight: string,
+//     //     margin: string,
+//     //     windowPadding: string,
+//     //     isFirst: boolean
+//     //     isLast: boolean,
+//     //     scale: number
+//     // }
 
-    // Temp vars for handling resize events
-    _x: number,
-    _y: number
-}
+//     // Temp vars for handling resize events
+//     _x: number,
+//     _y: number
+// }
 
 /**
  * This method is called when a window gets resized.
