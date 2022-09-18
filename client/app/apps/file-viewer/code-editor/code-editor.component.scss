@@ -1,0 +1,7 @@
+app-monaco-editor {
+    transition: opacity 200ms ease-in-out;
+
+    &.resizing {
+        opacity: 0
+    }
+}

@@ -6,8 +6,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
     styleUrls: ['./video-player.component.scss']
 })
 export class VideoPlayerComponent implements OnInit {
+
     @Input() data: {
-        file: string,
+        file: string | string[],
         dir: string
     };
     
@@ -17,14 +18,17 @@ export class VideoPlayerComponent implements OnInit {
     constructor() { }
 
     ngOnInit() {
+        
     }
 
     getLink() {
-        return "api/filesystem/download?file=" + encodeURIComponent(this.data.file) + "&dir=" + encodeURIComponent(this.data.dir);
+        // return "api/filesystem/download?file=" + encodeURIComponent(this.data.file) + "&dir=" + encodeURIComponent(this.data.dir);
+        return "";
     }
 
     isAudioOnly() {
-        let ext = this.data.file.split(".").splice(-1, 1)[0];
-        return /mp3|ogg|flac/.test(ext);
+        // let ext = this.data.file.split(".").splice(-1, 1)[0];
+        // return /mp3|ogg|flac/.test(ext);
+        return false;
     }
 }

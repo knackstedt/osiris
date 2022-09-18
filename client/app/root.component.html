@@ -6,27 +6,29 @@
         <div class="cdk-overlay-pane">
             <app-window 
                 *ngFor="let window of windowManager.managedWindows"
+                [id]="'window_' + window.id"
                 [window]="window"
                 class="draggable" 
+
                 cdkDrag 
                 cdkDragBoundary=".cdk-drag-boundary" 
-                [id]="'window_' + window.id"
-                
                 (cdkDragReleased)="window.onDragEnd($event)"
                 [cdkDragData]="{dragWindow: window, managedWindows: windowManager.managedWindows, snapPx: 5}"
                 [cdkDragFreeDragPosition]="{x: window.x-64, y: window.y}"
 
                 mwlResizable
+
                 (resizeEnd)="window.onResizeEnd($event)"
                 (resizing)="window.onResizing($event)"
-                (click)="$event.preventDefault()"
+                (click)="$event.stopPropagation()"
+                (mouseup)="$event.stopPropagation()"
+                (mousedown)="window.activate()"
                 
                 [class.active]="window._isActive"
                 [class.draggedOver]="window._isDraggedOver"
                 [class.maximized]="window._isMaximized"
                 [class.collapsed]="window._isCollapsed"
 
-                (mousedown)="window.activate()"
                 [style.z-index]="window._index"
                 [style.width]="window.width + 'px'"
                 [style.height]="window.height + 'px'"

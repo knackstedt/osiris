@@ -135,46 +135,54 @@ router.use('/file', route(async (req, res, next) => {
     // TODO: save file
     const { dir, file } = req.body;
 
-    const path = dir + file;
+    const files = Array.isArray(file) ? file : [file];
 
-    const ct = mime.lookup(file) || "application/octet-stream";
+    Promise.all(files.map(file => new Promise(async (resolve, reject) => {
+        const path = dir + file;
 
-    res.setHeader("content-type", ct);
-    let stats = await stat(path);
+        const ct = mime.lookup(file) || "application/octet-stream";
 
-    if (isText(path)) {
-        let data = await readFile(path, { encoding: "utf-8" });
+        res.setHeader("content-type", ct);
+        let stats = await stat(path);
 
-        res.send({
-            meta: stats,
-            type: "text",
-            content: data
-        })
-    }
-    else if (stats.size < 2 * 1024 * 1024) {
-        let buf = await readFile(path);
-        if (isText(null, buf)) {
-            res.send({
+        if (isText(path)) {
+            let data = await readFile(path, { encoding: "utf-8" });
+
+            resolve({
+                name: file,
                 meta: stats,
                 type: "text",
-                content: buf.toString(),
-            });
+                content: data
+            })
+        }
+        else if (stats.size < 2 * 1024 * 1024) {
+            let buf = await readFile(path);
+            if (isText(null, buf)) {
+                resolve({
+                    name: file,
+                    meta: stats,
+                    type: "text",
+                    content: buf.toString(),
+                });
+            }
+            else {
+                resolve({
+                    name: file,
+                    meta: stats,
+                    type: "binary"
+                });
+            }
         }
         else {
-            res.send({
+            resolve({
+                name: file,
                 meta: stats,
                 type: "binary"
             });
         }
-    }
-    else {
-        res.send({
-            meta: stats,
-            type: "binary"
-        });
-    }
-
-
+    })))
+    .then(result => res.send(result))
+    .catch(err => next(err));
 }));
 
 router.use('/', route(async (req, res, next) => {

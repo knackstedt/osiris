@@ -1,15 +1,12 @@
 <mat-progress-spinner *ngIf="!fileType" mode="indeterminate"></mat-progress-spinner>
 
 <ng-container [ngSwitch]="fileType">
-    <ng-container *ngSwitchCase="'text'" style="height: 100%">
-        <!-- {{file.content}} -->
-        <app-monaco-editor [class.resizing]="resizing" [data]="file.content">
-
-        </app-monaco-editor>
-    </ng-container>
+    <app-code-editor *ngSwitchCase="'text'" style="height: 100%" [windowData]="windowData">
+    </app-code-editor>
 
     <app-video-player [data]="data" *ngSwitchCase="'video'"></app-video-player>
 
+    <app-image-viewer></app-image-viewer>
     <ng-container *ngSwitchCase="'image'">
         <img [src]="getLink()">
         Image

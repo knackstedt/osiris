@@ -1,22 +1,29 @@
 import { HostListener, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { ManagedWindow, WindowManagerService } from './window-manager.service';
 
 type KeyCommand = {
+    /**
+     * The non-modifier key(s) that must be pressed for the event to fire.
+     */
+    key: string | string[],
+    /**
+     * The managed window that this keybind affects.
+     * Set to 'false' to make the keybind global.
+     */
+    window: ManagedWindow | false,
+
     ctrl?: boolean,
     alt?: boolean,
     shift?: boolean,
     super?: boolean,
     tab?: boolean,
-    /**
-     * The non-modifier key(s) that must be pressed for the event to fire.
-     */
-    key: string | string[]
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class KeyboardService extends Subject<string> {
+export class KeyboardService {
 
     private heldKeys: { [key: string]: boolean } = {};
     private keyCommands: {
@@ -24,36 +31,48 @@ export class KeyboardService extends Subject<string> {
         alt?: boolean,
         shift?: boolean,
         super?: boolean,
-        tab?: boolean,
         keys: string[],
-        sub: Subject<KeyboardEvent>
+        sub: Subject<KeyboardEvent>,
+        window: ManagedWindow | false
     }[] = [];
 
-    constructor() { super() }
+    constructor(private windowManager: WindowManagerService) {
+        window.addEventListener("keydown", (evt) => this.onKeyDown(evt));
+        window.addEventListener("keyup", (evt) => this.onKeyUp(evt));
+        window.addEventListener("keypress", (evt) => this.onKeyPress(evt));
+    }
 
-    @HostListener("keydown")
     private onKeyDown(evt: KeyboardEvent) {
-        this.heldKeys[evt.key] = true;
+        console.log("keydown", evt.key)
+        this.heldKeys[evt.key.toLowerCase()] = true;
 
         // Do a general filter where all of the modifiers must be matched if specified
         // Then check that the actual keys match what was specified
-        this.keyCommands
-            .filter(kc => {
-                (kc.ctrl != undefined && kc.ctrl === this.ctrlPressed) &&
-                (kc.alt != undefined && kc.alt === this.altPressed) &&
-                (kc.shift != undefined && kc.shift === this.shiftPressed) &&
-                (kc.super != undefined && kc.super === this.superPressed) &&
-                (kc.tab != undefined && kc.tab === this.tabPressed) && 
+        let commands = this.keyCommands
+            .filter(kc => 
+                (kc.ctrl == undefined || kc.ctrl === evt.ctrlKey) &&
+                (kc.alt == undefined || kc.alt === evt.altKey) &&
+                (kc.shift == undefined || kc.shift === evt.shiftKey) &&
+                (kc.super == undefined || kc.super === evt.metaKey) &&
                 kc.keys.length == kc.keys.filter(k => this.heldKeys[k])?.length
-            })
-            .forEach(kc => kc.sub.next(evt));
+            )
+            .filter(kc => kc.window == false || kc.window._isActive)
+        
+        if (evt.ctrlKey && commands.length > 0) {
+            evt.stopPropagation();
+            evt.preventDefault();
+        }
+            
+        if (evt.key == "Pause")
+            debugger;
+
+        commands.forEach(kc => kc.sub.next(evt));
+            
     }
-    @HostListener("keyup")
     private onKeyUp(evt: KeyboardEvent) {
-        this.heldKeys[evt.key] = false;
+        this.heldKeys[evt.key.toLowerCase()] = false;
     }
 
-    @HostListener("keypress")
     private onKeyPress(evt: KeyboardEvent) {
         // this.heldKeys[evt.key] = false;
     }
@@ -64,11 +83,14 @@ export class KeyboardService extends Subject<string> {
      * **NOT** interrupt the event chain.
      */
     public onKeyCommand(key: KeyCommand) {
+
         let item = {
             ...key,
             keys: (Array.isArray(key.key) ? key.key : [key.key]),
-            sub: new Subject<KeyboardEvent>()
+            sub: new Subject<KeyboardEvent>(),
+            window: key.window
         }
+
         this.keyCommands.push(item);
         return item.sub;
     }
@@ -77,7 +99,7 @@ export class KeyboardService extends Subject<string> {
         return !!this.heldKeys["shift"];
     }
     get ctrlPressed() {
-        return !!this.heldKeys["ctrl"];
+        return !!this.heldKeys["control"];
     }
     get altPressed() {
         return !!this.heldKeys["alt"];
@@ -88,5 +110,4 @@ export class KeyboardService extends Subject<string> {
     get tabPressed() {
         return !!this.heldKeys["tab"];
     }
-
 }

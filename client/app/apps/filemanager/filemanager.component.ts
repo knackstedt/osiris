@@ -2,6 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ManagedWindow, WindowManagerService } from '../../services/window-manager.service';
 import { Fetch } from '../../services/fetch.service';
 import { resolveIcon } from './icon-resolver';
+import { KeyboardService } from '../../services/keyboard.service';
+import { FileViewerComponent } from '../file-viewer/file-viewer.component';
+import { MatDialog } from '@angular/material/dialog';
 
 // TODO:
 /**
@@ -18,7 +21,7 @@ import { resolveIcon } from './icon-resolver';
 })
 export class FilemanagerComponent implements OnInit {
     
-    selected: string = "";
+    selected: string[] = [];
 
     resolveIcon = resolveIcon;
 
@@ -28,7 +31,9 @@ export class FilemanagerComponent implements OnInit {
 
     constructor(
         private fetch: Fetch, 
-        private windowManager: WindowManagerService
+        private windowManager: WindowManagerService,
+        private keyboard: KeyboardService,
+        private dialog: MatDialog
         ) {
     }
 
@@ -51,18 +56,35 @@ export class FilemanagerComponent implements OnInit {
             .catch(err => console.error(err));
     }
 
-
+    // This will only ever be one file
     openFile(file: string, evt: MouseEvent) {
         this.windowManager.OpenWindow("file-viewer", { dir: this.windowData.data?.basePath + "/", file })
-        // this.dialog.open(FileViewerComponent, {
-        //     data: {
-        //         dir: this.windowData.data?.basePath + "/",
-        //         file,
-        //     }
-        // });
     }
 
-    dbg(evt) {
-        debugger;
+    selectionAction(action: "open" | "move" | "delete") {
+
+    }
+
+    onClick(item: string, evt: MouseEvent) {
+        evt.stopPropagation();
+
+        if (this.keyboard.shiftPressed) {
+            let start = this.directoryContents.indexOf(this.selected.slice(-1, 1)[0]);
+            let end = this.directoryContents.indexOf(item);
+
+            let items = start > end 
+                ? this.directoryContents.slice(end, start+1) 
+                : this.directoryContents.slice(start, end+1);
+
+            this.selected = items;
+        }
+        else if (this.keyboard.ctrlPressed) {
+            if (!this.selected.includes(item))
+                this.selected.push(item);
+            else // Case that we selected the same item twice
+                this.selected.splice(this.selected.indexOf(item), 1);
+        }
+        else 
+            this.selected = [item];
     }
 }

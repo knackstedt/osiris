@@ -1,0 +1,17 @@
+<!-- <app-monaco-editor [class.resizing]="resizing" [data]="file.content">
+
+</app-monaco-editor> -->
+
+<app-window-template [windowData]="windowData">
+    <ng-template #toolbar>
+        <p>{{windowData.data.filename}}</p>
+        <button>save</button>
+        <button>rename</button>
+        <button>delete</button>
+    </ng-template>
+    <ng-template #content>
+        <div class="content" [class.active]="windowData._isActive">
+
+        </div>
+    </ng-template>
+</app-window-template>

@@ -9,7 +9,6 @@ import morgan from 'morgan';
 
 import { environment } from './environment';
 
-import "./types/index";
 import { ErrorHandler } from './errors';
 import { route } from './util';
 import { FilesystemApi } from "./api/files";

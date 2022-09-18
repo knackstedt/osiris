@@ -1,8 +1,10 @@
 <app-window-template [windowData]="windowData">
-    <ng-template #toolbar>312</ng-template>
+    <ng-template #toolbar>
+        I need a large amount of text to test that the text clipping shows an ellipse, which means I NEEED EVEN MORE TEXT DAMMIT
+    </ng-template>
     <ng-template #content>
-        <div class="content">
-            <div class="sidebar" (click)="selected = ''">
+        <div class="content" [class.active]="windowData._isActive">
+            <div class="sidebar" (click)="selected = []">
                 <ul>
                     <li>Recent</li>
                     <li>Starred</li>
@@ -24,11 +26,14 @@
                     <li>+ other locations</li>
                 </ul>
             </div>
-            <div class="files" (click)="selected = ''">
-                <div class="file" *ngFor="let item of directoryContents" [class.selected]="item == selected"
-                    (click)="selected = item; $event.stopPropagation()" (dblclick)="openFile(item, $event)">
+            <div class="files" [class.active]="windowData._isActive" (click)="selected = []">
+                <div class="file" 
+                    *ngFor="let item of directoryContents" 
+                    [class.selected]="selected.includes(item)"
+                    (click)="onClick(item, $event)" 
+                    (dblclick)="openFile(item, $event)"
+                >
                     <img [src]="resolveIcon(item)" />
-                    <!-- <p>{{item.split('/')[0]}}</p> -->
                     <p>{{item.split('/')[0]}}</p>
                 </div>
             </div>

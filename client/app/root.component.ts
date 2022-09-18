@@ -6,6 +6,7 @@ import { ThemeLoaderService } from 'client/app/services/themeloader.service';
 import { WindowManagerService } from './services/window-manager.service';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'client/environments/environment';
+import { KeyboardService } from './services/keyboard.service';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class RootComponent implements OnInit {
         private fetch: Fetch,
         private themeLoader: ThemeLoaderService,
         public dialog: MatDialog,
-        public windowManager: WindowManagerService
+        public windowManager: WindowManagerService,
+        private keyboard: KeyboardService
     ) {
 
         this.windowManager.OpenWindow({
@@ -45,6 +47,13 @@ export class RootComponent implements OnInit {
             x: 600,
             y: 300
         });
+
+        this.keyboard.onKeyCommand({
+            key: "f11",
+            window: false
+        }).subscribe((evt) => {
+            console.log("CTRL+S", evt)
+        })
     }
 
     ngOnInit() {
