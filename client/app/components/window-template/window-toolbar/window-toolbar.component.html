@@ -1,13 +1,18 @@
-<div class="other">
-    <div *ngIf="window.title">{{window.title}}</div>
-    <div class="debug" *ngIf="true">
-        <div>x: {{window.x}}</div>
-        <div>width: {{window.width}}</div>
-        <div>y: {{window.y}}</div>
-        <div>height: {{window.height}}</div>
-    </div>
+<div class="debug" *ngIf="true">
+    <div>x: {{window.x}}</div>
+    <div>width: {{window.width}}</div>
+    <div>y: {{window.y}}</div>
+    <div>height: {{window.height}}</div>
 </div>
-<ng-container *ngTemplateOutlet="template"></ng-container>
+
+<div class="container">
+    <!-- <div class="ellipse" [style.width]="window.width+'px'"> -->
+        <div *ngIf="!template">{{window.title}}</div>
+        <ng-container *ngIf="template">
+            <ng-container *ngTemplateOutlet="template"></ng-container>
+        </ng-container>
+    <!-- </div> -->
+</div>
 
 <div class="controls" *ngIf="!window._isCollapsed">
     <button (click)="window._isCollapsed = true">

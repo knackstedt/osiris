@@ -1,5 +1,5 @@
 import { ComponentType, Portal, ComponentPortal } from '@angular/cdk/portal';
-import { ComponentRef, Injectable } from '@angular/core';
+import { ComponentRef, Injectable, EventEmitter } from '@angular/core';
 import { AppId, WindowOptions } from 'client/types/window';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { ApplicationLoader } from '../applications';
@@ -142,7 +142,6 @@ export class ManagedWindow {
                 // Create the componentportal and render the elements.
                 this._portal = new ComponentPortal(component);
                 this._isLoading = false;
-                console.log("winload");
             });
     }
 
@@ -175,6 +174,7 @@ export class ManagedWindow {
         this._component?.instance['onResizeEnd'] && this._component.instance['onResizeEnd'](evt);
     }
 
+    onError = new EventEmitter();
 
     /**
      * Close the window.
@@ -226,4 +226,50 @@ export class ManagedWindow {
             w._isActive = false;
         });
     }
+}
+
+/**
+ * Catch lifecycle hook errors on the window contents and send them to
+ * the parent Window instance
+ */
+export function CatchErrors(): Function {
+
+    return (decoratedClass): any => {
+        // find the names of all methods of that class
+        const properties: Array<string> = Object.getOwnPropertyNames(decoratedClass.prototype);
+        const methodsNames = properties.filter((propertyName): boolean => {
+            return typeof decoratedClass.prototype[propertyName] === 'function';
+        });
+
+        // Wrap all methods to handle whatever errors are emitted
+        for (const methodsName of methodsNames) {
+            decoratedClass.prototype[methodsName] = new Proxy(decoratedClass.prototype[methodsName], {
+                apply: (method, component, args): void => {
+
+                    try {
+                        return method.apply(component, args);
+                    } 
+                    catch (error) {
+                        if (error.stack) {
+                            const lines = error.stack.split('\n');
+                            const match = lines[1].match(/ (?<name>[a-zA-Z][a-zA-Z0-9]+)\.(?<func>ngOnInit) /);
+                            const { name, func } = match?.groups;
+                            if (name.endsWith("Component")) {
+                                
+                                // intercept the error
+                                if (func == "ngOnInit")
+                                    return component.__onError?.next(error);
+                            }
+                            // else if (name.endsWith("Module")) {
+
+                            // }
+                        }
+                        throw error;
+                    }
+                },
+            });
+        }
+
+        decoratedClass.prototype.__onError = new BehaviorSubject(null);
+    };
 }

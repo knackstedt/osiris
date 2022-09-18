@@ -1,17 +1,26 @@
 <div class="window">
     <div class="content">
-        <ng-template 
-            *ngIf="!window._isCollapsed && !window._isLoading" 
-            [cdkPortalOutlet]="window._portal" 
-            (attached)="injectPortal($event, window)" 
-            class="active">
-        </ng-template>
-
-        <div *ngIf="window._isLoading">spinner...</div>
+        <ng-container *ngIf="!error">
+            <ng-template 
+                *ngIf="!window._isCollapsed && !window._isLoading" 
+                [cdkPortalOutlet]="window._portal" 
+                (attached)="injectPortal($event, window)"
+                >
+            </ng-template>
+            
+            <div *ngIf="window._isLoading">spinner...</div>
+        </ng-container>
+        <ng-container *ngIf="error">
+            <app-window-template [windowData]="window">
+                <ng-template #content>
+                    <app-window-error [error]="error"></app-window-error>
+                </ng-template>
+            </app-window-template>
+        </ng-container>
     </div>
 </div>
 
-<div class="resizeHandles" (mousedown)="$event.stopPropagation()">
+<div class="resizeHandles" (mousedown)="window.activate(); $event.stopPropagation()">
     <div class="resize-handle-top"    mwlResizeHandle [resizeEdges]="{ top: true }"></div>
     <div class="resize-handle-left"   mwlResizeHandle [resizeEdges]="{ left: true }"></div>
     <div class="resize-handle-right"  mwlResizeHandle [resizeEdges]="{ right: true }"></div>
