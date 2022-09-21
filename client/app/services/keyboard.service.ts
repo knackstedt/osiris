@@ -2,7 +2,7 @@ import { HostListener, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ManagedWindow, WindowManagerService } from './window-manager.service';
 
-type KeyCommand = {
+export type KeyCommand = {
     /**
      * The non-modifier key(s) that must be pressed for the event to fire.
      */

@@ -2,6 +2,7 @@ app-window-template {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    flex: 1;
     
     .dragInterrupt {
         display: contents;

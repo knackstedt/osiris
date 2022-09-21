@@ -20,7 +20,7 @@ export class WindowManagerService {
     // public managedWindows$ = new BehaviorSubject<ManagedWindow[]>([]);
     // public taskbarData$ = new BehaviorSubject<ManagedWindow[]>([]);
 
-    public async OpenWindow(options: Partial<WindowOptions> | AppId, data?) {
+    public async openWindow(options: Partial<WindowOptions> | AppId, data?) {
         let opts: any = {};
         if (typeof options == "string")
             opts.appId = options;
@@ -58,6 +58,10 @@ export class WindowManagerService {
 
         // Lastly add to the taskbar item.
         taskbarItem.windows.push(window);
+    }
+
+    public closeWindow(id: number) {
+
     }
 
     public blurAllWindows() {
@@ -178,6 +182,7 @@ export class ManagedWindow {
 
     /**
      * Close the window.
+     * @deprecated **Use the WindowManager.closeWindow method instead**
      */
     close() {
         managedWindows.splice(managedWindows.findIndex(w => w.id == this.id), 1);

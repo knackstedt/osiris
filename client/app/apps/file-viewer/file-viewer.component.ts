@@ -6,6 +6,7 @@ import { ResizeEvent } from 'angular-resizable-element';
 import { Subject } from 'rxjs';
 import { KeyboardService } from '../../services/keyboard.service';
 import { CatchErrors, ManagedWindow } from '../../services/window-manager.service';
+import { FileDescriptor } from '../filemanager/filemanager.component';
 
 const isImage = /\.(png|jpe?g|gif|tiff|jfif|webp|svg|ico)$/;
 const isAudio = /\.(wav|mp3|ogg|adts|webm|flac)$/;
@@ -33,14 +34,12 @@ export class FileViewerComponent implements OnInit, OnResizeEnd, OnResize {
     resize = new Subject<void>();
     resizing = false;
 
-    fileType: "image" | "text" | "video" | "archive" | "binary";
+    fileType: "image" | "text" | "video" | "archive" | "binary" | "mixed";
 
-    data: {
-        dir: string,
-        file: string[]
-    };
+    data: FileDescriptor[];
 
     isMultiple: boolean;
+    
 
     constructor(private fetch: Fetch, private keyboard: KeyboardService) {
         console.log("fileviewer constructor")
@@ -53,31 +52,38 @@ export class FileViewerComponent implements OnInit, OnResizeEnd, OnResize {
         })
     }
 
+    getMimetype(file: FileDescriptor) {
+        return  (isImage.test(file.name) && "image") ||
+                (isAudio.test(file.name) && "video") ||
+                (isVideo.test(file.name) && "video") ||
+                (isArchive.test(file.name) && "archive") ||
+                (file.ext == "text" && "text") ||
+                "binary"
+    }
+
     ngOnInit() {
-        console.log("Throwing the damn error");
-        throw new Error("Test eHandle");
-
-        if (!this.windowData)
+        if (!this.windowData || !this.windowData.data)
             throw new Error("Invalid data reference for fileviewer dialog popup");
-        this.data = this.windowData.data;
 
-        if (!this.data || !this.data.file || this.data.file.length == 0) 
-            throw new Error("Invalid argument passed to container");
+        this.data = Array.isArray(this.windowData.data) ? this.windowData.data : [this.windowData.data];
 
-        this.isMultiple = this.data.file.length >= 1;
+        // Use a map to deduplicate and get a discrete count of 
+        // total mimetypes provided.
+        let m = {};
+        this.data.map(d => this.getMimetype(d)).forEach(k => {
+            m[k] = true;
+        });
 
-        this.fetch.post<WorkingFile[]>(`api/filesystem/file`, { dir: this.data.dir, file: this.data.file })
-            .then(data => {
-                data.forEach(file => {
-                    // ....
-                    // this.fileType = (isImage.test(file) && "image") ||
-                    //     (isAudio.test(file) && "video") ||
-                    //     (isVideo.test(file) && "video") ||
-                    //     (isArchive.test(file) && "archive") ||
-                    //     (data.type == "text" && "text") ||
-                    //     "binary";
-                })
-            })
+        const isMixed = Object.keys(m).length == 1;
+        if (isMixed) {
+            // Prompt saving as list
+            // downloading as (tar/zip/7z/rar)
+            // open with other application (...)
+            // move -> new location
+        }
+        else {
+            // Single file, can very safely open whatever dialog we need for this.
+        }
     }
 
     onResize(evt: ResizeEvent): void {

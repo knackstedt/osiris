@@ -30,28 +30,39 @@ export const route = (fn: RequestHandler) => (req, res, next) => {
 }
 
 
-export const getFilesInFolder = async (folder: string, recursive = false) => {
+export const getFilesInFolder = async (folder: string, showHidden, recurse = 2) => {
     if (!folder.endsWith('/')) folder += '/';
 
     const contents = await fs.readdir(folder, { withFileTypes: true });
 
-    const dirs = contents.filter(f => f.isDirectory()).map(f => (recursive && folder || "") + f.name + '/');
-    const files = contents.filter(f => !f.isDirectory()).map(f => (recursive && folder || "") + f.name);
+    const dirs = await Promise.all(
+        contents.filter(f => f.isDirectory())
+            .filter(f => !f.name.startsWith('.'))
+            .map(async p => ({ 
+                contents: recurse -1 > 0 ? await getFilesInFolder( folder + p.name + '/', showHidden) : [], 
+                path: folder, 
+                name: p.name,
+                kind: "directory"
+            }))
+    );
 
-    if (recursive) {
-        let rContents = await Promise.all(dirs.map(d => getFilesInFolder(d, recursive)));
-        rContents.forEach(dir => {
-            dir.files.forEach(f => files.push(f));
-            dir.dirs.forEach(d => {
-                dirs.push(d);
-            })
-        });
-    }
+    const files = await Promise.all(
+        contents.filter(f => f.isFile())
+            .filter(f => !f.name.startsWith('.'))
+            .map(async p => ({ 
+                stats: await fs.stat(folder + p.name), 
+                path: folder,
+                name: p.name,
+                ext: p.name.split('.').pop(),
+                kind: "file" 
+            }))
+    );
 
     return {dirs, files};
 }
 
-getFilesInFolder("./", true)
-    .then(res => console.log("files in folders", res))
-    .catch(err => console.error(err))
+
+// getFilesInFolder("./", 1)
+//     .then(res => console.log("files in folders", res))
+//     .catch(err => console.error(err))
 

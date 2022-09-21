@@ -3,7 +3,10 @@
     [template]="toolbar" 
     [class.active]="windowData._isActive">
 </app-window-toolbar>
-<div class="dragInterrupt" (mousedown)="windowData.activate(); $event.stopPropagation()">
+<div class="dragInterrupt" 
+    (mousedown)="windowData.activate(); $event.stopPropagation()"
+    (touchstart)="windowData.activate(); $event.stopPropagation()"
+    >
     <ng-container *ngTemplateOutlet="content">
     </ng-container>
 </div>

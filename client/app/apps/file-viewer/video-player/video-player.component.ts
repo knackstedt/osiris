@@ -22,8 +22,9 @@ export class VideoPlayerComponent implements OnInit {
     }
 
     getLink() {
-        // return "api/filesystem/download?file=" + encodeURIComponent(this.data.file) + "&dir=" + encodeURIComponent(this.data.dir);
-        return "";
+        const f = Array.isArray(this.data.file) ? this.data.file[0] : this.data.file;
+        return "api/filesystem/download?file=" + encodeURIComponent(f) + "&dir=" + encodeURIComponent(this.data.dir);
+        // return "";
     }
 
     isAudioOnly() {

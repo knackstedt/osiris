@@ -1,10 +1,8 @@
 import * as express from "express";
-import { environment } from "../environment";
 import { route, getFilesInFolder } from '../util';
 import fs from 'fs';
 import { readFile, stat, access } from "fs-extra";
 import { isText, isBinary, getEncoding } from 'istextorbinary';
-import { getHeapStatistics } from "v8";
 import mime from "mime-types";
 import AdmZip from "adm-zip";
 import tar from "tar";
@@ -186,7 +184,7 @@ router.use('/file', route(async (req, res, next) => {
 }));
 
 router.use('/', route(async (req, res, next) => {
-    const { dir, path, showHidden } = req.body;
+    const { path, showHidden } = req.body;
 
     // If the file doesn't exist
     let hasAccess = await access(path, fs.constants.F_OK | fs.constants.W_OK | fs.constants.R_OK)
@@ -200,13 +198,8 @@ router.use('/', route(async (req, res, next) => {
     let stats = await stat(path);
 
     if (stats.isDirectory()) {
-        let {dirs, files} = await getFilesInFolder(path);
-    
-        if (!showHidden) {
-            dirs = dirs.filter(d => !d.startsWith('.'));
-            files = files.filter(f => !f.startsWith('.'));
-        }
-    
+        let {dirs, files} = await getFilesInFolder(path, showHidden, 1);
+
         res.send({dirs, files});
         return;
     }

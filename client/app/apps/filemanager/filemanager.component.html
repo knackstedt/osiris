@@ -1,6 +1,96 @@
 <app-window-template [windowData]="windowData">
     <ng-template #toolbar>
-        I need a large amount of text to test that the text clipping shows an ellipse, which means I NEEED EVEN MORE TEXT DAMMIT
+        <div class="buttongroup">
+            <button>
+                <img src="assets/icons/actions/go-previous-symbolic.svg" />
+            </button>
+            <button [disabled]='true'>
+                <img src="assets/icons/actions/go-next-symbolic.svg" />
+            </button>
+        </div>
+        <span></span>
+        <div class="breadcrumb" style="flex: 1">
+            <ul>
+                <li *ngFor="let crumb of breadcrumb">{{crumb.label}}</li>
+            </ul>
+        </div>
+        <button>
+            <img src="assets/icons/actions/view-more-symbolic.svg" />
+        </button>
+
+        <button>
+            <img src="assets/icons/actions/edit-find-symbolic.svg"/>
+        </button>
+        <span></span>
+        <div class="buttongroup">
+            <button>
+                <img [src]="this.viewMode == 'list' ? 'view-list-symbolic.svg' : 'view-grid-symbolic.svg'">
+            </button>
+            <button #btn 
+                [class.hover]="btn['hover']"
+                (mouseover)="btn['hover'] = true" 
+                (mouseleave)="btn['hover'] = false"
+                >
+                <img src="assets/icons/actions/pan-down-symbolic.svg" />
+                <ul class="button-dialog" *ngIf="true || btn['hover']">
+                    <div class="buttongroup">
+                        <button>
+                            <img src="assets/icons/actions/zoom-out-symbolic.svg" />
+                        </button>
+                        <label>67%</label>
+                        <button>
+                            <img src="assets/icons/actions/zoom-in-symbolic.svg" />
+                        </button>
+                    </div>
+
+                    <span class="seperator">Sort</span>
+
+                    <li (click)="sortOrder = 'a-z'" [class.selected]="sortOrder == 'a-z'">A-Z <input type="radio"/></li>
+                    <li (click)="sortOrder = 'z-a'" [class.selected]="sortOrder == 'z-a'">Z-A <input type="radio"/></li>
+                    <li (click)="sortOrder = 'lastmod'" [class.selected]="sortOrder == 'lastmod'">Last Modified <input type="radio"/></li>
+                    <li (click)="sortOrder = 'firstmod'" [class.selected]="sortOrder == 'firstmod'">First Modified <input type="radio"/></li>
+                    <li (click)="sortOrder = 'size'" [class.selected]="sortOrder == 'size'">Size <input type="radio"/></li>
+                    <li (click)="sortOrder = 'type'" [class.selected]="sortOrder == 'type'">Type <input type="radio"/></li>
+
+                    <hr/>
+
+                    <div>reload</div>
+                </ul>
+            </button>
+            <button #btn1 (mouseover)="btn1['hover'] = true" (mouseleave)="btn1['hover'] = false">
+                <img src="assets/icons/actions/open-menu-symbolic.svg" />
+                <ul *ngIf="btn1['hover']">
+                    <li>
+                        <div>
+                            <button>
+                                <img src="assets/icons/actions/appointment-new-symbolic.svg" />
+                            </button>
+                            <button>
+                                <img src="assets/icons/actions/tab-new-symbolic.svg" />
+                            </button>
+                            <button>
+                                <img src="assets/icons/actions/folder-new-symbolic.svg" />
+                            </button>
+                        </div>
+                    </li>
+                    <li>Undo Create Folder</li>
+                    <li>Redo</li>
+                    <hr/>
+                    <li>
+                        <label>
+                            Show hidden files
+                        </label>
+                        <input type="checkbox" [(ngModel)]="showHiddenFiles">
+                    </li>
+                    <li>Show sidebar [ ]</li>
+                    <hr/>
+                    <li>Perferences</li>
+                    <li>Keyboard Shortcuts</li>
+                    <li>Help</li>
+                    <li>About Files</li>
+                </ul>
+            </button>
+        </div>
     </ng-template>
     <ng-template #content>
         <div class="content" [class.active]="windowData._isActive">
@@ -23,19 +113,25 @@
                     <li>data on smb</li>
                 </ul>
                 <ul>
-                    <li>+ other locations</li>
+                    <li contextMenu>+ other locations</li>
                 </ul>
             </div>
             <div class="files" [class.active]="windowData._isActive" (click)="selected = []">
                 <div class="file" 
-                    *ngFor="let item of directoryContents" 
-                    [class.selected]="selected.includes(item)"
+                    *ngFor="let item of _sortFilter()" 
+                    [class.selected]="selected.includes(item.name)"
                     (click)="onClick(item, $event)" 
                     (dblclick)="openFile(item, $event)"
+
+                    contextMenu
+                    [contextMenuData]="item"
+                    [contextMenuItems]="folderContextMenu"
                 >
-                    <img [src]="resolveIcon(item)" />
-                    <p>{{item.split('/')[0]}}</p>
+                    <img [src]="resolveIcon(item.name)" />
+                    <p>{{item.name}}</p>
                 </div>
+
+                <div class="select-hint" *ngIf="getSelectionText()">{{getSelectionText()}}</div>
             </div>
         </div>
     </ng-template>

@@ -8,13 +8,17 @@ import { ResizableModule } from 'angular-resizable-element';
 import { MonacoEditorComponent } from './components/monaco-editor/monaco-editor.component';
 import { WindowToolbarComponent } from './components/window-template/window-toolbar/window-toolbar.component';
 import { WindowTemplateComponent } from './components/window-template/window-template.component';
+import { ContextMenuComponent } from './components/context-menu/context-menu.component';
+import { ContextMenuDirective } from './directives/context-menu.directive';
 
 
 @NgModule({
     declarations: [
         MonacoEditorComponent,
         WindowToolbarComponent,
-        WindowTemplateComponent
+        WindowTemplateComponent,
+        ContextMenuComponent,
+        ContextMenuDirective
     ],
     imports: [
         CommonModule,
@@ -22,14 +26,15 @@ import { WindowTemplateComponent } from './components/window-template/window-tem
         MaterialModule
     ],
     exports: [
+        ContextMenuDirective,
         CommonModule,
         ResizableModule,
         FormsModule,
         ReactiveFormsModule,
         MonacoEditorComponent,
         WindowToolbarComponent,
-        WindowTemplateComponent
-
+        WindowTemplateComponent,
+        ContextMenuComponent
     ],
 })
 

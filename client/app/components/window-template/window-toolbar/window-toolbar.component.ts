@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
+import { WindowManagerService } from '../../../services/window-manager.service';
 
 @Component({
     selector: 'app-window-toolbar',
@@ -14,7 +15,7 @@ export class WindowToolbarComponent implements OnInit {
 
     @Output() onClose = new EventEmitter();
 
-    constructor() { }
+    constructor(public windowManager: WindowManagerService) { }
 
     ngOnInit() {
     }

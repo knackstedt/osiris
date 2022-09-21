@@ -21,7 +21,7 @@
     <button (click)="window._isMaximized = !window._isMaximized">
         <img src="assets/icons/window-maximize-symbolic.svg" />
     </button>
-    <button class="close" (click)="this.onClose.emit(window)">
+    <button class="close" (click)="windowManager.closeWindow(window.id)">
         <img src="assets/icons/window-close-symbolic.svg" />
     </button>
 </div>

@@ -26,7 +26,7 @@ export class RootComponent implements OnInit {
         private keyboard: KeyboardService
     ) {
 
-        this.windowManager.OpenWindow({
+        this.windowManager.openWindow({
             title: "My special App",
             description: "My Application V1.0",
             appId: "file-manager",
@@ -34,6 +34,7 @@ export class RootComponent implements OnInit {
             y: 100,
             width: 800,
             height: 600,
+            icon: "assets/icons/apps/nautilus-symbolic.svg",
 
             // This is an arbitrary data object that gets loaded into the app
             data: {
@@ -41,11 +42,6 @@ export class RootComponent implements OnInit {
                 showHidden: false,
                 search: ""
             }
-        });
-        this.windowManager.OpenWindow({
-            title: "My special App -1",
-            x: 600,
-            y: 300
         });
 
         this.keyboard.onKeyCommand({

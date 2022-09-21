@@ -1,11 +1,9 @@
 :host {
     width: 100%;
     display: flex;
-    flex: 0 0 45px;
-
-
-    // height: 45px;
-
+    flex: 0;
+    z-index: 1;
+    max-height: 47px;
 
     color: #cccccc;
     border-top: 1px solid #434343;
@@ -28,10 +26,14 @@
     .container {
         flex: 1;
         width: 100%;
-        overflow: hidden;
+        height: 100%;
+        // TODO: fix for ellipse text.
+        // overflow: hidden;
         text-overflow: ellipsis;
         white-space: pre;
         align-self: center;
+        align-items: center;
+        padding: 6px;
     }
 
     button {
