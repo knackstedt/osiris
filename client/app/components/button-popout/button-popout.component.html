@@ -1,0 +1,8 @@
+<button class="popout-button" (click)="showDialog = !showDialog">
+    <img [src]="img"/>
+    <div class="dialog" *ngIf="showDialog" (click)="$event.stopPropagation()">
+        <ng-container  *ngTemplateOutlet="content">
+        </ng-container>
+    </div>
+    <div class="interaction-block" *ngIf="showDialog" (click)="showDialog = false; $event.stopPropagation()"></div>
+</button>

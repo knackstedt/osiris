@@ -1,5 +1,6 @@
 import { fileIcons } from "./mit-file-icons";
 import { folderIcons } from "./mit-folder-icons";
+import { FSDescriptor } from './filemanager.component';
 
 // Build maps of extension/filename => icon id.
 const exts = [];
@@ -35,7 +36,7 @@ const getBestMatch = (data: {val: string, iconName: string}[], filename) => {
         [0]?.iconName; // Return the first result.
 }
 
-export const resolveIcon = (file: string) => {
+export const resolveIcon = (file: FSDescriptor) => {
 
     // const mimeType = MimeTypeBase[ext];
     // MimeTypes[ext] ||
@@ -48,12 +49,12 @@ export const resolveIcon = (file: string) => {
 
     
     // VS Code Material Icon Theme pack
-    if (file.endsWith('/')) {
-        const dirnameMatch = getBestMatch(dirnames, file);
+    if (file.kind == "directory") {
+        const dirnameMatch = getBestMatch(dirnames, file.name);
         return dirnameMatch ? `lib/mit/${dirnameMatch}.svg` : "lib/mit/folder-app.svg";
     }
-    const filenameMatch = getBestMatch(filenames, file);
-    const extMatch = getBestMatch(exts, file);
+    const filenameMatch = getBestMatch(filenames, file.name);
+    const extMatch = getBestMatch(exts, file.name);
 
     return filenameMatch ? `lib/mit/${filenameMatch}.svg` : 
         extMatch ? `lib/mit/${extMatch}.svg` :

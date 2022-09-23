@@ -10,15 +10,17 @@ import { WindowToolbarComponent } from './components/window-template/window-tool
 import { WindowTemplateComponent } from './components/window-template/window-template.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { ContextMenuDirective } from './directives/context-menu.directive';
+import { ButtonPopoutComponent } from './components/button-popout/button-popout.component';
 
 
 @NgModule({
     declarations: [
+        ContextMenuDirective,
         MonacoEditorComponent,
         WindowToolbarComponent,
         WindowTemplateComponent,
         ContextMenuComponent,
-        ContextMenuDirective
+        ButtonPopoutComponent
     ],
     imports: [
         CommonModule,
@@ -34,7 +36,8 @@ import { ContextMenuDirective } from './directives/context-menu.directive';
         MonacoEditorComponent,
         WindowToolbarComponent,
         WindowTemplateComponent,
-        ContextMenuComponent
+        ContextMenuComponent,
+        ButtonPopoutComponent
     ],
 })
 

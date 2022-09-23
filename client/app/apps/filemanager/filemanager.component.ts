@@ -5,6 +5,7 @@ import { resolveIcon } from './icon-resolver';
 import { KeyboardService } from '../../services/keyboard.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ContextMenuItem } from '../../components/context-menu/context-menu.component';
+import { openDB, deleteDB, wrap, unwrap } from 'idb';
 
 // TODO:
 /**
@@ -74,14 +75,7 @@ export class FilemanagerComponent implements OnInit {
 
     sortOrder: "a-z" | "z-a" | "lastmod" | "firstmod" | "size" | "type" = "a-z";
 
-    breadcrumb = [
-        { path: "/home/knackstedt/", label: "Home" },
-        { path: "/home/knackstedt/source/", label: "source" },
-        { path: "/home/knackstedt/source/osiris/", label: "osiris" },
-        { path: "/home/knackstedt/source/osiris/client/", label: "client" },
-        { path: "/home/knackstedt/source/osiris/client/assets/", label: "assets" },
-        { path: "/home/knackstedt/source/osiris/client/assets/icons/", label: "icons" },
-    ];
+    breadcrumb = [];
 
     folderContextMenu: ContextMenuItem[] = [
         {
@@ -137,11 +131,11 @@ export class FilemanagerComponent implements OnInit {
 
 
     private sorters = {
-        "a-z":      (a: FileDescriptor, b: FileDescriptor) => a.path > b.path ? 1 : -1,
-        "z-a":      (a: FileDescriptor, b: FileDescriptor) => b.path > a.path ? 1 : -1,
-        "lastmod":  (a: FileDescriptor, b: FileDescriptor) => a.stats.mtimeMs - b.stats.mtimeMs,
-        "firstmod": (a: FileDescriptor, b: FileDescriptor) => b.stats.mtimeMs - a.stats.mtimeMs,
-        "size":     (a: FileDescriptor, b: FileDescriptor) => a.stats.size - b.stats.size,
+        "a-z":      (a: FileDescriptor, b: FileDescriptor) => a.name > b.name ? 1 : -1,
+        "z-a":      (a: FileDescriptor, b: FileDescriptor) => b.name > a.name ? 1 : -1,
+        "lastmod":  (a: FileDescriptor, b: FileDescriptor) => b.stats.mtimeMs - a.stats.mtimeMs,
+        "firstmod": (a: FileDescriptor, b: FileDescriptor) => a.stats.mtimeMs - b.stats.mtimeMs,
+        "size":     (a: FileDescriptor, b: FileDescriptor) => b.stats.size - a.stats.size,
         "type":     (a: FileDescriptor, b: FileDescriptor) => a.path.split('.').splice(-1,1)[0] > b.path.split('.').splice(-1,1)[0] ? 1 : -1
     }
 
@@ -162,26 +156,32 @@ export class FilemanagerComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log(this.windowData);
 
         if (this.windowData.data)
             this.loadFolder(this.windowData.data?.basePath);
     }
 
-    loadFolder(file: string) {
-        this.fetch.post(`/api/filesystem/`, { path: file, showHidden: this.windowData.data.showHidden })
+    loadFolder(absPath: string) {
+        this.windowData.data.basePath = absPath;
+        this.fetch.post(`/api/filesystem/`, { path: absPath, showHidden: this.windowData.data.showHidden })
             .then((data: any) => {
-                const files: FileDescriptor[] = data.files;
+                const files: FileDescriptor[] = data.files || [];
                 const dirs: DirectoryDescriptor[] = data.dirs;
 
                 this.directoryContents = files.concat(dirs as any) as FSDescriptor[];
+
+                const parts = absPath.split('/');
+                this.breadcrumb = parts.map((p, i) => ({ path: parts.slice(0, i+1).join('/'), label: p || " "}))
             })
             .catch(err => console.error(err));
     }
 
     // This will only ever be one file
-    openFile(file: FileDescriptor, evt: MouseEvent) {
-        this.windowManager.openWindow("file-viewer", file);
+    openFile(file: FSDescriptor, evt: MouseEvent) {
+        if (file.kind == "directory") 
+            this.loadFolder(file.path + file.name);
+        else
+            this.windowManager.openWindow("file-viewer", file);
     }
 
     selectionAction(action: "open" | "move" | "delete") {
@@ -218,8 +218,8 @@ export class FilemanagerComponent implements OnInit {
 
     getSelectionText() {
         const dirCount = this.selected.filter(s => s.endsWith('/')).length;
-        const fileCount = this.selected.length = dirCount;
-
+        const fileCount = this.selected.filter(s => !s.endsWith('/')).length;
+        
         const totalSize = (this.directoryContents
             .filter(d => d.kind == "file") as FileDescriptor[])
             .filter(d => this.selected?.includes(d.name))

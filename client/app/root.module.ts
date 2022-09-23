@@ -13,6 +13,8 @@ import { UrlSanitizer } from './pipes/urlsanitizer.pipe';
 import { TaskbarComponent } from './components/taskbar/taskbar.component';
 import { WindowComponent } from './components/window/window.component';
 import { WindowErrorComponent } from './components/window/error/error.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
     declarations: [
@@ -30,7 +32,13 @@ import { WindowErrorComponent } from './components/window/error/error.component'
         AppLibModule,
         MaterialModule,
         PortalModule,
-        HttpClientModule
+        HttpClientModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+          enabled: environment.production,
+          // Register the ServiceWorker as soon as the application is stable
+          // or after 30 seconds (whichever comes first).
+          registrationStrategy: 'registerWhenStable:30000'
+        })
     ],
     providers: [],
     bootstrap: [RootComponent]

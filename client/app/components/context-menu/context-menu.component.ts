@@ -1,4 +1,4 @@
-import { Component, Inject, Input, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, Inject, Input, ViewEncapsulation } from '@angular/core';
 import { KeyCommand } from 'client/app/services/keyboard.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
@@ -52,9 +52,16 @@ export class ContextMenuComponent {
     onMenuItemClick(item: ContextMenuItem, evt: MouseEvent) {
         if (typeof item == 'string') return;
         item.action(evt, this.data);
+        this.close();
     }
 
     formatLabel(label: string): string {
         return label.replace(/_([a-z0-9])_/i, (match, group) => `<u>${group}</u>`)
+    }
+
+    @HostListener("window:resize", ['event'])
+    @HostListener("window:blur", ['event'])
+    close() {
+        this.dialogRef.close();
     }
 }

@@ -14,8 +14,14 @@ const managedWindows: ManagedWindow[] = []
 })
 export class WindowManagerService {
 
+    private static registeredInstances: WindowManagerService[] = [];
+
     public managedWindows = managedWindows;
     public taskbarItems: TaskBarData[] = [];
+
+    constructor() {
+        WindowManagerService.registeredInstances.push(this);
+    }
 
     // public managedWindows$ = new BehaviorSubject<ManagedWindow[]>([]);
     // public taskbarData$ = new BehaviorSubject<ManagedWindow[]>([]);
@@ -68,6 +74,15 @@ export class WindowManagerService {
         managedWindows.forEach(w => {
             w._isActive = false;
         });
+    }
+
+    public static writeState() {
+        // TODO
+        // const state = WindowManagerService.registeredInstances;
+        // const sState = JSON.stringify(state);
+        // console.log("approx. state length", sState.length);
+
+        // history.pushState(sState, null, null);
     }
 }
 
@@ -149,6 +164,27 @@ export class ManagedWindow {
             });
     }
 
+    toJSON() {
+        return {
+            id: this.id,
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height,
+            data: this.data,
+
+            title: this.title,
+            icon: this.icon,
+            description: this.description,
+
+            _isCollapsed: this._isCollapsed,
+            _isMaximized: this._isMaximized,
+            _isActive: this._isActive,
+            _isLoading: this._isLoading,
+            _index: this._index, // z-index
+        }
+    }
+
     onDragEnd(evt?: CdkDragRelease) {
         const bounds = evt.source.getRootElement().getBoundingClientRect();
         this.x = this._x = bounds.x;
@@ -157,6 +193,8 @@ export class ManagedWindow {
         this.height = bounds.height;
 
         this._component?.instance['onDragEnd'] && this._component.instance['onDragEnd'](evt);
+
+        WindowManagerService.writeState();
     }
 
     onResizing(evt?: ResizeEvent) {
@@ -166,6 +204,8 @@ export class ManagedWindow {
         this.height = evt.rectangle.height;
 
         this._component?.instance['onResize'] && this._component.instance['onResize'](evt);
+
+        WindowManagerService.writeState();
     }
 
     onResizeEnd(evt?: ResizeEvent) {
@@ -176,6 +216,8 @@ export class ManagedWindow {
         this._x = this.x;
 
         this._component?.instance['onResizeEnd'] && this._component.instance['onResizeEnd'](evt);
+
+        WindowManagerService.writeState();
     }
 
     onError = new EventEmitter();
@@ -220,6 +262,8 @@ export class ManagedWindow {
         this.blurAllWindows();
         this._isActive = true;
         this._index = ManagedWindow.windowZindexCounter++;
+
+
 
         if (this._isCollapsed) {
             // TODO: re-activate window

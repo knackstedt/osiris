@@ -10,13 +10,32 @@
         </div>
         <span></span>
         <div class="breadcrumb" style="flex: 1">
-            <ul>
-                <li *ngFor="let crumb of breadcrumb">{{crumb.label}}</li>
-            </ul>
+            <button *ngFor="let crumb of breadcrumb" (click)="loadFolder(crumb.path)">{{crumb.label}}</button>
         </div>
-        <button>
-            <img src="assets/icons/actions/view-more-symbolic.svg" />
-        </button>
+        <app-button-popout img="assets/icons/actions/view-more-symbolic.svg">
+            <ng-template #dialogTemplate>
+                <div class="buttongroup border">
+                    <button>
+                        <img src="assets/icons/actions/appointment-new-symbolic.svg" />
+                    </button>
+                    <button>
+                        <img src="assets/icons/actions/tab-new-symbolic.svg" />
+                    </button>
+                    <button>
+                        <img src="assets/icons/actions/folder-new-symbolic.svg" />
+                    </button>
+                </div>
+                <li>New Folder</li>
+                <li>Add to Bookmarks</li>
+                <hr />
+                <li>Paste</li>
+                <li>Select All</li>
+                <hr />
+                <li>Open in Terminal</li>
+                <hr />
+                <li>Propetries</li>
+            </ng-template>
+        </app-button-popout>
 
         <button>
             <img src="assets/icons/actions/edit-find-symbolic.svg"/>
@@ -26,13 +45,8 @@
             <button>
                 <img [src]="this.viewMode == 'list' ? 'view-list-symbolic.svg' : 'view-grid-symbolic.svg'">
             </button>
-            <button #btn 
-                [class.hover]="btn['hover']"
-                (mouseover)="btn['hover'] = true" 
-                (mouseleave)="btn['hover'] = false"
-                >
-                <img src="assets/icons/actions/pan-down-symbolic.svg" />
-                <ul class="button-dialog" *ngIf="true || btn['hover']">
+            <app-button-popout img="assets/icons/actions/pan-down-symbolic.svg">
+                <ng-template #dialogTemplate>
                     <div class="buttongroup">
                         <button>
                             <img src="assets/icons/actions/zoom-out-symbolic.svg" />
@@ -42,59 +56,62 @@
                             <img src="assets/icons/actions/zoom-in-symbolic.svg" />
                         </button>
                     </div>
-
+                    
                     <span class="seperator">Sort</span>
-
-                    <li (click)="sortOrder = 'a-z'" [class.selected]="sortOrder == 'a-z'">A-Z <input type="radio"/></li>
-                    <li (click)="sortOrder = 'z-a'" [class.selected]="sortOrder == 'z-a'">Z-A <input type="radio"/></li>
-                    <li (click)="sortOrder = 'lastmod'" [class.selected]="sortOrder == 'lastmod'">Last Modified <input type="radio"/></li>
-                    <li (click)="sortOrder = 'firstmod'" [class.selected]="sortOrder == 'firstmod'">First Modified <input type="radio"/></li>
-                    <li (click)="sortOrder = 'size'" [class.selected]="sortOrder == 'size'">Size <input type="radio"/></li>
-                    <li (click)="sortOrder = 'type'" [class.selected]="sortOrder == 'type'">Type <input type="radio"/></li>
-
-                    <hr/>
-
-                    <div>reload</div>
-                </ul>
-            </button>
-            <button #btn1 (mouseover)="btn1['hover'] = true" (mouseleave)="btn1['hover'] = false">
-                <img src="assets/icons/actions/open-menu-symbolic.svg" />
-                <ul *ngIf="btn1['hover']">
-                    <li>
-                        <div>
-                            <button>
-                                <img src="assets/icons/actions/appointment-new-symbolic.svg" />
-                            </button>
-                            <button>
-                                <img src="assets/icons/actions/tab-new-symbolic.svg" />
-                            </button>
-                            <button>
-                                <img src="assets/icons/actions/folder-new-symbolic.svg" />
-                            </button>
-                        </div>
+                    
+                    <li (click)="sortOrder = 'a-z'" [class.selected]="sortOrder == 'a-z'">A-Z <input type="radio" /></li>
+                    <li (click)="sortOrder = 'z-a'" [class.selected]="sortOrder == 'z-a'">Z-A <input type="radio" /></li>
+                    <li (click)="sortOrder = 'lastmod'" [class.selected]="sortOrder == 'lastmod'">Last Modified <input type="radio" /></li>
+                    <li (click)="sortOrder = 'firstmod'" [class.selected]="sortOrder == 'firstmod'">First Modified <input type="radio" />
                     </li>
+                    <li (click)="sortOrder = 'size'" [class.selected]="sortOrder == 'size'">Size <input type="radio" /></li>
+                    <li (click)="sortOrder = 'type'" [class.selected]="sortOrder == 'type'">Type <input type="radio" /></li>
+                    
+                    <hr />
+                    
+                    <div (click)="ngOnInit()">reload</div>
+                </ng-template>
+            </app-button-popout>
+            <app-button-popout img="assets/icons/actions/open-menu-symbolic.svg">
+                <ng-template #dialogTemplate>
+                    <div class="buttongroup border">
+                        <button>
+                            <img src="assets/icons/actions/appointment-new-symbolic.svg" />
+                        </button>
+                        <button>
+                            <img src="assets/icons/actions/tab-new-symbolic.svg" />
+                        </button>
+                        <button>
+                            <img src="assets/icons/actions/folder-new-symbolic.svg" />
+                        </button>
+                    </div>
                     <li>Undo Create Folder</li>
                     <li>Redo</li>
-                    <hr/>
+                    <hr />
                     <li>
                         <label>
                             Show hidden files
                         </label>
                         <input type="checkbox" [(ngModel)]="showHiddenFiles">
                     </li>
-                    <li>Show sidebar [ ]</li>
-                    <hr/>
+                    <li>
+                        <label>
+                            Show sidebar
+                        </label>
+                        <input type="checkbox" [(ngModel)]="showSidebar">
+                    </li>
+                    <hr />
                     <li>Perferences</li>
                     <li>Keyboard Shortcuts</li>
                     <li>Help</li>
                     <li>About Files</li>
-                </ul>
-            </button>
+                </ng-template>
+            </app-button-popout>
         </div>
     </ng-template>
     <ng-template #content>
         <div class="content" [class.active]="windowData._isActive">
-            <div class="sidebar" (click)="selected = []">
+            <div class="sidebar" *ngIf="showSidebar" (click)="selected = []">
                 <ul>
                     <li>Recent</li>
                     <li>Starred</li>
@@ -118,16 +135,16 @@
             </div>
             <div class="files" [class.active]="windowData._isActive" (click)="selected = []">
                 <div class="file" 
-                    *ngFor="let item of _sortFilter()" 
+                    *ngFor="let item of _sortFilter()"
                     [class.selected]="selected.includes(item.name)"
-                    (click)="onClick(item, $event)" 
+                    (click)="onClick(item, $event)"
                     (dblclick)="openFile(item, $event)"
 
                     contextMenu
                     [contextMenuData]="item"
                     [contextMenuItems]="folderContextMenu"
                 >
-                    <img [src]="resolveIcon(item.name)" />
+                    <img [src]="resolveIcon(item)" />
                     <p>{{item.name}}</p>
                 </div>
 
