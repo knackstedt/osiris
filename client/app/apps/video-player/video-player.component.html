@@ -1,0 +1,78 @@
+<app-window-template [window]="windowRef">
+    <ng-template #toolbar>
+        <div class="buttongroup">
+            <button>
+                <img src="assets/icons/actions/go-previous-symbolic.svg" />
+            </button>
+            <button [disabled]='true'>
+                <img src="assets/icons/actions/go-next-symbolic.svg" />
+            </button>
+        </div>
+        <span></span>
+        <div class="title">
+            {{file?.name}}
+        </div>
+        <span></span>
+        <div class="buttongroup">
+            <button>
+                <img src="assets/icon/actions/view-fullscreen-symbolic.svg">
+            </button>
+            <app-button-popout img="assets/icons/actions/media-view-subtitles-symbolic.svg">
+                <ng-template #dialogTemplate>
+                    <span class="hr">Languages</span>
+                    <div>
+                        <label>Audio Track</label>
+                        <input type="radio">
+                    </div>
+                    <span class="hr">Subtitles</span>
+                    <div>
+                        <label>None</label>
+                        <input type="radio">
+                    </div>
+                    <button>Select Text Subtitles...</button>
+                </ng-template>
+            </app-button-popout>
+            <app-button-popout img="assets/icons/actions/view-more-symbolic.svg">
+                <ng-template #dialogTemplate>
+                    <li>Open Containing Folder</li>
+                    <li>Make Available Offline</li>
+                    <hr />
+                    <li>Aspect Ratio
+                        <div class="slide-dialog" *ngIf="false">
+                    <li><label>Auto</label><input type="radio"></li>
+                    <li><label>Square</label><input type="radio"></li>
+                    <li><label>4:3 (TV)</label><input type="radio"></li>
+                    <li><label>16:9 (Widescreen)</label><input type="radio"></li>
+                    <li><label>2.11:1 (DVB)</label><input type="radio"></li>
+        </div>
+        </li>
+        <li>Rotate CW</li>
+        <li>Rotate CCW</li>
+        <li>Switch Angles</li>
+        <hr />
+        <li>Preferences</li>
+        <li>Keyboard Shortcuts</li>
+        <hr />
+        <li>Properties</li>
+    </ng-template>
+    </app-button-popout>
+    </div>
+    </ng-template>
+    <ng-template #content>
+        <div class="content" [class.active]="windowRef._isActive">
+            <ng-container>
+                <video controls [style.filter]="getFilter()">
+                    <source [src]="getLink(file)">
+                </video>
+            </ng-container>
+            <div class="controls">
+                <button (click)="currentIndex = currentIndex - 1">Prev</button>
+                <button (click)="isPaused = !isPaused">pause/play</button>
+                <span>02:35</span>
+                <div class="slider"></div>
+                <span>47:39</span>
+                <button (click)="currentIndex = currentIndex + 1">next</button>
+            </div>
+        </div>
+    </ng-template>
+</app-window-template>

@@ -18,6 +18,11 @@ export type KeyCommand = {
     shift?: boolean,
     super?: boolean,
     tab?: boolean,
+
+    /**
+     * Should the handler interrupt default event handling
+     */
+    interrupt?: boolean,
 }
 
 @Injectable({
@@ -31,6 +36,7 @@ export class KeyboardService {
         alt?: boolean,
         shift?: boolean,
         super?: boolean,
+        interrupt?: boolean,
         keys: string[],
         sub: Subject<KeyboardEvent>,
         window: ManagedWindow | false
@@ -65,9 +71,9 @@ export class KeyboardService {
                 (kc.super == undefined || kc.super === evt.metaKey) &&
                 kc.keys.length == kc.keys.filter(k => this.heldKeys[k])?.length
             )
-            .filter(kc => kc.window == false || kc.window._isActive)
+            .filter(kc => kc.window == false || !kc.window || kc.window._isActive)
         
-        if (evt.ctrlKey && commands.length > 0) {
+        if (evt.ctrlKey && commands.length > 0 || commands.find(c => c.interrupt)) {
             evt.stopPropagation();
             evt.preventDefault();
         }

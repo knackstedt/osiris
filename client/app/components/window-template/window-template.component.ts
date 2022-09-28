@@ -9,7 +9,7 @@ import { ManagedWindow } from '../../services/window-manager.service';
 })
 export class WindowTemplateComponent {
 
-    @Input() windowData: ManagedWindow;
+    @Input() window: ManagedWindow;
 
     @ContentChild("toolbar", {read: TemplateRef}) toolbar: TemplateRef<any>;
     @ContentChild("content", {read: TemplateRef}) content: TemplateRef<any>;

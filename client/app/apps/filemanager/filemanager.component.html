@@ -1,4 +1,4 @@
-<app-window-template [windowData]="windowData">
+<app-window-template [window]="windowRef">
     <ng-template #toolbar>
         <div class="buttongroup">
             <button>
@@ -92,7 +92,7 @@
                         <label>
                             Show hidden files
                         </label>
-                        <input type="checkbox" [(ngModel)]="showHiddenFiles">
+                        <input type="checkbox" [(ngModel)]="showHiddenFiles" (ngModelChange)="loadFolder()">
                     </li>
                     <li>
                         <label>
@@ -110,7 +110,7 @@
         </div>
     </ng-template>
     <ng-template #content>
-        <div class="content" [class.active]="windowData._isActive">
+        <div class="content" [class.active]="windowRef._isActive">
             <div class="sidebar" *ngIf="showSidebar" (click)="selected = []">
                 <ul>
                     <li>Recent</li>
@@ -118,8 +118,14 @@
                     <li>Home</li>
                     <li #li (hover)="li['hover']=true" (mouseout)="li['hover']=false">
                         Desktop
-                        <div class="tooltip" [class.visible]="li['hover']">/home/knackstedt/Downloads</div>
+                        <!-- <div class="tooltip" [class.visible]="li['hover']">/home/knackstedt/Downloads</div> -->
                     </li>
+                    <li>Documents</li>
+                    <li>Downloads</li>
+                    <li>Music</li>
+                    <li>Pcitures</li>
+                    <li>Videos</li>
+                    <li>Trash</li>
                 </ul>
                 <ul>
                     <li>mounted f:/</li>
@@ -130,10 +136,10 @@
                     <li>data on smb</li>
                 </ul>
                 <ul>
-                    <li contextMenu>+ other locations</li>
+                    <li>+ other locations</li>
                 </ul>
             </div>
-            <div class="files" [class.active]="windowData._isActive" (click)="selected = []">
+            <div class="files" [class.active]="windowRef._isActive" (click)="selected = []">
                 <div class="file" 
                     *ngFor="let item of _sortFilter()"
                     [class.selected]="selected.includes(item.name)"
@@ -143,8 +149,9 @@
                     contextMenu
                     [contextMenuData]="item"
                     [contextMenuItems]="folderContextMenu"
+                    [class.generic]="item['_icon'].needsBackdrop"
                 >
-                    <img [src]="resolveIcon(item)" />
+                    <img [src]="item['_icon'].path"/>
                     <p>{{item.name}}</p>
                 </div>
 

@@ -1,15 +1,23 @@
-import { Injectable } from '@angular/core';
-
 export const Apps = [
     {
         appId: "file-manager",
         load: () => import('./apps/filemanager/filemanager.module').then(m => m.FilemanagerModule)
     },
     {
-        appId: "file-viewer",
-        load: () => import('./apps/file-viewer/file-viewer.module').then(m => m.FileViewerModule),
+        appId: "video-player",
+        load: () => import('./apps/video-player/video-player.module').then(m => m.VideoPlayerModule),
+    },
+    {
+        appId: "image-viewer",
+        load: () => import('./apps/image-viewer/image-viewer.module').then(m => m.ImageViewerModule),
+    },    
+    {
+        appId: "code-editor",
+        load: () => import('./apps/code-editor/code-editor.module').then(m => m.CodeEditorModule),
     }
 ];
+
+export const KnownApps = Apps.map(a => a.appId);
 
 export class ApplicationLoader {
 

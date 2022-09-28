@@ -2,7 +2,7 @@
     width: 100%;
     display: flex;
     flex: 0;
-    z-index: 1;
+    z-index: 1000;
     max-height: 47px;
 
     color: #cccccc;
@@ -36,6 +36,11 @@
         align-self: center;
         align-items: center;
         padding: 6px;
+    }
+
+    .title {
+        font-weight: bold;
+        color: #fff;    
     }
 
     button {

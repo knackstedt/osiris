@@ -8,6 +8,7 @@
                 *ngFor="let window of windowManager.managedWindows"
                 [id]="'window_' + window.id"
                 [window]="window"
+                [data]="window.data"
                 class="draggable" 
 
                 cdkDrag 

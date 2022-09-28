@@ -4,7 +4,7 @@
 export const fileIcons = {
     defaultIcon: { name: 'file' },
     icons: [
-        { name: 'html', fileExtensions: ['htm', 'xhtml', 'html_vm', 'asp'] },
+        { name: 'html', fileExtensions: ['htm', 'html', 'xhtml', 'html_vm', 'asp'] },
         {
             name: 'pug',
             fileExtensions: ['jade', 'pug'],
@@ -147,7 +147,7 @@ export const fileIcons = {
                 'pnm',
             ],
         },
-        { name: 'javascript', fileExtensions: ['esx', 'mjs'] },
+        { name: 'javascript', fileExtensions: ['esx', 'mjs', 'js', 'cjs'] },
         { name: 'react', fileExtensions: ['jsx'] },
         { name: 'react_ts', fileExtensions: ['tsx'] },
         {
@@ -237,6 +237,7 @@ export const fileIcons = {
             fileExtensions: ['d.ts', 'd.cts', 'd.mts'],
         },
         { name: 'markojs', fileExtensions: ['marko'] },
+        { name: 'typescript', fileExtensions: ['ts'] },
         {
             name: 'astro',
             fileExtensions: ['astro'],

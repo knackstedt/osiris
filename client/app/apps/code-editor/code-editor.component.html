@@ -1,0 +1,17 @@
+<app-window-template [window]="windowRef">
+    <ng-template #toolbar>
+        <p>{{windowRef.data.filename}}</p>
+        <button>save</button>
+        <button>rename</button>
+        <button>delete</button>
+    </ng-template>
+    <ng-template #content>
+        <div class="content" [class.active]="windowRef._isActive">
+            <mat-tab-group>
+                <mat-tab *ngFor="let file of files" [label]="file.name">
+                    <app-monaco-editor [code]="file.content" [path]="windowRef.data.path + file.name"></app-monaco-editor>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </ng-template>
+</app-window-template>

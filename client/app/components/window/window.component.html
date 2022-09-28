@@ -4,14 +4,14 @@
             <ng-template 
                 *ngIf="!window._isCollapsed && !window._isLoading" 
                 [cdkPortalOutlet]="window._portal" 
-                (attached)="injectPortal($event, window)"
+                (attached)="injectPortal($event)"
                 >
             </ng-template>
             
             <div *ngIf="window._isLoading">spinner...</div>
         </ng-container>
         <ng-container *ngIf="error">
-            <app-window-template [windowData]="window">
+            <app-window-template [window]="window">
                 <ng-template #content>
                     <app-window-error [error]="error"></app-window-error>
                 </ng-template>
@@ -21,13 +21,13 @@
 </div>
 
 <div class="resizeHandles" (mousedown)="window.activate(); $event.stopPropagation()">
-    <div class="resize-handle-top"    mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-    <div class="resize-handle-left"   mwlResizeHandle [resizeEdges]="{ left: true }"></div>
-    <div class="resize-handle-right"  mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-    <div class="resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+    <div class="top"    mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+    <div class="left"   mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+    <div class="right"  mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+    <div class="bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
 
-    <div class="resize-handle-top-left"     mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
-    <div class="resize-handle-top-right"    mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-    <div class="resize-handle-bottom-left"  mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-    <div class="resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+    <div class="top-left"     mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+    <div class="top-right"    mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+    <div class="bottom-left"  mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+    <div class="bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
 </div>

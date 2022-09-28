@@ -1,0 +1,110 @@
+.taskbar-left,
+.taskbar-right {
+    .dots {
+        flex-direction: column;
+        padding: 0 4px;
+        height: 64px;
+    }
+
+    .taskbar {
+        width: 64px;
+        height: 100%;
+        flex-direction: column;
+
+        .task-button {
+            pointer-events: all;
+
+            .icon {
+                width: 48px;
+                right: 0;
+            }
+
+            .tooltip {
+                height: 64px;
+                align-items: center;
+            }
+        }
+    }
+
+    .cdk-overlay-pane {
+        top: 0;
+        bottom: 0;
+    }
+}
+
+.taskbar-right {
+    right: 0;
+
+    .tooltip {
+        right: 100%;
+    }
+
+    .cdk-overlay-pane {
+        left: 0;
+        right: 64px;
+    }
+}
+
+.taskbar-left {
+
+    .taskbar {
+
+        left: 0;
+
+        .tooltip {
+            left: 100%;
+        }
+    }
+
+    .cdk-overlay-pane {
+        left: 64px;
+        right: 0;
+    }
+}
+
+.taskbar-top,
+.taskbar-bottom {
+    flex-direction: column;
+
+    .dots {
+        padding: 4px 0;
+        width: 64px;
+    }
+
+    .taskbar {
+        height: 48px;
+        width: 100%;
+
+        .task-button {
+            .icon {
+                height: 48px;
+                top: 0;
+            }
+
+            .tooltip {
+                align-items: center;
+            }
+        }
+    }
+}
+
+
+.taskbar-top {
+    .taskbar {
+        top: 0;
+
+        .tooltip {
+            top: 100%;
+        }
+    }
+}
+
+.taskbar-bottom {
+    .taskbar {
+        bottom: 0;
+
+        .tooltip {
+            bottom: 100%;
+        }
+    }
+}

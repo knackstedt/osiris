@@ -15,7 +15,7 @@ import { KeyboardService } from './services/keyboard.service';
     styleUrls: ['./root.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class RootComponent implements OnInit {
+export class RootComponent {
     environment = environment;
 
     constructor(
@@ -38,7 +38,7 @@ export class RootComponent implements OnInit {
 
             // This is an arbitrary data object that gets loaded into the app
             data: {
-                basePath: "/home/knackstedt/Downloads",
+                basePath: "/home/knackstedt/Downloads/_Test",
                 showHidden: false,
                 search: ""
             }
@@ -50,10 +50,6 @@ export class RootComponent implements OnInit {
         }).subscribe((evt) => {
             console.log("CTRL+S", evt)
         })
-    }
-
-    ngOnInit() {
-        
     }
 
     titleOverride = "";

@@ -5,8 +5,6 @@ import { resolveIcon } from './icon-resolver';
 import { KeyboardService } from '../../services/keyboard.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ContextMenuItem } from '../../components/context-menu/context-menu.component';
-import { openDB, deleteDB, wrap, unwrap } from 'idb';
-
 // TODO:
 /**
  * Multiple music / video / image files selected turns into a playlist
@@ -63,7 +61,7 @@ export class FilemanagerComponent implements OnInit {
     
     resolveIcon = resolveIcon;
     
-    @Input() windowData: ManagedWindow;
+    @Input() windowRef: ManagedWindow;
     
     directoryContents: FSDescriptor[] = [];
     selected: string[] = [];
@@ -153,24 +151,80 @@ export class FilemanagerComponent implements OnInit {
         private keyboard: KeyboardService,
         private dialog: MatDialog
         ) {
+
+        // ctrl + a => select all 
+        keyboard.onKeyCommand({
+            key: "a",
+            ctrl: true,
+            window: this.windowRef
+        }).subscribe(evt => {
+            this.selected = this._sortFilter().map(f => f.name);
+        })
+
+        // ctrl + c => copy file names to clipboard
+        keyboard.onKeyCommand({
+            key: "c",
+            ctrl: true,
+            window: this.windowRef
+        }).subscribe(evt => {
+            
+        })
+
+        // ctrl + h => toggle hidden files
+        keyboard.onKeyCommand({
+            key: "h",
+            ctrl: true,
+            window: this.windowRef,
+            interrupt: true
+        }).subscribe(evt => {
+            this.showHiddenFiles = !this.showHiddenFiles;
+        })
+
+        keyboard.onKeyCommand({
+            key: "f2",
+            window: this.windowRef
+        }).subscribe(evt => {
+            // Rename selected file(s)
+        })
+
+        keyboard.onKeyCommand({
+            key: "Enter",
+            window: this.windowRef
+        }).subscribe(evt => {
+            const files = this.directoryContents.filter(dc => this.selected.includes(dc.name));
+            this.windowManager.openFiles(files as any);
+        })
+        keyboard.onKeyCommand({
+            key: "delete",
+            window: this.windowRef
+        }).subscribe(evt => {
+            const files = this.directoryContents.filter(dc => this.selected.includes(dc.name));
+        })
     }
 
     ngOnInit(): void {
 
-        if (this.windowData.data)
-            this.loadFolder(this.windowData.data?.basePath);
+        if (this.windowRef.data)
+            this.loadFolder(this.windowRef.data?.basePath);
     }
 
-    loadFolder(absPath: string) {
-        this.windowData.data.basePath = absPath;
-        this.fetch.post(`/api/filesystem/`, { path: absPath, showHidden: this.windowData.data.showHidden })
+    loadFolder(absPath?: string) {
+        this.windowRef.data.basePath = absPath || this.windowRef.data.basePath;
+        this.fetch.post(`/api/filesystem/`, { path: this.windowRef.data.basePath, showHidden: this.showHiddenFiles })
             .then((data: any) => {
                 const files: FileDescriptor[] = data.files || [];
                 const dirs: DirectoryDescriptor[] = data.dirs;
 
-                this.directoryContents = files.concat(dirs as any) as FSDescriptor[];
+                const descriptors = files.concat(dirs as any) as FSDescriptor[];
 
-                const parts = absPath.split('/');
+                descriptors.forEach(fsd => {
+                    
+                    fsd['_icon'] = resolveIcon(fsd);
+                });
+
+                this.directoryContents = descriptors;
+
+                const parts = this.windowRef.data.basePath.split('/');
                 this.breadcrumb = parts.map((p, i) => ({ path: parts.slice(0, i+1).join('/'), label: p || " "}))
             })
             .catch(err => console.error(err));
@@ -180,8 +234,18 @@ export class FilemanagerComponent implements OnInit {
     openFile(file: FSDescriptor, evt: MouseEvent) {
         if (file.kind == "directory") 
             this.loadFolder(file.path + file.name);
-        else
-            this.windowManager.openWindow("file-viewer", file);
+        else {
+            this.fetch.post<any>(`/api/filesystem/file?only=stat`, [file.path + file.name ]).then(res => {
+                if (res[0].type == "text")
+                    this.windowManager.openWindow("code-editor", file);
+                else 
+                    this.downloadFile(file);
+                // this.fileData = res;
+            });
+        }
+    }
+
+    downloadFile(file: FSDescriptor) {
     }
 
     selectionAction(action: "open" | "move" | "delete") {
@@ -219,13 +283,23 @@ export class FilemanagerComponent implements OnInit {
     getSelectionText() {
         const dirCount = this.selected.filter(s => s.endsWith('/')).length;
         const fileCount = this.selected.filter(s => !s.endsWith('/')).length;
+
+        if (dirCount + fileCount == 0) return "";
         
         const totalSize = (this.directoryContents
             .filter(d => d.kind == "file") as FileDescriptor[])
             .filter(d => this.selected?.includes(d.name))
             .map(d => d.stats.size).reduce((a,b) => a+b, 0);
 
-        return `${dirCount} folders selected, ${fileCount} other items selected (${this.bytesToString(totalSize)})`
+        if (dirCount + fileCount == 1) 
+            return `"${this.selected[0]}" selected (${this.bytesToString(totalSize)})`;
+    
+        if (dirCount > 0 && fileCount == 0)
+            return `"${dirCount}" folders selected`;
+        if (fileCount > 0 && dirCount == 0)
+            return `${fileCount} items selected (${this.bytesToString(totalSize)})`;
+
+        return `${dirCount} folder${dirCount == 1 ? "" : "s"} selected, ${fileCount} other item${fileCount == 1 ? "" : "s"} selected (${this.bytesToString(totalSize)})`;
     }
 
     bytesToString(bytes: number, decimals = 2) {

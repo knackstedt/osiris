@@ -48,6 +48,8 @@
 import 'zone.js';  // Included with Angular CLI.
 
 
+export default () => { }
+
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */

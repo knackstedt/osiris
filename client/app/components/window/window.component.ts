@@ -1,25 +1,28 @@
-import { Component, OnInit, ComponentRef, Input, ViewChild, ElementRef, TemplateRef } from '@angular/core';
+import { Component, OnInit, ComponentRef, Input, ViewChild, ElementRef, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { ManagedWindow } from '../../services/window-manager.service';
 
 @Component({
     selector: 'app-window',
     templateUrl: './window.component.html',
-    styleUrls: ['./window.component.scss']
+    styleUrls: ['./window.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
-export class WindowComponent implements OnInit {
+export class WindowComponent {
     
     @Input() window: ManagedWindow;
+    @Input() data: any;
 
     error: any;
 
-    constructor() { }
-
-    ngOnInit() { }
-    
-    injectPortal(ref, data: ManagedWindow) {
+    injectPortal(ref) {
         const component = ref as ComponentRef<any>;
-        component.instance["windowData"] = data;
-        data._component = component;
+
+        // Bind the window reference
+        component.instance["windowRef"] = this.window;
+        // Bind arbitrary data
+        component.instance["data"] = this.data;
+        
+        this.window._component = component;
 
         // If we have a decorated __onError handler,
         // we listen for init errors.

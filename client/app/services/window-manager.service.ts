@@ -1,13 +1,23 @@
 import { ComponentType, Portal, ComponentPortal } from '@angular/cdk/portal';
 import { ComponentRef, Injectable, EventEmitter } from '@angular/core';
-import { AppId, WindowOptions } from 'client/types/window';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { WindowOptions } from 'client/types/window';
+import { BehaviorSubject } from 'rxjs';
 import { ApplicationLoader } from '../applications';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { CdkDragRelease } from '@angular/cdk/drag-drop';
 import { ResizeEvent } from 'angular-resizable-element';
+import { FileDescriptor, FSDescriptor } from '../apps/filemanager/filemanager.component';
 
-const managedWindows: ManagedWindow[] = []
+const managedWindows: ManagedWindow[] = [];
+
+const isImage = /\.(png|jpe?g|gif|tiff|jfif|webp|svg|ico)$/;
+const isAudio = /\.(wav|mp3|ogg|adts|webm|flac)$/;
+const isVideo = /\.(mp4|webm|ogv)$/;
+const isArchive = /\.(7z|zip|rar|tar\.?(gz|xz)?)$/;
+type FileType = "image" | "text" | "video" | "archive" | "binary" | "mixed";
+
+export type AppId = "file-manager" | "image-viewer" | "video-viewer" | "code-editor";
+
 
 @Injectable({
     providedIn: 'root'
@@ -83,6 +93,65 @@ export class WindowManagerService {
         // console.log("approx. state length", sState.length);
 
         // history.pushState(sState, null, null);
+    }
+
+    private getMimetype(file: FileDescriptor) {
+        return (isImage.test(file.name) && "image") ||
+            (isAudio.test(file.name) && "video") ||
+            (isVideo.test(file.name) && "video") ||
+            (isArchive.test(file.name) && "archive") ||
+            (file.stats.size > 2 * 1024 * 1024 && "binary") ||
+            ("text")
+    }
+
+    openFiles(files: FileDescriptor | FileDescriptor[]) {
+
+        const fileArr = Array.isArray(files) ? files : [files];
+
+        // Use a map to deduplicate and get a discrete count of 
+        // total mimetypes provided.
+        let m = {};
+        fileArr.map(d => this.getMimetype(d)).forEach(k => {
+            m[k] = true;
+        });
+
+        const types = Object.keys(m);
+
+        const isMixed = types.length > 1;
+        let fileType: FileType;
+        if (isMixed) {
+            // Prompt saving as list
+            // downloading as (tar/zip/7z/rar)
+            // open with other application (...)
+            // move -> new location
+            fileType = "mixed";
+        }
+        else {
+            fileType = types[0] as any;
+            // Single file, can very safely open whatever dialog we need for this.
+        }
+
+        // Open dialog!
+
+        switch(fileType) {
+            case "image": { return this.openWindow("image-viewer", files) }
+            case "video": { return this.openWindow("video-viewer", files) }
+            // case "archive": { return this.openWindow("", files) }
+            case "text": { return this.openWindow("code-editor", files) }
+            // case "mixed": 
+            // case "binary": { this.openWindow("", files) }
+        }
+        return null;
+    }
+
+    downloadFile() {
+        // let a = document.createElement("a");
+
+        // a.setAttribute("href", this.getLink());
+        // a.setAttribute("download", this.data.file);
+
+        // a.click();
+        // a.remove();
     }
 }
 
