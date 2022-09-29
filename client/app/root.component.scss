@@ -8,13 +8,31 @@
     flex: 1;
     overflow: hidden;
 
-    // https: //unsplash.com/photos/KNhVlMjkNjs
-    background: url(https://unsplash.com/photos/KNhVlMjkNjs/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjYzMzc5ODAw&force=true);
+    background-image: url(https://unsplash.com/photos/KNhVlMjkNjs/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjYzMzc5ODAw&force=true);
     background-repeat: no-repeat;
     background-size: cover;
+
+    .window {
+        pointer-events: auto;
+    }
 }
 
 @keyframes fadeOut {
-    from { opacity: 1;}
-    to {opacity: 0;}
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.wallpaper-credits {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    a {
+        color: rgb(157, 149, 136);
+        text-decoration-skip-ink: auto;
+        transition: color .1s ease-in-out, opacity .1s ease-in-out;
+        &:hover {
+            color: #fff;
+        }
+    }
 }

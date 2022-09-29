@@ -15,6 +15,9 @@ html, body {
 html.cdk-global-scrollblock {
     overflow: hidden;
 }
+.windowManager>.cdk-overlay-pane {
+    pointer-events: none;
+}
 
 * {
     box-sizing: border-box;
@@ -92,8 +95,6 @@ input[type=radio] {
         }
     }
 }
-
-
 
 button {
     border: 1px solid #272727;

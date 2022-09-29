@@ -7,6 +7,7 @@ import { WindowManagerService } from './services/window-manager.service';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'client/environments/environment';
 import { KeyboardService } from './services/keyboard.service';
+import { WallpaperService } from './services/wallpaper.service';
 
 
 @Component({
@@ -23,7 +24,8 @@ export class RootComponent {
         private themeLoader: ThemeLoaderService,
         public dialog: MatDialog,
         public windowManager: WindowManagerService,
-        private keyboard: KeyboardService
+        private keyboard: KeyboardService,
+        public wallpaper: WallpaperService
     ) {
 
         this.windowManager.openWindow({
