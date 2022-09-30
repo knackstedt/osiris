@@ -6,24 +6,8 @@
         height: 64px;
     }
 
-    .taskbar {
+    app-taskbar {
         width: 64px;
-        height: 100%;
-        flex-direction: column;
-
-        .task-button {
-            pointer-events: all;
-
-            .icon {
-                width: 48px;
-                right: 0;
-            }
-
-            .tooltip {
-                height: 64px;
-                align-items: center;
-            }
-        }
     }
 
     .cdk-overlay-pane {
@@ -33,10 +17,21 @@
 }
 
 .taskbar-right {
-    right: 0;
+    flex-direction: row-reverse;
 
-    .tooltip {
-        right: 100%;
+    .task-button {
+        flex-direction: row-reverse;
+
+        .tooltip {
+            right: 100%;
+        }
+        .picker {
+            right: 100%;
+            top: 0;
+            animation: slide-in-right 200ms ease;
+            margin-left: 0;
+            margin-right: 6px;
+        }
     }
 
     .cdk-overlay-pane {
@@ -46,13 +41,17 @@
 }
 
 .taskbar-left {
+    flex-direction: row;
 
-    .taskbar {
-
-        left: 0;
-
+    .task-button {
         .tooltip {
             left: 100%;
+        }
+
+        .picker {
+            top: 0;
+            left: 100%;
+            animation: slide-in-left 200ms ease;
         }
     }
 
@@ -65,6 +64,10 @@
 .taskbar-top,
 .taskbar-bottom {
     flex-direction: column;
+
+    app-taskbar {
+        height: 64px;
+    }
 
     .dots {
         padding: 4px 0;
@@ -85,26 +88,44 @@
                 align-items: center;
             }
         }
+
+        .picker {
+            width: unset!important;
+            max-width: calc(100vw - 12px);
+            height: 264px;
+        }
     }
 }
 
 
 .taskbar-top {
-    .taskbar {
-        top: 0;
 
+    .task-button {
         .tooltip {
             top: 100%;
+        }
+
+        .picker {
+            top: 100%;
+            left: 0;
+            animation: slide-in-top 200ms ease;
         }
     }
 }
 
 .taskbar-bottom {
-    .taskbar {
-        bottom: 0;
+    flex-direction: column-reverse;
 
+    .task-button {
         .tooltip {
             bottom: 100%;
+        }
+
+        .picker {
+            left: 0;
+            bottom: 100%;
+            animation: slide-in-bottom 200ms ease;
+            margin-bottom: 6px;
         }
     }
 }

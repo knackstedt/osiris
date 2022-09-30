@@ -73,6 +73,10 @@ export class FilemanagerComponent implements OnInit {
 
     sortOrder: "a-z" | "z-a" | "lastmod" | "firstmod" | "size" | "type" = "a-z";
 
+    location = {
+        label: "Home",
+        icon: "assets/icons/"
+    }
     breadcrumb = [];
 
     folderContextMenu: ContextMenuItem[] = [
@@ -180,6 +184,7 @@ export class FilemanagerComponent implements OnInit {
             this.showHiddenFiles = !this.showHiddenFiles;
         })
 
+        // F2 => Rename selected files
         keyboard.onKeyCommand({
             key: "f2",
             window: this.windowRef
@@ -187,6 +192,7 @@ export class FilemanagerComponent implements OnInit {
             // Rename selected file(s)
         })
 
+        // Enter => Open selected files
         keyboard.onKeyCommand({
             key: "Enter",
             window: this.windowRef
@@ -194,6 +200,8 @@ export class FilemanagerComponent implements OnInit {
             const files = this.directoryContents.filter(dc => this.selected.includes(dc.name));
             this.windowManager.openFiles(files as any);
         })
+
+        // Delete => delete selected files
         keyboard.onKeyCommand({
             key: "delete",
             window: this.windowRef
@@ -217,15 +225,22 @@ export class FilemanagerComponent implements OnInit {
 
                 const descriptors = files.concat(dirs as any) as FSDescriptor[];
 
-                descriptors.forEach(fsd => {
-                    
-                    fsd['_icon'] = resolveIcon(fsd);
-                });
+                descriptors.forEach(fsd => fsd['_icon'] = resolveIcon(fsd));
 
                 this.directoryContents = descriptors;
 
                 const parts = this.windowRef.data.basePath.split('/');
-                this.breadcrumb = parts.map((p, i) => ({ path: parts.slice(0, i+1).join('/'), label: p || " "}))
+
+                // TODO Refactor.
+                // this.location = 
+                this.breadcrumb = parts.map((p, i) => {
+                    const path = parts.slice(0, i + 1).join('/');
+
+                    return {
+                        path, 
+                        label: p || ""
+                    };
+                });
             })
             .catch(err => console.error(err));
     }

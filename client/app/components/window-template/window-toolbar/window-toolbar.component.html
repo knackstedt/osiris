@@ -15,13 +15,13 @@
 </div>
 
 <div class="controls" *ngIf="!window._isCollapsed">
-    <button (click)="window._isCollapsed = true">
+    <button (click)="window.collapse()">
         <img src="assets/icons/window-minimize-symbolic.svg" />
     </button>
-    <button (click)="window._isMaximized = !window._isMaximized">
+    <button (click)="window._isMaximized ? window.unmaximize() : window.maximize()">
         <img src="assets/icons/window-maximize-symbolic.svg" />
     </button>
-    <button class="close" (click)="windowManager.closeWindow(window.id)">
+    <button class="close" (click)="window.close()">
         <img src="assets/icons/window-close-symbolic.svg" />
     </button>
 </div>

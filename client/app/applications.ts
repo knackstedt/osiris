@@ -1,7 +1,9 @@
 export const Apps = [
     {
         appId: "file-manager",
-        load: () => import('./apps/filemanager/filemanager.module').then(m => m.FilemanagerModule)
+        load: () => import('./apps/filemanager/filemanager.module').then(m => m.FilemanagerModule),
+        "min-width": 683,
+        "min-height": 327
     },
     {
         appId: "video-player",

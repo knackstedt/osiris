@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { WindowManagerService } from '../../services/window-manager.service';
 
@@ -17,12 +17,9 @@ export type TaskBarData = {
     templateUrl: './taskbar.component.html',
     styleUrls: ['./taskbar.component.scss']
 })
-export class TaskbarComponent implements OnInit {
+export class TaskbarComponent {
 
     constructor(public windowManager: WindowManagerService) { }
-
-    ngOnInit() {
-    }
 
     calcScale(window: ManagedWindow) {
         const xMax = 250;
@@ -46,7 +43,10 @@ export class TaskbarComponent implements OnInit {
     showMenu(menu: TaskBarData) {
         menu._isActive = true
         menu.windows.forEach(w => {
-            w._preview = this.getIHTML(w);
+            if (w._isCollapsed)
+                w._preview = w._minimizedPreview;
+            else
+                w._preview = this.getIHTML(w);
         });
         console.log("show Menu")
     }

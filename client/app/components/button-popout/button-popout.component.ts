@@ -38,6 +38,8 @@ export class ButtonPopoutComponent {
      * @returns boolean
      */
     private checkForParentNode(test: string, currentNode: Element) {
+        if (!currentNode) return;
+        
         if (currentNode.nodeName == "BODY" || currentNode.nodeName == "HTML")
             return false;
         else if (currentNode.nodeName == test.toUpperCase())

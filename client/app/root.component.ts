@@ -19,6 +19,8 @@ import { WallpaperService } from './services/wallpaper.service';
 export class RootComponent {
     environment = environment;
 
+    taskbarPosition: "top" | "right" | "bottom" | "left" = "left";
+
     constructor(
         private fetch: Fetch,
         private themeLoader: ThemeLoaderService,
@@ -68,5 +70,4 @@ export class RootComponent {
                 break;
         }
     }
-
 }

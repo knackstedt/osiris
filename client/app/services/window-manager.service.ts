@@ -1,5 +1,5 @@
 import { ComponentType, Portal, ComponentPortal } from '@angular/cdk/portal';
-import { ComponentRef, Injectable, EventEmitter } from '@angular/core';
+import { ComponentRef, Injectable, EventEmitter, HostListener } from '@angular/core';
 import { WindowOptions } from 'client/types/window';
 import { BehaviorSubject } from 'rxjs';
 import { ApplicationLoader } from '../applications';
@@ -7,6 +7,8 @@ import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { CdkDragRelease } from '@angular/cdk/drag-drop';
 import { ResizeEvent } from 'angular-resizable-element';
 import { FileDescriptor, FSDescriptor } from '../apps/filemanager/filemanager.component';
+import { table } from 'console';
+import { t } from 'tar';
 
 const managedWindows: ManagedWindow[] = [];
 
@@ -77,7 +79,26 @@ export class WindowManagerService {
     }
 
     public closeWindow(id: number) {
+        WindowManagerService.closeWindow(id);
+    }
 
+    public static closeWindow(id: number) {
+        // Get the instance of the window manager.
+        const instance = this.registeredInstances.find(ri => ri.managedWindows.find(mw => mw.id == id));
+
+        // Remove the window from the managed windows list.
+        instance.managedWindows.splice(instance.managedWindows.findIndex(mw => mw.id == id), 1);
+
+        // Get the corresponding taskbar group.
+        let taskbarGroup = instance.taskbarItems.find(taskbar => taskbar.windows.find(w => w.id == id));
+
+        // Remove the window from the taskbar group.
+        taskbarGroup.windows.splice(taskbarGroup.windows.findIndex(w => w.id == id), 1);
+
+        // If the taskbar group is now empty, purge it.
+        if (taskbarGroup.windows.length == 0) 
+            instance.taskbarItems.splice(instance.taskbarItems.findIndex(tb => tb.app == taskbarGroup.app), 1);
+        
     }
 
     public blurAllWindows() {
@@ -177,12 +198,15 @@ export class ManagedWindow {
     _isLoading = false;
     _index: number; // z-index
     _isDraggedOver = false; // is something being dragged in front of this window?
+
     _portal?: Portal<any>;
-    _module?: any; // The module that gets loaded
+    _module?: any;      // The module that gets loaded
     _component?: ComponentRef<any> // the loaded component
+
     _initialStyle: string;
 
     _preview: string;
+    _minimizedPreview: string;
 
     // Temp vars for handling resize events
     _x: number;
@@ -293,11 +317,11 @@ export class ManagedWindow {
 
     /**
      * Close the window.
-     * @deprecated **Use the WindowManager.closeWindow method instead**
      */
     close() {
-        managedWindows.splice(managedWindows.findIndex(w => w.id == this.id), 1);
+        WindowManagerService.closeWindow(this.id);
     }
+
     /**
      * Maximize the window as big as we can 
      */    
@@ -314,12 +338,15 @@ export class ManagedWindow {
      * Collapse the window to the taskbar
      */
     collapse() {
+        this._minimizedPreview = this.getIHTML();
         this._isCollapsed = true;
     }
+    
     /**
      * Restore the window from it's collapsed state
      */
     uncollapse() {
+        delete this._minimizedPreview;
         this._isCollapsed = false;
         this._index = ManagedWindow.windowZindexCounter++;
     }
@@ -343,6 +370,9 @@ export class ManagedWindow {
         managedWindows.forEach(w => {
             w._isActive = false;
         });
+    }
+    private getIHTML() {
+        return document.querySelector("#window_" + this.id + " .window")?.innerHTML;
     }
 }
 

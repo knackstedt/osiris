@@ -1,12 +1,10 @@
-<div class="root taskbar-left">
+<div class="root taskbar-{{taskbarPosition}}">
     <app-taskbar></app-taskbar>
 
     <div class="windowManager" 
         (click)="windowManager.blurAllWindows()"
         [style.background-image]="'url(' + wallpaper.value?.link + ')'"
     >
-        <div class="cdk-drag-boundary"></div>
-        <div class="cdk-overlay-pane">
             <app-window 
                 *ngFor="let window of windowManager.managedWindows"
                 [id]="'window_' + window.id"
@@ -42,7 +40,6 @@
                 -- to minimize the number of active DOM elements.
                 -->
             </app-window>
-        </div>
 
         <div class="wallpaper-credits">
             <div [innerHTML]="wallpaper.value?.credit"></div>

@@ -1,5 +1,6 @@
 import { Component, OnInit, ComponentRef, Input, ViewChild, ElementRef, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { ManagedWindow } from '../../services/window-manager.service';
+import { KeyboardService } from '../../services/keyboard.service';
 
 @Component({
     selector: 'app-window',
@@ -13,6 +14,15 @@ export class WindowComponent {
     @Input() data: any;
 
     error: any;
+
+    constructor(private keyboard: KeyboardService) {
+        keyboard.onKeyCommand({
+            key: "w",
+            ctrl: true,
+            window: this.window,
+            interrupt: true
+        }).subscribe(evt => this.window.close());
+    }
 
     injectPortal(ref) {
         const component = ref as ComponentRef<any>;
