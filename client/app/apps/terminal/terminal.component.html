@@ -3,7 +3,9 @@
         <p>{{windowRef.title}}</p>
     </ng-template>
     <ng-template #content>
+        <!-- <div class="content" [class.active]="windowRef._isActive" style="--font: {{font}}-Powerline"> -->
         <div class="content" [class.active]="windowRef._isActive">
+            <div class="terminal-container" #terminal></div>
         </div>
     </ng-template>
 </app-window-template>

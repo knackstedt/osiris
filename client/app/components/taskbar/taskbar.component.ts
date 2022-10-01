@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
-import { WindowManagerService } from '../../services/window-manager.service';
+import { WindowManagerService, AppId } from '../../services/window-manager.service';
 
 export type TaskBarData = {
-  app: string,
+  appId: string,
   windows: ManagedWindow[],
 
   _isHovered: boolean
@@ -19,7 +19,30 @@ export type TaskBarData = {
 })
 export class TaskbarComponent {
 
-    constructor(public windowManager: WindowManagerService) { }
+    favorites: {
+        appId: AppId,
+        icon: string,
+        title: string,
+        taskbar?: TaskBarData
+    }[] = [];
+
+    constructor(public windowManager: WindowManagerService) { 
+
+        // Watch for changes to the list of windows
+        windowManager.subscribe(data => {
+            
+            // this.favorites = [
+            //     { appId: "application-menu", icon: "assets/icons/apps/nautilus-symbolic.svg", title: "Show Applications" }
+            // ];
+
+            this.favorites.forEach(f => {
+                // Update the favorites so we can keep track of active windows.
+                let taskbar = windowManager.taskbarItems.find(tb => tb.appId == f.appId);
+                f.taskbar = taskbar;
+            });
+
+        });
+    }
 
     calcScale(window: ManagedWindow) {
         const xMax = 250;
@@ -60,5 +83,13 @@ export class TaskbarComponent {
 
     getIHTML(window: ManagedWindow) {
         return document.querySelector("#window_" + window.id + " .window")?.innerHTML;
+    }
+
+    isFavorite(item: TaskBarData) {
+        return !!this.favorites.find(f => f.appId == item.appId);
+    }
+
+    getTaskbarItems(item) {
+        return [this.windowManager.taskbarItems.find(tb => tb.appId == item.appId)];
     }
 }

@@ -1,9 +1,31 @@
-export const Apps = [
+import { AppId } from './services/window-manager.service';
+
+type AppDefinition = {
+    appId: AppId,
+    load: () => Promise<any>,
+    icon?: string,
+    title?: string,
+    description?: string,
+    "min-width"?: number,
+    "max-width"?: number,
+    "min-height"?: number,
+    "max-height"?: number,
+}
+
+export const Apps: AppDefinition[] = [
+    {
+        appId: "terminal",
+        load: () => import('./apps/terminal/terminal.module').then(m => m.TerminalModule),
+        icon: "assets/icons/apps/utilities-terminal-symbolic.svg",
+        title: "Terminal"
+    },
     {
         appId: "file-manager",
         load: () => import('./apps/filemanager/filemanager.module').then(m => m.FilemanagerModule),
         "min-width": 683,
-        "min-height": 327
+        "min-height": 327,
+        icon: "assets/icons/apps/nautilus-symbolic.svg",
+        title: "File Manager"
     },
     {
         appId: "video-player",
@@ -16,6 +38,14 @@ export const Apps = [
     {
         appId: "code-editor",
         load: () => import('./apps/code-editor/code-editor.module').then(m => m.CodeEditorModule),
+    },
+    {
+        appId: "application-menu",
+        load: () => import('./apps/application-menu/application-menu.module').then(m => m.ApplicationMenuModule),
+    },
+    {
+        appId: "system-settings",
+        load: () => import('./apps/system-settings/system-settings.module').then(m => m.SystemSettingsModule),
     }
 ];
 

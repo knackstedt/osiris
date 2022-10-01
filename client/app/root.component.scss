@@ -7,11 +7,12 @@
 .windowManager {
     flex: 1;
     overflow: hidden;
+    position: relative;
 
     background-image: url(https://unsplash.com/photos/KNhVlMjkNjs/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjYzMzc5ODAw&force=true);
     background-repeat: no-repeat;
     background-size: cover;
-
+    
     .window {
         pointer-events: auto;
     }

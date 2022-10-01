@@ -2,17 +2,17 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 
 @Component({
-    selector: 'app-image-viewer',
-    templateUrl: './image-viewer.component.html',
-    styleUrls: ['./image-viewer.component.scss']
+    templateUrl: './application-menu.component.html',
+    styleUrls: ['./application-menu.component.scss']
 })
-export class ImageViewerComponent implements OnInit {
+export class ApplicationMenuComponent implements OnInit {
 
     @Input() windowRef: ManagedWindow;
+    @Input() data: any;
 
     constructor() { }
 
     ngOnInit(): void {
-        console.log(this.windowRef);
+        console.log(this.windowRef, this.data);
     }
 }

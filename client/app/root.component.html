@@ -2,7 +2,6 @@
     <app-taskbar></app-taskbar>
 
     <div class="windowManager" 
-        (click)="windowManager.blurAllWindows()"
         [style.background-image]="'url(' + wallpaper.value?.link + ')'"
     >
             <app-window 
@@ -22,9 +21,7 @@
 
                 (resizeEnd)="window.onResizeEnd($event)"
                 (resizing)="window.onResizing($event)"
-                (click)="$event.stopPropagation()"
-                (mouseup)="$event.stopPropagation()"
-                (mousedown)="window.activate()"
+                (pointerDown)="window.activate()"
                 
                 [class.active]="window._isActive"
                 [class.draggedOver]="window._isDraggedOver"

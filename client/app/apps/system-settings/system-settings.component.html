@@ -1,0 +1,56 @@
+<app-window-template [window]="windowRef">
+    <ng-template #toolbar>
+        <p>{{windowRef.data.filename}}</p>
+    </ng-template>
+    <ng-template #content>
+        <div class="content" [class.active]="windowRef._isActive">
+        </div>
+    </ng-template>
+</app-window-template>
+
+<div>
+    <div class="sidebar">
+        <div class="header">
+            <button>search</button>
+            <b>Settings</b>
+            <button>List</button>
+        </div>
+        <div class="search">
+            <input type="text">
+        </div>    
+        <div class="menus">
+            <div>Wi-Fi</div>
+            <div>Network</div>
+            <div>Bluetooth</div>
+            <div>Desktop ></div>
+            <div>Notifications</div>
+            <div>Applications ></div>
+            <div>Privacy ></div>
+            <div>Online Accounts</div>
+            <div>Sharing</div>
+            <div>Sound</div>
+            <div>Power</div>
+            <div>Displays</div>
+            <div>Mouse & Touchpad</div>
+            <div>Keyboard</div>
+            <div>Printers</div>
+            <div>Removable Media</div>
+            <div>Color</div>
+            <div>Firmware</div>
+            <div>Region & Language</div>
+            <div>Accessibility</div>
+            <div>Users</div>
+            <div>Default Applications</div>
+            <div>Date & Time</div>
+            <div>OS Upgrade & Recovery</div>
+            <div>Support</div>
+            <div>About</div>
+        </div>    
+    </div>
+    <div class="content">
+        <div class="header"></div>
+        <div class="body">
+            ...
+        </div>
+    </div>
+</div>

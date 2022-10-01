@@ -12,6 +12,7 @@ import { environment } from './environment';
 import { ErrorHandler } from './errors';
 import { route } from './util';
 import { FilesystemApi } from "./api/files";
+import { SocketService } from "./pty";
 
 (async () => {
 
@@ -136,5 +137,10 @@ import { FilesystemApi } from "./api/files";
     app.use(ErrorHandler);
 
     // Listen on the specified port.
-    server.start();
+    await server.start();
+    const httpserver = server.getServer();
+    const socketService = new SocketService();
+
+    // We are going to pass server to socket.io in SocketService.js
+    socketService.attachServer(httpserver);
 })();

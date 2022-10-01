@@ -31,20 +31,31 @@ export class RootComponent {
     ) {
 
         this.windowManager.openWindow({
-            title: "My special App",
-            description: "My Application V1.0",
             appId: "file-manager",
             x: 100,
             y: 100,
             width: 800,
             height: 600,
-            icon: "assets/icons/apps/nautilus-symbolic.svg",
 
             // This is an arbitrary data object that gets loaded into the app
             data: {
                 basePath: "/home/knackstedt/Downloads/_Test",
                 showHidden: false,
                 search: ""
+            }
+        });
+
+        this.windowManager.openWindow({
+            appId: "terminal",
+            x: 100,
+            y: 100,
+            width: 800,
+            height: 600,
+
+            // This is an arbitrary data object that gets loaded into the app
+            data: {
+                cwd: "/home/knackstedt/Downloads/",
+                command: "bash"
             }
         });
 

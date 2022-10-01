@@ -2,7 +2,7 @@ import { ComponentType, Portal, ComponentPortal } from '@angular/cdk/portal';
 import { ComponentRef, Injectable, EventEmitter, HostListener } from '@angular/core';
 import { WindowOptions } from 'client/types/window';
 import { BehaviorSubject } from 'rxjs';
-import { ApplicationLoader } from '../applications';
+import { ApplicationLoader, Apps } from '../applications';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { CdkDragRelease } from '@angular/cdk/drag-drop';
 import { ResizeEvent } from 'angular-resizable-element';
@@ -18,13 +18,13 @@ const isVideo = /\.(mp4|webm|ogv)$/;
 const isArchive = /\.(7z|zip|rar|tar\.?(gz|xz)?)$/;
 type FileType = "image" | "text" | "video" | "archive" | "binary" | "mixed";
 
-export type AppId = "file-manager" | "image-viewer" | "video-viewer" | "code-editor";
+export type AppId = "file-manager" | "image-viewer" | "video-player" | "code-editor" | "application-menu" | "terminal" | "system-settings";
 
 
 @Injectable({
     providedIn: 'root'
 })
-export class WindowManagerService {
+export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
 
     private static registeredInstances: WindowManagerService[] = [];
 
@@ -32,6 +32,8 @@ export class WindowManagerService {
     public taskbarItems: TaskBarData[] = [];
 
     constructor() {
+        super([]);
+
         WindowManagerService.registeredInstances.push(this);
     }
 
@@ -68,18 +70,21 @@ export class WindowManagerService {
         this.managedWindows.push(window);
 
         // Lookup if we already have a taskbar item
-        let taskbarItem = this.taskbarItems.find(t => t.app == cfg.appId);
+        let taskbarItem = this.taskbarItems.find(t => t.appId == cfg.appId);
 
         // If not, create one
         if (!taskbarItem)
-            this.taskbarItems.push(taskbarItem = { app: cfg.appId, windows: [], _isActive: false, _isHovered: false });
+            this.taskbarItems.push(taskbarItem = { appId: cfg.appId, windows: [], _isActive: false, _isHovered: false });
 
         // Lastly add to the taskbar item.
         taskbarItem.windows.push(window);
+
+        this.next(this.managedWindows);
     }
 
     public closeWindow(id: number) {
         WindowManagerService.closeWindow(id);
+        this.next(this.managedWindows);
     }
 
     public static closeWindow(id: number) {
@@ -97,8 +102,7 @@ export class WindowManagerService {
 
         // If the taskbar group is now empty, purge it.
         if (taskbarGroup.windows.length == 0) 
-            instance.taskbarItems.splice(instance.taskbarItems.findIndex(tb => tb.app == taskbarGroup.app), 1);
-        
+            instance.taskbarItems.splice(instance.taskbarItems.findIndex(tb => tb.appId == taskbarGroup.appId), 1);
     }
 
     public blurAllWindows() {
@@ -156,7 +160,7 @@ export class WindowManagerService {
 
         switch(fileType) {
             case "image": { return this.openWindow("image-viewer", files) }
-            case "video": { return this.openWindow("video-viewer", files) }
+            case "video": { return this.openWindow("video-player", files) }
             // case "archive": { return this.openWindow("", files) }
             case "text": { return this.openWindow("code-editor", files) }
             // case "mixed": 
@@ -182,15 +186,25 @@ export class ManagedWindow {
     private static windowZindexCounter = 0;
 
     id: number;
+    appId: string;
     x = 100;
     y = 100;
-    width = 800;
-    height = 600;
     data: any = {}; 
 
     title = "Osiris Application";
     icon = "assets/icons/dialog-information-symbolic.svg";
     description = "";
+
+    isResizable = true;
+    isDraggable = true;
+
+    maxWidth = "100vw";
+    minWidth = "300px"; 
+    width = 800;
+    
+    maxHeight = "100vh";
+    minHeight = "200px";
+    height = 600;
 
     _isCollapsed = false;
     _isMaximized = false;
@@ -227,9 +241,18 @@ export class ManagedWindow {
         };
         Object.keys(data).forEach(k => this[k] = data[k]);
 
-        this._initialStyle = `width: ${data.width}px; height: ${data.height}px;`
+        if (!config.appId)
+            throw new Error("Unknown application. Cannot create window");
+
+        this._initialStyle = `width: ${data.width}px; height: ${data.height}px;`;
         this._x = this.x;
         this._y = this.y;
+        this.appId = config.appId;
+
+        const app = Apps.find(a => a.appId == config.appId);
+        this.icon = app.icon;
+        this.title = app.title;
+        this.description = app.description;
 
         ApplicationLoader.LoadApplication(config.appId)
             .then(async module => {
@@ -326,13 +349,15 @@ export class ManagedWindow {
      * Maximize the window as big as we can 
      */    
     maximize() {
-        this._isMaximized = false;
+        console.log("maximize()")
+        this._isMaximized = true;
     }
     /**
      * Restore previous window dimensions
      */
     unmaximize() {
-        this._isMaximized = true;
+        console.log("unmaximize()")
+        this._isMaximized = false;
     }
     /**
      * Collapse the window to the taskbar

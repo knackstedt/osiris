@@ -65,7 +65,7 @@
             height: 64px;
             justify-content: center;
 
-            img {
+            &>* {
                 width: 36px;
                 height: 36px;
                 align-self: center;
