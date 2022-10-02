@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<div class="resizeHandles" 
+<div *ngIf="false" class="resizeHandles" 
     (mousedown)="$event.stopPropagation()"
     (pointerdown)="window.activate(); $event.stopPropagation()">
     <div class="top"    mwlResizeHandle [resizeEdges]="{ top: true }"></div>

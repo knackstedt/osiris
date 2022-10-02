@@ -4,6 +4,16 @@
     <div class="windowManager" 
         [style.background-image]="'url(' + wallpaper.value?.link + ')'"
     >
+                    <!-- cdkDrag
+                    cdkDragBoundary=".cdk-drag-boundary"
+                    (cdkDragReleased)="window.onDragEnd($event)"
+                    [cdkDragData]="{dragWindow: window, managedWindows: windowManager.managedWindows, snapPx: 5}"
+                    [cdkDragFreeDragPosition]="{x: window.x-64, y: window.y}"
+                    
+                    mwlResizable
+                    
+                    (resizeEnd)="window.onResizeEnd($event)"
+                    (resizing)="window.onResizing($event)" -->
             <app-window 
                 *ngFor="let window of windowManager.managedWindows"
                 [id]="'window_' + window.id"
@@ -11,16 +21,7 @@
                 [data]="window.data"
                 class="draggable" 
 
-                cdkDrag 
-                cdkDragBoundary=".cdk-drag-boundary" 
-                (cdkDragReleased)="window.onDragEnd($event)"
-                [cdkDragData]="{dragWindow: window, managedWindows: windowManager.managedWindows, snapPx: 5}"
-                [cdkDragFreeDragPosition]="{x: window.x-64, y: window.y}"
 
-                mwlResizable
-
-                (resizeEnd)="window.onResizeEnd($event)"
-                (resizing)="window.onResizing($event)"
                 (pointerDown)="window.activate()"
                 
                 [class.active]="window._isActive"
@@ -31,6 +32,7 @@
                 [style.z-index]="window._index"
                 [style.width]="window.width + 'px'"
                 [style.height]="window.height + 'px'"
+                [style.transform]="'translate3d(' + window.x + 'px, ' + window.y + 'px, 0)'"
                 >
                 <!-- [style]="window._initialStyle" -->
             <!-- Collapsed windows will not render their contents
