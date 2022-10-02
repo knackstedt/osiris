@@ -1,4 +1,6 @@
-<div class="window" (pointerdown)="window.activate()">
+<div 
+    class="window" 
+    (pointerdown)="window.activate()">
     <div class="content">
         <ng-container *ngIf="!error">
             <ng-template 
@@ -20,16 +22,15 @@
     </div>
 </div>
 
-<div *ngIf="false" class="resizeHandles" 
-    (mousedown)="$event.stopPropagation()"
-    (pointerdown)="window.activate(); $event.stopPropagation()">
-    <div class="top"    mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-    <div class="left"   mwlResizeHandle [resizeEdges]="{ left: true }"></div>
-    <div class="right"  mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-    <div class="bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+<div class="resizeHandles" 
+>
+    <div class="top"    ></div>
+    <div class="left"   ></div>
+    <div class="right"  ></div>
+    <div class="bottom" ></div>
 
-    <div class="top-left"     mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
-    <div class="top-right"    mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
-    <div class="bottom-left"  mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
-    <div class="bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+    <div class="top-left"     ></div>
+    <div class="top-right"    ></div>
+    <div class="bottom-left"  ></div>
+    <div class="bottom-right" ></div>
 </div>

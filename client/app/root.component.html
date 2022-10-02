@@ -4,24 +4,12 @@
     <div class="windowManager" 
         [style.background-image]="'url(' + wallpaper.value?.link + ')'"
     >
-                    <!-- cdkDrag
-                    cdkDragBoundary=".cdk-drag-boundary"
-                    (cdkDragReleased)="window.onDragEnd($event)"
-                    [cdkDragData]="{dragWindow: window, managedWindows: windowManager.managedWindows, snapPx: 5}"
-                    [cdkDragFreeDragPosition]="{x: window.x-64, y: window.y}"
-                    
-                    mwlResizable
-                    
-                    (resizeEnd)="window.onResizeEnd($event)"
-                    (resizing)="window.onResizing($event)" -->
             <app-window 
                 *ngFor="let window of windowManager.managedWindows"
                 [id]="'window_' + window.id"
                 [window]="window"
                 [data]="window.data"
                 class="draggable" 
-
-
                 (pointerDown)="window.activate()"
                 
                 [class.active]="window._isActive"
@@ -39,7 +27,6 @@
                 -- to minimize the number of active DOM elements.
                 -->
             </app-window>
-
         <div class="wallpaper-credits">
             <div [innerHTML]="wallpaper.value?.credit"></div>
         </div>

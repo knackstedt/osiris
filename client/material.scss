@@ -47,3 +47,8 @@ $app-theme: mat.define-dark-theme((color: (primary: $app-primary,
 .mat-spinner circle {
     stroke: white;
 }
+
+
+.cdk-overlay-container .mat-dialog-container {
+    padding: 0;
+}

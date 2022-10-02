@@ -58,6 +58,24 @@ input[type=radio] {
     }
 }
 
+input[type=text] {
+    color: #e6e6e6;
+    background-color: #444544;
+
+    border: 3px solid transparent;
+    border-radius: 4px;
+    outline: none;
+
+    padding: 8px 8px 8px 8px;
+    height: 38px;
+    
+    &:focus {
+        border-color: #fbb86c;
+    }
+    &::placeholder {
+        color: #b5b5b5;
+    }
+}
 
 .breadcrumb {
     border: 1px solid #171717;

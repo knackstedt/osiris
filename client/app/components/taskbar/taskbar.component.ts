@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
+import { AppId } from 'client/app/applications';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
-import { WindowManagerService, AppId } from '../../services/window-manager.service';
+import { WindowManagerService } from '../../services/window-manager.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AppMenuComponent } from '../app-menu/app-menu.component';
 
 export type TaskBarData = {
   appId: string,
@@ -26,7 +29,7 @@ export class TaskbarComponent {
         taskbar?: TaskBarData
     }[] = [];
 
-    constructor(public windowManager: WindowManagerService) { 
+    constructor(public windowManager: WindowManagerService, private dialog: MatDialog) { 
 
         // Watch for changes to the list of windows
         windowManager.subscribe(data => {
@@ -91,5 +94,15 @@ export class TaskbarComponent {
 
     getTaskbarItems(item) {
         return [this.windowManager.taskbarItems.find(tb => tb.appId == item.appId)];
+    }
+
+    openApplicationMenu() {
+        // For 1920x1080...
+
+        // width // 168px
+        this.dialog.open(AppMenuComponent, {
+            width: "65.52vw",
+            height: "66.38vh"
+        });
     }
 }
