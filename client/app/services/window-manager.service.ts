@@ -1,14 +1,12 @@
-import { ComponentType, Portal, ComponentPortal } from '@angular/cdk/portal';
-import { ComponentRef, Injectable, EventEmitter, HostListener } from '@angular/core';
+import { Portal, ComponentPortal } from '@angular/cdk/portal';
+import { ComponentRef, Injectable, EventEmitter } from '@angular/core';
 import { WindowOptions } from 'client/types/window';
 import { BehaviorSubject } from 'rxjs';
-import { ApplicationLoader, Apps } from '../applications';
+import { AppId, ApplicationLoader, Apps } from '../applications';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { CdkDragRelease } from '@angular/cdk/drag-drop';
 import { ResizeEvent } from 'angular-resizable-element';
-import { FileDescriptor, FSDescriptor } from '../apps/filemanager/filemanager.component';
-import { table } from 'console';
-import { t } from 'tar';
+import { FileDescriptor } from '../apps/filemanager/filemanager.component';
 
 const managedWindows: ManagedWindow[] = [];
 
@@ -17,8 +15,6 @@ const isAudio = /\.(wav|mp3|ogg|adts|webm|flac)$/;
 const isVideo = /\.(mp4|webm|ogv)$/;
 const isArchive = /\.(7z|zip|rar|tar\.?(gz|xz)?)$/;
 type FileType = "image" | "text" | "video" | "archive" | "binary" | "mixed";
-
-export type AppId = "file-manager" | "image-viewer" | "video-player" | "code-editor" | "application-menu" | "terminal" | "system-settings";
 
 
 @Injectable({
@@ -311,6 +307,10 @@ export class ManagedWindow {
         this._component?.instance['onDragEnd'] && this._component.instance['onDragEnd'](evt);
 
         WindowManagerService.writeState();
+    }
+
+    publishEvent(evt: any) {
+        
     }
 
     onResizing(evt?: ResizeEvent) {

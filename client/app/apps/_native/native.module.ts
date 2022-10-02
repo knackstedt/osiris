@@ -1,19 +1,19 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ApplicationMenuComponent } from './application-menu.component';
+import { NativeComponent } from './native.component';
 import { AppLibModule } from 'client/app/app-lib.module';
 import { MaterialModule } from 'client/app/material.module';
 
 @NgModule({
     declarations: [
-        ApplicationMenuComponent
+        NativeComponent
     ],
     imports: [
         CommonModule,
         AppLibModule,
         MaterialModule,
-        RouterModule.forChild([{ path: '', component: ApplicationMenuComponent }])
+        RouterModule.forChild([{ path: '', component: NativeComponent }])
     ]
 })
-export class ApplicationMenuModule { }
+export class NativeModule { }

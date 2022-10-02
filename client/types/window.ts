@@ -2,7 +2,7 @@ import { Portal } from '@angular/cdk/portal';
 import { ComponentRef } from '@angular/core';
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
 import { ResizeEvent } from 'angular-resizable-element';
-import { AppId } from '../app/services/window-manager.service';
+import { AppId } from 'client/app/applications';
 
 
 

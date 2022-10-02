@@ -2,10 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 
 @Component({
-    templateUrl: './application-menu.component.html',
-    styleUrls: ['./application-menu.component.scss']
+    templateUrl: './docker.component.html',
+    styleUrls: ['./docker.component.scss']
 })
-export class ApplicationMenuComponent implements OnInit {
+export class DockerComponent implements OnInit {
 
     @Input() windowRef: ManagedWindow;
     @Input() data: any;

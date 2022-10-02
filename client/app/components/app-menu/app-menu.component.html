@@ -1,1 +1,18 @@
-<p>app-menu works!</p>
+<input class="search" type="text" placeholder="&nbsp;&nbsp;Type to search"/>
+
+<div class="drawer">
+    <ng-container *ngFor="let app of apps">
+        <div *ngIf="app.icon && app.title" class="app" (click)="windowManager.openWindow(app); dialogRef.close()">
+            <img [src]="app.icon"/>
+            <p>{{app.title}}</p>
+        </div>
+    </ng-container>
+</div>
+<hr/>
+<div>
+    <div>Library Home</div>
+    <div>Office</div>
+    <div>System</div>
+    <div>Utilities</div>
+    <div>Create folder</div>
+</div>

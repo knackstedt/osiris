@@ -1,4 +1,11 @@
-import { AppId } from './services/window-manager.service';
+export type AppId = 
+    "native" | 
+    "file-manager" | 
+    "image-viewer" | 
+    "video-player" | 
+    "code-editor" | 
+    "terminal" | 
+    "system-settings";
 
 type AppDefinition = {
     appId: AppId,
@@ -13,6 +20,10 @@ type AppDefinition = {
 }
 
 export const Apps: AppDefinition[] = [
+    {
+        appId: "native",
+        load: () => import('./apps/_native/native.module').then(m => m.NativeModule)
+    },
     {
         appId: "terminal",
         load: () => import('./apps/terminal/terminal.module').then(m => m.TerminalModule),
@@ -38,10 +49,6 @@ export const Apps: AppDefinition[] = [
     {
         appId: "code-editor",
         load: () => import('./apps/code-editor/code-editor.module').then(m => m.CodeEditorModule),
-    },
-    {
-        appId: "application-menu",
-        load: () => import('./apps/application-menu/application-menu.module').then(m => m.ApplicationMenuModule),
     },
     {
         appId: "system-settings",
