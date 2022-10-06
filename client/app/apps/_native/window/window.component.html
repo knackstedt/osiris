@@ -1,0 +1,16 @@
+<app-window-template [window]="windowRef">
+    <ng-template #toolbar>
+        <p>{{windowRef.title}}</p>
+    </ng-template>
+    <ng-template #content>
+        <div class="content" [class.active]="windowRef._isActive">
+            <!-- <iframe [src]="getUrl() | urlSanitizer"></iframe> -->
+            <!-- <iframe src="assets/xpra-html/index.html?server=localhost&port=3200&ssl=false&path=https://localhost:4200/assets/xpra-html/"></iframe> -->
+            <!-- <iframe src="assets/xpra-html/index.html?server=localhost&port=3200&ssl=false&path=https://localhost:4200/assets/xpra-html/"></iframe> -->
+            <div #xpra></div>
+        </div>
+    </ng-template>
+</app-window-template>
+
+
+
