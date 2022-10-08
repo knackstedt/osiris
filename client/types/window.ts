@@ -1,10 +1,6 @@
-import { Portal } from '@angular/cdk/portal';
-import { ComponentRef } from '@angular/core';
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
 import { ResizeEvent } from 'angular-resizable-element';
 import { AppId } from 'client/app/applications';
-
-
 
 export type WindowOptions = {
     /**
@@ -36,75 +32,90 @@ export type WindowOptions = {
      * Format can be Object/String/Buffer etc.
      */
     data?: any,
-    /**
-     * Internal app instance Id.
-     */
-    id: number,
+
+    
 
     x: number,
     y: number
 };
-
-
-// export type ManagedWindow = WindowOptions & {
-//     _isCollapsed: boolean,
-//     _isMaximized: boolean,
-//     _isActive: boolean,
-//     _isLoading: boolean,
-//     _index: number, // z-index
-//     _isDraggedOver: boolean, // is something being dragged in front of this window?
-//     _portal?: Portal<any>,
-//     _module?: any, // The module that gets loaded
-//     _component?: ComponentRef<any> // the loaded component
-//     _initialStyle: string,
-
-
-//     _preview: string,
-//     // _isTaskbarPreview?: boolean,
-//     // _previewTransform: string
-//     // _dialogTransform: string,
-//     // _preview?: {
-//     //     windowWidth: string,
-//     //     windowHeight: string,
-//     //     margin: string,
-//     //     windowPadding: string,
-//     //     isFirst: boolean
-//     //     isLast: boolean,
-//     //     scale: number
-//     // }
-
-//     // Temp vars for handling resize events
-//     _x: number,
-//     _y: number
-// }
 
 /**
  * This method is called when a window gets resized.
  * This is very useful for adjusting layouts based on dimensions.
  */
 export declare interface OnResize {
-    onResize(evt: ResizeEvent): void
+    onResize(evt: MouseEvent): void
 }
+
 /**
- * This method is called when a user stops dragging a window.
- * Most windows probably don't need to use this.
+ * This method is called when the dimensions of a window have 
+ * been resized by the user. 
  */
-export declare interface OnDragEnd {
-    onDragEnd(evt: CdkDragEnd): void
+export declare interface OnResizeStart {
+    onResizeStart(evt: MouseEvent): void
 }
 /**
  * This method is called when the dimensions of a window have 
  * been resized by the user. 
  */
 export declare interface OnResizeEnd {
-    onResizeEnd(evt: ResizeEvent): void
+    onResizeEnd(evt: MouseEvent): void
+}
+
+/**
+ * This method is called when a user stops dragging a window.
+ * Most windows probably don't need to use this.
+ */
+export declare interface OnDrag {
+    onDrag(evt: MouseEvent): void
+}
+/**
+ * This method is called when a user stops dragging a window.
+ * Most windows probably don't need to use this.
+ */
+export declare interface OnDragStart {
+    onDragStart(evt: MouseEvent): void
+}
+/**
+ * This method is called when a user stops dragging a window.
+ * Most windows probably don't need to use this.
+ */
+export declare interface OnDragEnd {
+    onDragEnd(evt: MouseEvent): void
+}
+
+/**
+ * Emitted when a window is activated (given context)
+ * or deactivated (loses context)
+ */
+export declare interface OnActivateChange {
+    onActivateChange(evt: {isActivated: boolean}): void
+}
+
+/**
+ * Emitted when the collapsed state changes
+ */
+export declare interface OnCollapseChange {
+    onCollapseChange(evt: { isCollapsed: boolean }): void
+}
+
+/**
+ * Emitted when the maximized state changes
+ */
+export declare interface OnMaximizeChange {
+    onMaximizeChange(evt: { isMaximized: boolean }): void
 }
 
 /**
  * This method is invoked when the window is closed.
+ */
+export declare interface OnClose {
+    onClose(): void
+}
+/**
  * This allows for the window to activate a confirmation prompt.
  * Will time-out after 3 seconds.
  */
-export declare interface OnClosing {
-    onClosing(): boolean | Promise<boolean>
+export declare interface beforeClose {
+    beforeClose(): boolean | Promise<boolean>
 }

@@ -5,6 +5,7 @@ export type AppId =
     "video-player" | 
     "code-editor" | 
     "terminal" | 
+    "demo" |
     "system-settings";
 
 type AppDefinition = {
@@ -53,6 +54,12 @@ export const Apps: AppDefinition[] = [
     {
         appId: "system-settings",
         load: () => import('./apps/system-settings/system-settings.module').then(m => m.SystemSettingsModule),
+    },
+    {
+        appId: "demo",
+        load: () => import('./apps/demo/demo.module').then(m => m.DemoModule),
+        icon: "assets/icons/apps/utilities-terminal-symbolic.svg",
+        title: "Demo"
     }
 ];
 

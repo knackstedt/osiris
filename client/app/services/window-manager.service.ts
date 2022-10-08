@@ -181,19 +181,19 @@ export class ManagedWindow {
     private static windowIdCounter = 0;
     private static windowZindexCounter = 0;
 
-    id: number;
+    id = ManagedWindow.windowIdCounter++;
     appId: string;
-    x = 100;
-    y = 100;
-    data: any = {}; 
 
     title = "Osiris Application";
     icon = "assets/icons/dialog-information-symbolic.svg";
     description = "";
 
+    x = 100;
+    y = 100;    
+    
     isResizable = true;
     isDraggable = true;
-
+    
     maxWidth = "100vw";
     minWidth = "300px"; 
     width = 800;
@@ -201,56 +201,35 @@ export class ManagedWindow {
     maxHeight = "100vh";
     minHeight = "200px";
     height = 600;
+    
+    data: any = {}; 
 
     _isCollapsed = false;
     _isMaximized = false;
     _isActive = false;
     _isLoading = false;
-    _index: number; // z-index
+    _index = ManagedWindow.windowZindexCounter++; // z-index
     _isDraggedOver = false; // is something being dragged in front of this window?
 
     _portal?: Portal<any>;
     _module?: any;      // The module that gets loaded
     _component?: ComponentRef<any> // the loaded component
 
-    _initialStyle: string;
-
     _preview: string;
     _minimizedPreview: string;
 
-    // Temp vars for handling resize events
-    _x: number;
-    _y: number;
-
-
-
     constructor(config: WindowOptions) {
-        const data: any = {
-            id: ManagedWindow.windowIdCounter++,
-            _isCollapsed: false,
-            _isMaximized: false,
-            _isActive: false,
-            _index: ManagedWindow.windowZindexCounter++,
-            _isDraggedOver: false,
-            _isLoading: true,
-            ...config
-        };
-        Object.keys(data).forEach(k => this[k] = data[k]);
-
-        if (!config.appId)
+        Object.keys(config).forEach(k => this[k] = config[k]);
+        
+        const app = Apps.find(a => a.appId == this.appId);
+        if (!app)
             throw new Error("Unknown application. Cannot create window");
 
-        this._initialStyle = `width: ${data.width}px; height: ${data.height}px;`;
-        this._x = this.x;
-        this._y = this.y;
-        this.appId = config.appId;
-
-        const app = Apps.find(a => a.appId == config.appId);
         this.icon = app.icon;
         this.title = app.title;
         this.description = app.description;
 
-        ApplicationLoader.LoadApplication(config.appId)
+        ApplicationLoader.LoadApplication(this.appId)
             .then(async module => {
                 // no module, there is no remote app to load.
                 if (!module) {
@@ -260,7 +239,7 @@ export class ManagedWindow {
                 this._module = module;
 
                 // Parse the APP id so we can do a tolerant match
-                const appId = config.appId.toLowerCase().replace(/-/g, '');
+                const appId = this.appId.toLowerCase().replace(/-/g, '');
                 const component = module['ɵmod'].declarations
                     .find(c => {
                         const ccn = c.name.toLowerCase().replace(/-/g, '').replace(/component$/, '');
@@ -268,7 +247,7 @@ export class ManagedWindow {
                     });
 
                 if (!component)
-                    throw `Could not find appId ${config.appId} on module ${module.name}!`;
+                    throw `Could not find appId ${this.appId} on module ${module.name}!`;
 
                 // Create the componentportal and render the elements.
                 this._portal = new ComponentPortal(component);
@@ -297,43 +276,14 @@ export class ManagedWindow {
         }
     }
 
-    onDragEnd(evt?: CdkDragRelease) {
-        const bounds = evt.source.getRootElement().getBoundingClientRect();
-        this.x = this._x = bounds.x;
-        this.y = this._y = bounds.y;
-        this.width = bounds.width;
-        this.height = bounds.height;
+    emit(name: string, event?: any) {
+        let res = this._component?.instance[name] && this._component.instance[name](event);
 
-        this._component?.instance['onDragEnd'] && this._component.instance['onDragEnd'](evt);
+        // before and after events should be ignored.
+        if (name.startsWith('on'))
+            WindowManagerService.writeState();
 
-        WindowManagerService.writeState();
-    }
-
-    publishEvent(evt: any) {
-        
-    }
-
-    onResizing(evt?: ResizeEvent) {
-        this.y = this._y + evt.rectangle.top;
-        this.x = this._x + evt.rectangle.left - 64;
-        this.width = evt.rectangle.width;
-        this.height = evt.rectangle.height;
-
-        this._component?.instance['onResize'] && this._component.instance['onResize'](evt);
-
-        WindowManagerService.writeState();
-    }
-
-    onResizeEnd(evt?: ResizeEvent) {
-        this.height = evt.rectangle.height;
-        this.width = evt.rectangle.width;
-
-        this._y = this.y;
-        this._x = this.x;
-
-        this._component?.instance['onResizeEnd'] && this._component.instance['onResizeEnd'](evt);
-
-        WindowManagerService.writeState();
+        return res;
     }
 
     onError = new EventEmitter();
@@ -341,28 +291,37 @@ export class ManagedWindow {
     /**
      * Close the window.
      */
-    close() {
-        WindowManagerService.closeWindow(this.id);
+    async close() {
+        let result = await this.emit("beforeClose");
+
+        if (!result) {
+            WindowManagerService.closeWindow(this.id);
+            this.emit("onClose");
+        }
     }
 
     /**
      * Maximize the window as big as we can 
      */    
     maximize() {
-        console.log("maximize()")
+        this.emit("onMaximizeChange", { isMaximized: true });
+
         this._isMaximized = true;
     }
     /**
      * Restore previous window dimensions
      */
     unmaximize() {
-        console.log("unmaximize()")
+        this.emit("onMaximizeChange", { isMaximized: false });
+
         this._isMaximized = false;
     }
     /**
      * Collapse the window to the taskbar
      */
     collapse() {
+        this.emit("onCollapseChange", { isCollapsed: true });
+
         this._minimizedPreview = this.getIHTML();
         this._isCollapsed = true;
     }
@@ -371,6 +330,8 @@ export class ManagedWindow {
      * Restore the window from it's collapsed state
      */
     uncollapse() {
+        this.emit("onCollapseChange", { isCollapsed: false });
+
         delete this._minimizedPreview;
         this._isCollapsed = false;
         this._index = ManagedWindow.windowZindexCounter++;
@@ -380,20 +341,20 @@ export class ManagedWindow {
      * Bring this window to top && grant it context.
      */
     activate() {
-        this.blurAllWindows();
+        this.blurAllWindows(this);
+        this.emit("onActivateChange", { isActivated: true });
+
         this._isActive = true;
         this._index = ManagedWindow.windowZindexCounter++;
-
-
-
-        if (this._isCollapsed) {
-            // TODO: re-activate window
-        }
     }
 
-    private blurAllWindows() {
+    private blurAllWindows(skip?: ManagedWindow) {
         managedWindows.forEach(w => {
-            w._isActive = false;
+            // Skip if we provide one to ignore
+            if ((skip && skip.id != w.id) && w._isActive) {
+                w.emit("onActivateChange", { isActivated: false });
+                w._isActive = false;
+            }
         });
     }
     private getIHTML() {
@@ -405,7 +366,7 @@ export class ManagedWindow {
  * Catch lifecycle hook errors on the window contents and send them to
  * the parent Window instance
  */
-export function CatchErrors(): Function {
+export function Window(): Function {
 
     return (decoratedClass): any => {
         // find the names of all methods of that class

@@ -96,7 +96,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
         // terminal.;
     }
 
-    onResize(evt: ResizeEvent): void {
+    onResize(evt: MouseEvent): void {
         console.log("resizing")
         this.fitAddon?.fit();
     }
