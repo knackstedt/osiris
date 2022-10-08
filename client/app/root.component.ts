@@ -32,25 +32,39 @@ export class RootComponent {
     ) {
         this.bindEvents()
 
-        this.windowManager.openWindow({
-            appId: "file-manager",
-            x: 50,
-            y: 800,
-            width: 800,
-            height: 200,
+        // this.windowManager.openWindow({
+        //     appId: "file-manager",
+        //     x: 50,
+        //     y: 800,
+        //     width: 800,
+        //     height: 200,
 
-            // This is an arbitrary data object that gets loaded into the app
-            data: {
-                basePath: "/home/knackstedt/Downloads/_Test",
-                showHidden: false,
-                search: ""
-            }
-        });
+        //     // This is an arbitrary data object that gets loaded into the app
+        //     data: {
+        //         basePath: "/home/knackstedt/Downloads/_Test",
+        //         showHidden: false,
+        //         search: ""
+        //     }
+        // });
+
+        // this.windowManager.openWindow({
+        //     appId: "terminal",
+        //     x: 500,
+        //     y: 100,
+        //     width: 400,
+        //     height: 400,
+
+        //     // This is an arbitrary data object that gets loaded into the app
+        //     data: {
+        //         cwd: "/home/knackstedt/Downloads/",
+        //         command: "bash"
+        //     }
+        // });
 
         this.windowManager.openWindow({
-            appId: "terminal",
-            x: 500,
-            y: 100,
+            appId: "native",
+            x: 200,
+            y: 200,
             width: 400,
             height: 400,
 
@@ -91,25 +105,33 @@ export class RootComponent {
         const bottomOffset = this.taskbarPosition == "bottom" ? -64 : 0;
         const leftOffset = this.taskbarPosition == "left" ? 64 : 0;
 
-        let snapCorners = [];
-
+        let snapPoints = [];
+        let resizeBounds = {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            width: 300,
+            height: 200
+        };
+        let window: ManagedWindow;
 
         const createLineSnap = (opts: { x: number, y: number, distance: number }, dir: "x" | "y") => {
-            snapCorners.push({
+            snapPoints.push({
                 y: opts.y,
                 x: opts.x,
                 range: 15
             });
 
             for (let i = 15; i < opts.distance - 15; i++) {
-                snapCorners.push({
+                snapPoints.push({
                     y: (dir == "y" && i || 0) + opts.y,
                     x: (dir == "x" && i || 0) + opts.x,
                     range: 15
                 });
             }
 
-            snapCorners.push({
+            snapPoints.push({
                 y: (dir == "y" && opts.distance || 0) + opts.y,
                 x: (dir == "x" && opts.distance || 0) + opts.x,
                 range: 15
@@ -244,10 +266,10 @@ export class RootComponent {
             edges: { top: true, left: true, bottom: true, right: true },
             modifiers: [
                 interact.modifiers.restrictRect({
-                    restriction: 'parent'
+                    restriction: resizeBounds
                 }),
                 interact.modifiers.snap({
-                    targets: snapCorners,
+                    targets: snapPoints,
                     relativePoints: [{
                         x: 0,
                         y: 0
@@ -259,16 +281,26 @@ export class RootComponent {
                 const numId = parseInt(evt.target.id.split('_').pop());
                 window = this.windowManager.managedWindows.find(w => w.id == numId);
 
+                window.emit("onResizeStart", evt);
+
+                resizeBounds.top = 0;
+                resizeBounds.left = 0;
+                resizeBounds.right = globalThis.innerWidth;// - (window.width + window.x) + rightOffset;
+                resizeBounds.bottom = globalThis.innerHeight;
+
                 calculateEdges();
             },
             onend: evt => {
+                window.emit("onResizeEnd", evt);
+
                 evt.target.classList.remove("resizing");
-                snapCorners.splice(0);
+                snapPoints.splice(0);
                 window = null;
             },
             onmove: evt => {
                 const numId = parseInt(evt.target.id.split('_').pop());
                 const window = this.windowManager.managedWindows.find(w => w.id == numId);
+                window.emit("onResize", evt);
 
                 window.height = evt.rect.height;
                 window.width = evt.rect.width;
@@ -277,8 +309,6 @@ export class RootComponent {
             }
         })
 
-        let snapEdges = [];
-        let window: ManagedWindow;
 
         interact('.draggable').draggable({
             modifiers: [
@@ -286,7 +316,7 @@ export class RootComponent {
                 //     restriction: 'parent'
                 // }),
                 interact.modifiers.snap({
-                    targets: snapCorners,
+                    targets: snapPoints,
                     relativePoints: [{
                         x: 0,
                         y: 0
@@ -298,17 +328,22 @@ export class RootComponent {
                 window = this.windowManager.managedWindows.find(w => w.id == numId);
 
                 evt.target.classList.add("dragging");
+                window.emit("onDragStart", evt);
+
                 calculateEdges();
             },
 
             onend: evt => {
                 evt.target.classList.remove("dragging");
-                snapCorners.splice(0);
+                window.emit("onDragEnd", evt);
+
+                snapPoints.splice(0);
                 window = null;
             },
             onmove: evt => {
                 window.x += evt.dx;
                 window.y += evt.dy;
+
 
                 this.windowManager.managedWindows.forEach(w => {
                     w._isDraggedOver = false;
@@ -338,7 +373,9 @@ export class RootComponent {
 
                     if (xOverlap && yOverlap)
                         w._isDraggedOver = true;
-                })
+                });
+
+                window.emit("onDrag", evt);
             }
         })
     }

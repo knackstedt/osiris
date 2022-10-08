@@ -22,10 +22,6 @@
                 [style.height]="window.height + 'px'"
                 [style.transform]="'translate3d(' + window.x + 'px, ' + window.y + 'px, 0)'"
                 >
-                <!-- [style]="window._initialStyle" -->
-            <!-- Collapsed windows will not render their contents
-                -- to minimize the number of active DOM elements.
-                -->
             </app-window>
         <div class="wallpaper-credits">
             <div [innerHTML]="wallpaper.value?.credit"></div>
