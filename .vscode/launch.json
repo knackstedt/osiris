@@ -24,6 +24,18 @@
       ],
       "sourceMaps": true,
       "cwd": "${workspaceRoot}/server",
+    },
+    {
+      "name": "Start XPRA",
+      "preLaunchTask": "xpra",
+      "type": "msedge",
+      "request": "attach"
+    },
+    {
+      "name": "Start Broadway",
+      "preLaunchTask": "broadway",
+      "type": "msedge",
+      "request": "attach"
     }
   ]
 }

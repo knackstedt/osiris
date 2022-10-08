@@ -37,6 +37,28 @@
           }
         }
       }
+    },
+    {
+      "label": "xpra",
+      "type": "shell",
+      "command": "xpra",
+      "args": [
+        "--no-daemon", 
+        "--sharing=yes", 
+        "--bind-ws=127.0.0.1:3300", 
+        "--html=off", 
+        "--start-via-proxy=no",
+        "start"
+      ],
+    },
+    {
+      "label": "broadway",
+      "type": "shell",
+      "command": "broadwayd",
+      "args": [
+        "-p",
+        "8080"
+      ],
     }
   ]
 }
