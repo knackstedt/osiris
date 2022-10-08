@@ -61,7 +61,7 @@
                     </button>
                     <div class="draggable">
                         <div class="window" [style.width]="window.width + 'px'" [style.height]="window.height + 'px'"
-                            [style.transform]="calcScale(window)" [innerHTML]="window._preview | urlSanitizer">
+                            [style.transform]="calcScale(window)" [innerHTML]="window._preview | htmlSanitizer">
                         </div>
                     </div>
                     <div class="label">
@@ -110,7 +110,7 @@
                     </button>
                     <div class="draggable">
                         <div class="window" [style.width]="window.width + 'px'" [style.height]="window.height + 'px'"
-                            [style.transform]="calcScale(window)" [innerHTML]="window._preview | urlSanitizer">
+                            [style.transform]="calcScale(window)" [innerHTML]="window._preview | htmlSanitizer">
                         </div>
                     </div>
                     <div class="label">

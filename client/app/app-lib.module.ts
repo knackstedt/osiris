@@ -11,10 +11,13 @@ import { WindowTemplateComponent } from './components/window-template/window-tem
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { ContextMenuDirective } from './directives/context-menu.directive';
 import { ButtonPopoutComponent } from './components/button-popout/button-popout.component';
+import { UrlSanitizer, HTMLSanitizer } from './pipes/urlsanitizer.pipe';
 
 
 @NgModule({
     declarations: [
+        UrlSanitizer,
+        HTMLSanitizer,
         ContextMenuDirective,
         MonacoEditorComponent,
         WindowToolbarComponent,
@@ -28,6 +31,8 @@ import { ButtonPopoutComponent } from './components/button-popout/button-popout.
         MaterialModule
     ],
     exports: [
+        UrlSanitizer,
+        HTMLSanitizer,
         ContextMenuDirective,
         CommonModule,
         ResizableModule,

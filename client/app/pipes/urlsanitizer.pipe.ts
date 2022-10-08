@@ -13,31 +13,16 @@ export class UrlSanitizer implements PipeTransform {
     constructor(private sanitizer: DomSanitizer) { }
 
     public transform(url: string): SafeUrl {
+        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+}
 
-        // TODO: Restore implementation
+@Pipe({ name: 'htmlSanitizer' })
+export class HTMLSanitizer implements PipeTransform {
 
-        // if(!url || url.length < 4) {
-        //   console.log('Empty URL!');
-        //   return "";
-        // }
+    constructor(private sanitizer: DomSanitizer) { }
 
-        // // Process target into an HTTPS string.
-        // if (!url.startsWith('https://')) url = 'https://' + url.replace(/^(http|ftp):\/\//, 'i');
-
-        // const targetUrl = new URL(url);
-
-        // // Check if we should trust the domain
-        // if(environment.trustedDomains.includes(targetUrl.host)){
-        //     console.log('Safe URL/', targetUrl.host);
-        //     console.log(decodeURIComponent(url));
-
-        //     return this.sanitizer.bypassSecurityTrustUrl(url);
-        // }
-
-        // // Unsafe URL.
-        // console.error(`Domain %c"%c${targetUrl.host}%c"%c is not a known safe domain. Aborting request.`, 'color: white', 'color: gray', 'color: white', '');
-
-        // Route them to a safe place :)
+    public transform(url: string): SafeUrl {
         return this.sanitizer.bypassSecurityTrustHtml(url);
     }
 }
