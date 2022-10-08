@@ -1,20 +1,19 @@
 // @ts-nocheck
-import { Component } from '@angular/core';
-import { OnDragEnd } from 'client/types/window';
-import { WindowOptions } from '../../../types/window';
+import { Component, Input, OnInit } from '@angular/core';
+import { ManagedWindow } from 'client/app/services/window-manager.service';
 
 @Component({
-    selector: 'app-filetemplate',
     templateUrl: './filetemplate.component.html',
     styleUrls: ['./filetemplate.component.scss']
 })
-export class TemplateComponent implements OnInit, OnResize, OnDragEnd, On {
+export class TemplateComponent implements OnInit {
 
-    @Input() windowData: WindowOptions;
+    @Input() windowRef: ManagedWindow;
+    @Input() data: any;
 
     constructor() { }
 
     ngOnInit(): void {
-        console.log(this.windowData);
+        console.log(this.windowRef, this.data);
     }
 }

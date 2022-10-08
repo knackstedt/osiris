@@ -13,14 +13,14 @@ const templateFiles = [
 
 const templateDir = "template";
 
-const appRouter = 'src/app/app-routing.module.ts';
+const appRouter = 'client/app/applications.ts';
 
 if (process.argv) {
     const target = process.argv[2];
 
-    let targetPath = target.match(/(^.+)\/[^\/]+$/)[1]
+    let targetPath = target.match(/(^.+)\/[^\/]+$/) ? target.match(/(^.+)\/[^\/]+$/)[1] : "";
 
-    let outClassName = target.match(/\/([^\/]+)$/)[1];
+    let outClassName = target.match(/\/([^\/]+)$/) ? target.match(/\/([^\/]+)$/)[1] : target;
     let outFileName = outClassName.replace(/(?=[^\/])[A-Z]/g, match => '-' + match.toLowerCase());
 
     // If the first letter is lowercase, force it to upper case.
@@ -33,7 +33,7 @@ if (process.argv) {
         FileName: outFileName
     });
 
-    const outDir = __dirname + '/client/app/' + targetPath + '/';
+    const outDir = __dirname + '/client/app/apps/' + targetPath + '/';
 
     try {
         fs.mkdirSync(outDir + outFileName + '/');
@@ -64,12 +64,16 @@ if (process.argv) {
         let appRouterText = fs.readFileSync(appRouter, { encoding: 'utf8' });
         let lines = appRouterText.split('\n');
 
-
-        let newRoute = `  { path: '${outClassName}', loadChildren: () => import('./${targetPath}/${outFileName}/${outFileName}.module').then(m => m.${outClassName}Module) },`
+        let newRoute = 
+`    {
+        appId: "${outFileName}",
+        load: () => import('./apps${targetPath}/${outFileName}/${outFileName}.module').then(m => m.${outClassName}Module),
+    },`;
+        
         let injected = false;
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
-            if (/const routes[^a-zA-z]/.test(line)) {
+            if (/const Apps = \[/.test(line)) {
                 lines.splice(i + 1, 0, newRoute);
                 injected = true;
                 break;
