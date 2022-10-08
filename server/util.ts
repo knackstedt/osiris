@@ -30,7 +30,23 @@ export const route = (fn: RequestHandler) => (req, res, next) => {
 }
 
 
-export const getFilesInFolder = async (folder: string, showHidden, recurse = 2) => {
+export const getFilesInFolder: 
+    (folder: string, showHidden: boolean, recurse?: number) => Promise<{
+        dirs: {
+            contents: any,
+            path: string,
+            name: string,
+            kind: "directory"
+        }[],
+        files: {
+            stats: fs.Stats,
+            path: string,
+            name: string,
+            ext: string,
+            kind: "file"
+        }[]
+    }> 
+    = async (folder: string, showHidden, recurse = 2) => {
     if (!folder.endsWith('/')) folder += '/';
 
     const contents = await fs.readdir(folder, { withFileTypes: true });
@@ -39,10 +55,10 @@ export const getFilesInFolder = async (folder: string, showHidden, recurse = 2) 
         contents.filter(f => f.isDirectory())
             .filter(f => !f.name.startsWith('.'))
             .map(async p => ({ 
-                contents: recurse -1 > 0 ? await getFilesInFolder( folder + p.name + '/', showHidden) : [], 
+                contents: recurse -1 > 0 ? await getFilesInFolder( folder + p.name + '/', showHidden) : null, 
                 path: folder, 
                 name: p.name,
-                kind: "directory"
+                kind: "directory" as "directory"
             }))
     );
 
@@ -54,11 +70,11 @@ export const getFilesInFolder = async (folder: string, showHidden, recurse = 2) 
                 path: folder,
                 name: p.name,
                 ext: p.name.split('.').pop(),
-                kind: "file" 
+                kind: "file" as "file"
             }))
     );
 
-    return {dirs, files};
+    return { dirs, files };
 }
 
 

@@ -7,7 +7,7 @@ class PTY {
     shell = os.platform() === "win32" ? "powershell.exe" : "bash";
     ptyProcess: pty.IPty = null;
 
-    constructor(private socket) {
+    constructor(private socket: Socket) {
         // Setting default terminals based on user os
 
         // Initialize PTY process.
@@ -28,9 +28,9 @@ class PTY {
 
         // Add a "data" event listener.
         this.ptyProcess.onData(data => {
-            console.log("pty data", data)
             // Whenever terminal generates any data, send that output to socket.io client
-            this.sendToClient(data);
+            this.socket.emit("output", data);
+
         });
     }
 
@@ -38,14 +38,14 @@ class PTY {
      * Use this function to send in the input to Pseudo Terminal process.
      * @param {*} data Input from user like a command sent from terminal UI
      */
-
     write(data) {
         this.ptyProcess.write(data);
     }
 
-    sendToClient(data) {
-        // Emit data to socket.io client in an event "output"
-        this.socket.emit("output", data);
+    dispose() {
+        this.socket.disconnect();
+        this.socket._cleanup();
+        this.ptyProcess.kill();
     }
 }
 
@@ -76,18 +76,20 @@ export class SocketService {
 
             this.socket = socket;
 
+            // Create a new pty service when client connects.
+            const pty = new PTY(this.socket);
+
             this.socket.on("disconnect", () => {
                 console.log("Disconnected Socket: ", socket.id);
+                pty.dispose();
             });
 
-            // Create a new pty service when client connects.
-            this.pty = new PTY(this.socket);
 
             // Attach event listener for socket.io
             this.socket.on("input", input => {
                 // Runs this listener when socket receives "input" events from socket.io client.
                 // input event is emitted on client side when user types in terminal UI
-                this.pty.write(input);
+                pty.write(input);
             });
         });
     }
