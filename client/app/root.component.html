@@ -6,17 +6,17 @@
     >
             <app-window 
                 *ngFor="let window of windowManager.managedWindows"
+                class="draggable" 
                 [id]="'window_' + window.id"
                 [window]="window"
                 [data]="window.data"
-                class="draggable" 
-
-                (pointerdown)="window.activate()"
+                (pointerDown)="window.activate()"
                 
                 [class.active]="window._isActive"
                 [class.draggedOver]="window._isDraggedOver"
                 [class.maximized]="window._isMaximized"
                 [class.collapsed]="window._isCollapsed"
+                [class.native]="window.appId == 'native'"
 
                 [style.z-index]="window._index"
                 [style.width]="window.width + 'px'"

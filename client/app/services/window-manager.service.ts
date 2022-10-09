@@ -5,7 +5,6 @@ import { BehaviorSubject } from 'rxjs';
 import { AppId, ApplicationLoader, Apps } from '../applications';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { CdkDragRelease } from '@angular/cdk/drag-drop';
-import { ResizeEvent } from 'angular-resizable-element';
 import { FileDescriptor } from '../apps/filemanager/filemanager.component';
 
 const managedWindows: ManagedWindow[] = [];

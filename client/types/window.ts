@@ -1,5 +1,3 @@
-import { CdkDragEnd } from '@angular/cdk/drag-drop';
-import { ResizeEvent } from 'angular-resizable-element';
 import { AppId } from 'client/app/applications';
 
 export type WindowOptions = {
@@ -44,7 +42,7 @@ export type WindowOptions = {
  * This is very useful for adjusting layouts based on dimensions.
  */
 export declare interface OnResize {
-    onResize(evt: MouseEvent): void
+    // onResize(evt: ResizeEvent): void
 }
 
 /**
