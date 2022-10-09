@@ -5,7 +5,6 @@ import { BehaviorSubject } from 'rxjs';
 import { AppId, ApplicationLoader, Apps } from '../applications';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { CdkDragRelease } from '@angular/cdk/drag-drop';
-import { ResizeEvent } from 'angular-resizable-element';
 import { FileDescriptor } from '../apps/filemanager/filemanager.component';
 
 const managedWindows: ManagedWindow[] = [];
@@ -313,7 +312,7 @@ export class ManagedWindow {
         
     }
 
-    onResizing(evt?: ResizeEvent) {
+    onResizing(evt?: any) {
         this.y = this._y + evt.rectangle.top;
         this.x = this._x + evt.rectangle.left - 64;
         this.width = evt.rectangle.width;
@@ -324,7 +323,7 @@ export class ManagedWindow {
         WindowManagerService.writeState();
     }
 
-    onResizeEnd(evt?: ResizeEvent) {
+    onResizeEnd(evt?: any) {
         this.height = evt.rectangle.height;
         this.width = evt.rectangle.width;
 

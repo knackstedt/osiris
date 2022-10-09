@@ -2,5 +2,9 @@
     "/api": {
         "target": "https://localhost:3000",
         "secure": false
+    },
+    "/socket.io": {
+        "target": "https://localhost:3000",
+        "secure": false
     }
 }

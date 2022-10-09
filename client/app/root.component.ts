@@ -9,6 +9,7 @@ import { environment } from 'client/environments/environment';
 import { KeyboardService } from './services/keyboard.service';
 import { WallpaperService } from './services/wallpaper.service';
 import interact from 'interactjs';
+import { XpraService } from './services/xpra.service';
 
 
 @Component({
@@ -20,7 +21,7 @@ import interact from 'interactjs';
 export class RootComponent {
     environment = environment;
 
-    taskbarPosition: "top" | "right" | "bottom" | "left" = "left";
+    taskbarPosition: "top" | "right" | "bottom" | "left" = "right";
 
     constructor(
         private fetch: Fetch,
@@ -28,38 +29,53 @@ export class RootComponent {
         public dialog: MatDialog,
         public windowManager: WindowManagerService,
         private keyboard: KeyboardService,
-        public wallpaper: WallpaperService
+        public wallpaper: WallpaperService,
+        public xpraService: XpraService
     ) {
         this.bindEvents()
 
-        this.windowManager.openWindow({
-            appId: "file-manager",
-            x: 50,
-            y: 800,
-            width: 800,
-            height: 200,
+        // this.windowManager.openWindow({
+        //     appId: "file-manager",
+        //     x: 50,
+        //     y: 800,
+        //     width: 800,
+        //     height: 200,
 
-            // This is an arbitrary data object that gets loaded into the app
-            data: {
-                basePath: "/home/knackstedt/Downloads/_Test",
-                showHidden: false,
-                search: ""
-            }
-        });
+        //     // This is an arbitrary data object that gets loaded into the app
+        //     data: {
+        //         basePath: "/home/knackstedt/Downloads/_Test",
+        //         showHidden: false,
+        //         search: ""
+        //     }
+        // });
 
-        this.windowManager.openWindow({
-            appId: "terminal",
-            x: 500,
-            y: 100,
-            width: 400,
-            height: 400,
+        // this.windowManager.openWindow({
+        //     appId: "terminal",
+        //     x: 500,
+        //     y: 100,
+        //     width: 400,
+        //     height: 400,
 
-            // This is an arbitrary data object that gets loaded into the app
-            data: {
-                cwd: "/home/knackstedt/Downloads/",
-                command: "bash"
-            }
-        });
+        //     // This is an arbitrary data object that gets loaded into the app
+        //     data: {
+        //         cwd: "/home/knackstedt/Downloads/",
+        //         command: "bash"
+        //     }
+        // });
+
+        // this.windowManager.openWindow({
+        //     appId: "native",
+        //     x: 100,
+        //     y: 100,
+        //     width: 600,
+        //     height: 600,
+
+        //     // This is an arbitrary data object that gets loaded into the app
+        //     data: {
+        //         cwd: "/home/knackstedt/Downloads/",
+        //         command: "gedit"
+        //     }
+        // });
 
         this.keyboard.onKeyCommand({
             key: "f11",

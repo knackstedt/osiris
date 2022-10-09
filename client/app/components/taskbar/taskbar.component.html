@@ -59,7 +59,7 @@
                     <button class="close" (click)="window.close(); $event.preventDefault()">
                         <img src="assets/icons/window-close-symbolic.svg" />
                     </button>
-                    <div class="draggable">
+                    <div class="body">
                         <div class="window" [style.width]="window.width + 'px'" [style.height]="window.height + 'px'"
                             [style.transform]="calcScale(window)" [innerHTML]="window._preview | urlSanitizer">
                         </div>
@@ -108,7 +108,7 @@
                     <button class="close" (click)="window.close(); $event.preventDefault()">
                         <img src="assets/icons/window-close-symbolic.svg" />
                     </button>
-                    <div class="draggable">
+                    <div class="body">
                         <div class="window" [style.width]="window.width + 'px'" [style.height]="window.height + 'px'"
                             [style.transform]="calcScale(window)" [innerHTML]="window._preview | urlSanitizer">
                         </div>

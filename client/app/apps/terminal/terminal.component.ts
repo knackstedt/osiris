@@ -10,7 +10,6 @@ import { Unicode11Addon } from 'xterm-addon-unicode11';
 import io, { Socket } from "socket.io-client";
 // import fonts from "../../../assets/powerline-fonts/fonts.json";
 import { OnResize } from 'client/types/window';
-import { ResizeEvent } from 'angular-resizable-element';
 
 @Component({
     selector: "window-terminal",
@@ -96,7 +95,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
         // terminal.;
     }
 
-    onResize(evt: ResizeEvent): void {
+    onResize(evt: any): void {
         console.log("resizing")
         this.fitAddon?.fit();
     }

@@ -1,7 +1,6 @@
 import { Portal } from '@angular/cdk/portal';
 import { ComponentRef } from '@angular/core';
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
-import { ResizeEvent } from 'angular-resizable-element';
 import { AppId } from 'client/app/applications';
 
 
@@ -83,7 +82,7 @@ export type WindowOptions = {
  * This is very useful for adjusting layouts based on dimensions.
  */
 export declare interface OnResize {
-    onResize(evt: ResizeEvent): void
+    // onResize(evt: ResizeEvent): void
 }
 /**
  * This method is called when a user stops dragging a window.
@@ -97,7 +96,7 @@ export declare interface OnDragEnd {
  * been resized by the user. 
  */
 export declare interface OnResizeEnd {
-    onResizeEnd(evt: ResizeEvent): void
+    // onResizeEnd(evt: ResizeEvent): void
 }
 
 /**
