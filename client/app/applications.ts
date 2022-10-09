@@ -23,7 +23,9 @@ type AppDefinition = {
 export const Apps: AppDefinition[] = [
     {
         appId: "native",
-        load: () => import('./apps/_native/native.module').then(m => m.NativeModule)
+        load: () => import('./apps/_native/native.module').then(m => m.NativeModule),
+        icon: "assets/icons/apps/preferences-desktop-remote-desktop-symbolic.svg",
+        title: "Native App"
     },
     {
         appId: "terminal",
@@ -69,7 +71,7 @@ export class ApplicationLoader {
 
     constructor() { }
 
-    public static async LoadApplication(appId: string) {
-        return await Apps.find(a => a.appId == appId)?.load();
+    public static LoadApplication(appId: string) {
+        return Apps.find(a => a.appId == appId)?.load();
     }
 }

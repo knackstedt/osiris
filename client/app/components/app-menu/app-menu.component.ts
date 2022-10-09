@@ -21,6 +21,8 @@ export class AppMenuComponent {
 
     apps = Apps;
 
+    isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent)
+
     _filterApps() {
         const regex = this.search.split('')
             .map(c => charMap[c] || c)

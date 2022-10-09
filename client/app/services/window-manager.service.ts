@@ -277,6 +277,8 @@ export class ManagedWindow {
     }
 
     emit(name: string, event?: any) {
+        // console.log(name, event);
+        
         let res = this._component?.instance[name] && this._component.instance[name](event);
 
         // before and after events should be ignored.
@@ -343,6 +345,8 @@ export class ManagedWindow {
     activate() {
         this.blurAllWindows(this);
         this.emit("onActivateChange", { isActivated: true });
+
+        console.log("activate")
 
         this._isActive = true;
         this._index = ManagedWindow.windowZindexCounter++;

@@ -10,7 +10,8 @@
                 [window]="window"
                 [data]="window.data"
                 class="draggable" 
-                (pointerDown)="window.activate()"
+
+                (pointerdown)="window.activate()"
                 
                 [class.active]="window._isActive"
                 [class.draggedOver]="window._isDraggedOver"

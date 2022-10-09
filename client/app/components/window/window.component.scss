@@ -9,6 +9,7 @@ app-window {
     transition: transform 200ms ease-in-out, width 200ms ease-in-out, height 200ms ease-in-out;
     cursor: unset;
     box-sizing: content-box;
+    touch-action: none;
 
     &.dragging,
     &.resizing {

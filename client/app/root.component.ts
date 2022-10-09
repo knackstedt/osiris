@@ -100,6 +100,8 @@ export class RootComponent {
 
     private bindEvents() {
 
+        // TODO: line intersections.
+
         const topOffset = this.taskbarPosition == "top" ? 64 : 0;
         const rightOffset = this.taskbarPosition == "right" ? -64 : 0;
         const bottomOffset = this.taskbarPosition == "bottom" ? -64 : 0;
