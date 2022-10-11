@@ -14,6 +14,7 @@ app-root {
 
     app-taskbar {
         width: 64px;
+        height: 100%;
     }
 
     .cdk-overlay-pane {
@@ -73,6 +74,7 @@ app-root {
 
     app-taskbar {
         height: 64px;
+        width: 100%;
     }
 
     .dots {

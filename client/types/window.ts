@@ -37,83 +37,83 @@ export type WindowOptions = {
     y: number
 };
 
-/**
- * This method is called when a window gets resized.
- * This is very useful for adjusting layouts based on dimensions.
- */
 export declare interface OnResize {
+    /**
+     * This method is called when a window gets resized.
+     * This is very useful for adjusting layouts based on dimensions.
+     */
     // onResize(evt: ResizeEvent): void
 }
 
-/**
- * This method is called when the dimensions of a window have 
- * been resized by the user. 
- */
 export declare interface OnResizeStart {
+    /**
+     * This method is called when the dimensions of a window have 
+     * been resized by the user. 
+     */
     onResizeStart(evt: MouseEvent): void
 }
-/**
- * This method is called when the dimensions of a window have 
- * been resized by the user. 
- */
 export declare interface OnResizeEnd {
+    /**
+     * This method is called when the dimensions of a window have 
+     * been resized by the user. 
+     */
     onResizeEnd(evt: MouseEvent): void
 }
 
-/**
- * This method is called when a user stops dragging a window.
- * Most windows probably don't need to use this.
- */
 export declare interface OnDrag {
+    /**
+     * This method is called when a user stops dragging a window.
+     * Most windows probably don't need to use this.
+     */
     onDrag(evt: MouseEvent): void
 }
-/**
- * This method is called when a user stops dragging a window.
- * Most windows probably don't need to use this.
- */
 export declare interface OnDragStart {
+    /**
+     * This method is called when a user stops dragging a window.
+     * Most windows probably don't need to use this.
+     */
     onDragStart(evt: MouseEvent): void
 }
-/**
- * This method is called when a user stops dragging a window.
- * Most windows probably don't need to use this.
- */
 export declare interface OnDragEnd {
+    /**
+     * This method is called when a user stops dragging a window.
+     * Most windows probably don't need to use this.
+     */
     onDragEnd(evt: MouseEvent): void
 }
 
-/**
- * Emitted when a window is activated (given context)
- * or deactivated (loses context)
- */
 export declare interface OnActivateChange {
+    /**
+     * Emitted when a window is activated (given context)
+     * or deactivated (loses context)
+     */
     onActivateChange(evt: {isActivated: boolean}): void
 }
 
-/**
- * Emitted when the collapsed state changes
- */
 export declare interface OnCollapseChange {
+    /**
+     * Emitted when the collapsed state changes
+     */
     onCollapseChange(evt: { isCollapsed: boolean }): void
 }
 
-/**
- * Emitted when the maximized state changes
- */
 export declare interface OnMaximizeChange {
+    /**
+     * Emitted when the maximized state changes
+     */
     onMaximizeChange(evt: { isMaximized: boolean }): void
 }
 
-/**
- * This method is invoked when the window is closed.
- */
 export declare interface OnClose {
+    /**
+     * This method is invoked when the window is closed.
+     */
     onClose(): void
 }
-/**
- * This allows for the window to activate a confirmation prompt.
- * Will time-out after 3 seconds.
- */
-export declare interface beforeClose {
+export declare interface BeforeClose {
+    /**
+     * This allows for the window to activate a confirmation prompt.
+     * Will time-out after 3 seconds.
+     */
     beforeClose(): boolean | Promise<boolean>
 }

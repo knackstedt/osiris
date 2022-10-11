@@ -48,6 +48,22 @@
         "--bind-ws=127.0.0.1:3300", 
         "--html=off", 
         "--start-via-proxy=no",
+        "--mdns=no",
+        "--webcam=no",
+        "--terminate-children=yes",
+        "--start-env=",
+        "--pulseaudio=yes",
+        "--sharing=yes", // needs review.
+        // "--speaker=on",
+        // "--speaker-codec=flac+ogg",
+        "--video-scaling=0",
+        "--min-quality=100",
+        "--opengl=auto",
+        "--windows=yes", // ?
+        "",
+        "",
+        "",
+        "",
         "start"
       ],
     },

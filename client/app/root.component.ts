@@ -21,7 +21,7 @@ import { XpraService } from './services/xpra.service';
 export class RootComponent {
     environment = environment;
 
-    taskbarPosition: "top" | "right" | "bottom" | "left" = "right";
+    taskbarPosition: "top" | "right" | "bottom" | "left" = "left";
 
     constructor(
         private fetch: Fetch,
@@ -63,19 +63,19 @@ export class RootComponent {
         //     }
         // });
 
-        this.windowManager.openWindow({
-            appId: "native",
-            x: 200,
-            y: 200,
-            width: 400,
-            height: 400,
+        // this.windowManager.openWindow({
+        //     appId: "native",
+        //     x: 200,
+        //     y: 200,
+        //     width: 400,
+        //     height: 400,
 
         //     // This is an arbitrary data object that gets loaded into the app
         //     data: {
         //         cwd: "/home/knackstedt/Downloads/",
         //         command: "bash"
         //     }
-        });
+        // });
 
         // this.windowManager.openWindow({
         //     appId: "native",
@@ -118,10 +118,10 @@ export class RootComponent {
 
         // TODO: line intersections.
 
-        const topOffset = this.taskbarPosition == "top" ? 64 : 0;
-        const rightOffset = this.taskbarPosition == "right" ? -64 : 0;
+        const topOffset    = this.taskbarPosition == "top"    ?  64 : 0;
+        const rightOffset  = this.taskbarPosition == "right"  ? -64 : 0;
         const bottomOffset = this.taskbarPosition == "bottom" ? -64 : 0;
-        const leftOffset = this.taskbarPosition == "left" ? 64 : 0;
+        const leftOffset   = this.taskbarPosition == "left"   ?  64 : 0;
 
         let snapPoints = [];
         let resizeBounds = {
@@ -279,7 +279,11 @@ export class RootComponent {
                 });
         }
 
-        interact('.draggable').resizable({
+        const resizable = interact('.resizable');
+        resizable.styleCursor(false);
+
+        resizable.resizable({
+            // cursorChecker: false,
             margin: 8,
             edges: { top: true, left: true, bottom: true, right: true },
             modifiers: [
@@ -322,13 +326,15 @@ export class RootComponent {
 
                 window.height = evt.rect.height;
                 window.width = evt.rect.width;
-                window.x = evt.rect.left - leftOffset;
-                window.y = evt.rect.top - topOffset;
+                window.x = evt.rect.left;
+                window.y = evt.rect.top;
             }
-        })
+        });
 
+        const draggable = interact('.draggable');
+        draggable.styleCursor(false);
 
-        interact('.draggable').draggable({
+        draggable.draggable({
             modifiers: [
                 // interact.modifiers.restrictRect({
                 //     restriction: 'parent'
@@ -350,7 +356,6 @@ export class RootComponent {
 
                 calculateEdges();
             },
-
             onend: evt => {
                 evt.target.classList.remove("dragging");
                 window.emit("onDragEnd", evt);
@@ -362,14 +367,13 @@ export class RootComponent {
                 window.x += evt.dx;
                 window.y += evt.dy;
 
-
                 this.windowManager.managedWindows.forEach(w => {
                     w._isDraggedOver = false;
 
-                    const dragTop = window.y;
-                    const dragRight = window.x + window.width;
+                    const dragTop    = window.y;
+                    const dragRight  = window.x + window.width;
                     const dragBottom = window.y + window.height;
-                    const dragLeft = window.x;
+                    const dragLeft   = window.x;
 
                     let xOverlap = false;
                     let yOverlap = false;
@@ -395,6 +399,6 @@ export class RootComponent {
 
                 window.emit("onDrag", evt);
             }
-        })
+        });
     }
 }

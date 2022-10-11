@@ -85,7 +85,7 @@ export class TaskbarComponent {
     }
 
     getIHTML(window: ManagedWindow) {
-        return document.querySelector("#window_" + window.id + " .window")?.innerHTML;
+        return window.getIHTML();
     }
 
     isFavorite(item: TaskBarData) {

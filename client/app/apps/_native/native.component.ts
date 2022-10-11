@@ -1,16 +1,17 @@
 import { Component, Input, OnInit, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
-import { ManagedWindow } from 'client/app/services/window-manager.service';
+import { ManagedWindow, Window } from 'client/app/services/window-manager.service';
 import { XpraService } from 'client/app/services/xpra.service';
 import { Fetch } from '../../services/fetch.service';
 import { XpraWindowManagerWindow } from 'xpra-html5-client';
+import { OnClose, OnCollapseChange, OnDragEnd, OnMaximizeChange, OnResizeEnd } from 'client/types/window';
 
-
+@Window()
 @Component({
     // selector: 'native',
     templateUrl: './native.component.html',
     styleUrls: ['./native.component.scss']
 })
-export class NativeComponent implements  AfterViewInit {
+export class NativeComponent implements AfterViewInit, OnCollapseChange, OnMaximizeChange, OnClose, OnDragEnd, OnResizeEnd {
     @ViewChild("canvas", {read: ElementRef}) elementRef;
     @Input() windowRef: ManagedWindow;
     @Input() data: XpraWindowManagerWindow;
@@ -27,13 +28,15 @@ export class NativeComponent implements  AfterViewInit {
     // }
 
     async ngAfterViewInit() {
+        if (!this.windowRef.data)
+            throw new Error("Cannot create native window without data reference!");
+
         this.elementRef.nativeElement.appendChild(this.windowRef.data.canvas);
 
         // win.canvas.onmousedown = e => this.wm.mouseButton(null, e, true);
         // win.canvas.onmouseup = e => this.wm.mouseButton(null, e, false);
         // win.canvas.onmousemove = e => this.wm.mouseMove(null, e);
-
-        this.xpraService.wm.moveResize(this.data, this.getPos(), this.getDim());
+        this.updateGeometry();
     }
 
     private getPos(): [number,number] {
@@ -42,21 +45,29 @@ export class NativeComponent implements  AfterViewInit {
     private getDim(): [number, number] {
         return [this.windowRef.width, this.windowRef.height];
     }
-
-    onMaximizeChange(evt) {
-        this.xpraService.wm.maximize(this.data, this.getPos(), this.getDim());
-        // this.xpraService.wm.maximize(this.data, this.getPos(), this.getDim());
-    }
-
-    onCollapse() {
+    private updateGeometry() {
+        this.xpraService.wm.moveResize(this.data, this.getPos(), this.getDim());
 
     }
 
-    onClose() {
+    onClose(): void {
         this.xpraService.wm.close(this.data);
+    }    
 
+    onMaximizeChange(evt): void {
+        this.xpraService.wm.maximize(this.data, this.getPos(), this.getDim());        
     }
-
+    
+    onCollapseChange(evt: { isCollapsed: boolean; }): void {
+        this.xpraService.wm.minimize(this.data);        
+    }
+    onResizeEnd(evt: MouseEvent): void {
+        this.updateGeometry();        
+    }
+    onDragEnd(evt: MouseEvent): void {
+        this.updateGeometry();
+    }
+    
     // getEvent(evt) {
     //     // debugger
     //     let x = this.data.attributes.position[0] + (evt.clientX - this.windowRef.x);
@@ -64,31 +75,43 @@ export class NativeComponent implements  AfterViewInit {
     //     return { clientX: x, clientY: y, ...evt}
     // }
 
-    // !! These may need to be on the canvas element...
-    // @HostListener("pointerdown", ["$event"])
     @HostListener("pointerup", ["$event"])
-    onDesktopPointerEvent(evt) {
+    onPointerUp(evt) {
         this.xpraService.wm.mouseButton(this.data, evt, false);
+        // evt.stopPropagation();
+
     }
 
     @HostListener("pointerdown", ["$event"])
-    // @HostListener("pointerup", ["$event"])
-    // @HostListener("mouseup", ["$event"])
-    // @HostListener("mousedown", ["$event"])
-    onPointerEvent(evt: PointerEvent) {
+    onPointerDown(evt: PointerEvent) {
         this.xpraService.wm.mouseButton(this.data, evt, true);
+
+        // evt.stopPropagation();
     }
 
     @HostListener("pointermove", ["$event"])
-    // @HostListener("mousemove", ["$event"])
     onPointerMove(evt: PointerEvent) {
         this.xpraService.wm.mouseMove(this.data, evt);
+        this.xpraService.setHoverTarget(this.data);
+
+        // evt.stopPropagation();
     }
 
     @HostListener("keypress", ["$event"])
     onKeypress(evt: KeyboardEvent) {
         this.xpraService.wm.keyPress(this.data, evt, true);
     }
+
+    @HostListener("mousewheel", ["$event"])
+    onPointerEnter(evt: PointerEvent) {
+        this.xpraService.wm.mouseWheel(this.data, evt);
+    }
+
+    // @HostListener("pointerleave", ["$event"])
+    // @HostListener("blur", ["$event"])
+    // onPointerLeave(evt: PointerEvent) {
+    //     this.xpraService.setHoverTarget(this.data);
+    // }
 
     // @HostListener("resize", ["$event"])
     // onResize(evt: any) {

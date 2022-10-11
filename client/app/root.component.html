@@ -6,12 +6,16 @@
     >
             <app-window 
                 *ngFor="let window of windowManager.managedWindows"
-                class="draggable" 
+                class="draggable resizable" 
                 [id]="'window_' + window.id"
+                [style]="window.customCss"
                 [window]="window"
                 [data]="window.data"
                 (pointerDown)="window.activate()"
                 
+                [class.resizable]="window.isResizable"
+                [class.draggable]="window.isDraggable"
+
                 [class.active]="window._isActive"
                 [class.draggedOver]="window._isDraggedOver"
                 [class.maximized]="window._isMaximized"

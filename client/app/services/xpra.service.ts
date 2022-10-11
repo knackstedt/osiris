@@ -1,13 +1,20 @@
-import { Injectable } from '@angular/core';
+import { HostListener, Injectable } from '@angular/core';
 import { XpraClient, XpraWindowManager, XpraWindowManagerWindow } from 'xpra-html5-client';
-import { WindowManagerService } from './window-manager.service';
+import { WindowManagerService, ManagedWindow } from './window-manager.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class XpraService {
 
-    constructor(private windowManager: WindowManagerService) { this.init() }
+    private static services: XpraService[] = [];
+
+    constructor(private windowManager: WindowManagerService) { 
+        this.init(); 
+
+        // Register this service
+        XpraService.services.push(this); 
+    }
 
     private worker: Worker;
     private decoder: Worker;
@@ -16,6 +23,7 @@ export class XpraService {
 
     windows: XpraWindowManagerWindow[] = [];
 
+    // Startup web workers and connection to server.
     async init() {
 
         this.worker = new Worker(new URL("../workers/xpra-worker.worker", import.meta.url));
@@ -54,7 +62,6 @@ export class XpraService {
 
         xpra.on('windowIcon', evt => console.log("__windowIcon", evt))
         // xpra.on('pong', evt => console.log("__pong", evt))
-        xpra.on('cursor', evt => console.log("__cursor", evt))
         xpra.on('moveResizeWindow', evt => console.log("__moveResizeWindow", evt))
         xpra.on('updateWindowMetadata', evt => console.log("__updateWindowMetadata", evt))
         xpra.on('raiseWindow', evt => console.log("__raiseWindow", evt))
@@ -69,7 +76,7 @@ export class XpraService {
         xpra.on('challengePrompt', evt => console.log("__challengePrompt", evt))
 
 
-        xpra.connect('ws://localhost:3100', {
+        xpra.connect('ws://localhost:3300', {
             mouse: true
             // username: 'user',
             // password: 'pass',
@@ -89,15 +96,52 @@ export class XpraService {
             })
         })
 
+        // In the case of closing a window in the outer frame, this will be invoked redundantly.
         xpra.on('removeWindow', evt => {
-            this.windowManager.closeWindow(this.windowManager.managedWindows.find(w => w.data.id == evt).id);
+            const window = this.windowManager.managedWindows.find(w => w.data.attributes.id == evt);
+
+            if (window)
+                this.windowManager.closeWindow(window.id);
         })
 
+        xpra.on('cursor', evt => {
+            this.hoverWindow.customCss = evt ? `cursor: url(${evt.image}), auto` : '';
+        })
 
-        this.xpra.on('connect', () => {
+        xpra.on('connect', () => {
             console.log('connected to host');
 
-            this.xpra.sendStartCommand("gedit", "nautilus", false);
+            setTimeout(() => {
+                this.xpra.sendStartCommand("gedit", "nautilus", false);
+                this.xpra.sendStartCommand("gedit", "gedit", false);
+                this.xpra.sendStartCommand("gedit", "code", false);
+
+            }, 5000)
+            // this.xpra.sendStartCommand("gedit", "nautilus", false);
+
+            // this.xpra.sendGeometryWindow
         });
     }
+
+    hoverTarget: XpraWindowManagerWindow;
+    hoverWindow: ManagedWindow;
+    setHoverTarget(win: XpraWindowManagerWindow) {
+        this.hoverTarget = win;
+        this.hoverWindow = this.windowManager.managedWindows.find(w => w.data.attributes.id == win.attributes.id) || this.hoverWindow;
+    }
+
+    /** @hidden */
+    static closeWindow(window: ManagedWindow) {
+        const id = window.data?.attributes?.id;
+        if (!id) return;
+
+        const service = this.services.find(s => s.windows.find(w => w.attributes.id == id));
+        const winstance = service.windows.find(w => w.attributes.id == id);
+
+        if (!winstance)
+            throw new Error("Could not resolve instance on close request");
+
+        service.wm.close(winstance);
+    }
 }
+globalThis.XpraService = XpraService;

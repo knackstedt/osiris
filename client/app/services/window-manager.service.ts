@@ -98,6 +98,9 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
         // If the taskbar group is now empty, purge it.
         if (taskbarGroup.windows.length == 0) 
             instance.taskbarItems.splice(instance.taskbarItems.findIndex(tb => tb.appId == taskbarGroup.appId), 1);
+
+        // Last, purge the actual window if it's native. 
+        globalThis.XpraService.closeWindow(instance);
     }
 
     public blurAllWindows() {
@@ -201,6 +204,8 @@ export class ManagedWindow {
     minHeight = "200px";
     height = 600;
     
+    customCss: string = "";
+
     data: any = {}; 
 
     _isCollapsed = false;
@@ -345,8 +350,6 @@ export class ManagedWindow {
         this.blurAllWindows(this);
         this.emit("onActivateChange", { isActivated: true });
 
-        console.log("activate")
-
         this._isActive = true;
         this._index = ManagedWindow.windowZindexCounter++;
     }
@@ -360,8 +363,15 @@ export class ManagedWindow {
             }
         });
     }
-    private getIHTML() {
-        return document.querySelector("#window_" + this.id + " .window")?.innerHTML;
+
+    getIHTML() {
+        const srcEl = document.querySelector("#window_" + this.id + " .window");
+
+        // Native apps are just a canvas, so we can use a screenshot.
+        if (this.appId == "native")
+            return `<img src="${srcEl.querySelector("canvas").toDataURL() }"/>`;
+
+        return srcEl?.innerHTML;
     }
 }
 

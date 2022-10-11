@@ -10,7 +10,7 @@
       "url": "https://localhost:4200/"
     },
     {
-      "name": "server",
+      "name": "Server",
       "type": "node",
       "request": "launch",
       "args": [
@@ -26,13 +26,13 @@
       "cwd": "${workspaceRoot}/server",
     },
     {
-      "name": "Start XPRA",
+      "name": "XPRA",
       "preLaunchTask": "xpra",
       "type": "msedge",
       "request": "attach"
     },
     {
-      "name": "Start Broadway",
+      "name": "Broadway",
       "preLaunchTask": "broadway",
       "type": "msedge",
       "request": "attach"
