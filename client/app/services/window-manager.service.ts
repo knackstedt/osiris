@@ -1,11 +1,11 @@
 import { Portal, ComponentPortal } from '@angular/cdk/portal';
 import { ComponentRef, Injectable, EventEmitter } from '@angular/core';
-import { WindowOptions } from 'client/types/window';
 import { BehaviorSubject } from 'rxjs';
 import { AppId, ApplicationLoader, Apps } from '../applications';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
-import { CdkDragRelease } from '@angular/cdk/drag-drop';
 import { FileDescriptor } from '../apps/filemanager/filemanager.component';
+import { XpraWindowManagerWindow, XpraWindowMetadataType } from 'xpra-html5-client';
+import { openStdin } from 'process';
 
 const managedWindows: ManagedWindow[] = [];
 
@@ -35,46 +35,40 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
     // public managedWindows$ = new BehaviorSubject<ManagedWindow[]>([]);
     // public taskbarData$ = new BehaviorSubject<ManagedWindow[]>([]);
 
-    public async openWindow(options: Partial<WindowOptions> | AppId, data?) {
-        let opts: any = {};
+    public async openWindow(options: WindowConfig | AppId, data?) {
+        let opts: Partial<WindowConfig> = {};
         if (typeof options == "string")
             opts.appId = options;
         else 
             opts = options;
 
-        const cfg = {
-            ...{
-                appId: "unknown",
-                icon: "assets/icons/dialog-question-symbolic.svg",
-                description: "No description provided",
-                title: "Application",
-                width: 300,
-                height: 200,
-                x: 50,
-                y: 50,
-            },
-            ...opts,
-        };
-        cfg.data = data || opts.data;
+        opts.data = opts.data || data;
 
         // this.next(cfg as WindowOptions);
 
-        const window = new ManagedWindow(cfg);
+        const window = new ManagedWindow(opts);
 
         // Store data in the windows array
         this.managedWindows.push(window);
+        this.next(this.managedWindows);
+
+        // If this is a tooltip or otherwise a modal popup, don't add it into the taskbar.
+        if (opts.appId == 'native' && !(
+                opts.data.attributes.metadata['window-type'].includes("DESKTOP") ||
+                opts.data.attributes.metadata['window-type'].includes("NORMAL")
+            ))
+            return;
 
         // Lookup if we already have a taskbar item
-        let taskbarItem = this.taskbarItems.find(t => t.appId == cfg.appId);
+        let taskbarItem = this.taskbarItems.find(t => t.appId == opts.appId);
 
         // If not, create one
         if (!taskbarItem)
-            this.taskbarItems.push(taskbarItem = { appId: cfg.appId, windows: [], _isActive: false, _isHovered: false });
+            this.taskbarItems.push(taskbarItem = { appId: opts.appId, windows: [], _isActive: false, _isHovered: false });
 
         // Lastly add to the taskbar item.
         taskbarItem.windows.push(window);
 
-        this.next(this.managedWindows);
     }
 
     public closeWindow(id: number) {
@@ -93,10 +87,10 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
         let taskbarGroup = instance.taskbarItems.find(taskbar => taskbar.windows.find(w => w.id == id));
 
         // Remove the window from the taskbar group.
-        taskbarGroup.windows.splice(taskbarGroup.windows.findIndex(w => w.id == id), 1);
+        taskbarGroup?.windows.splice(taskbarGroup.windows.findIndex(w => w.id == id), 1);
 
         // If the taskbar group is now empty, purge it.
-        if (taskbarGroup.windows.length == 0) 
+        if (taskbarGroup?.windows.length == 0) 
             instance.taskbarItems.splice(instance.taskbarItems.findIndex(tb => tb.appId == taskbarGroup.appId), 1);
 
         // Last, purge the actual window if it's native. 
@@ -179,6 +173,14 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
 }
 
 
+type NonFunctionPropertyNames<T> = {
+    [K in keyof T]: T[K] extends Function ? never : K;
+}[keyof T];
+// This excludes methods and private properties.
+type NonFunctionProperties<T> = Pick<T, NonFunctionPropertyNames<T>>;
+
+export type WindowConfig = Partial<NonFunctionProperties<ManagedWindow>>;
+
 export class ManagedWindow {
     private static windowIdCounter = 0;
     private static windowZindexCounter = 0;
@@ -222,7 +224,10 @@ export class ManagedWindow {
     _preview: string;
     _minimizedPreview: string;
 
-    constructor(config: WindowOptions) {
+    _nativeWindowType: XpraWindowMetadataType[];
+    _nativeWindow: XpraWindowManagerWindow;
+
+    constructor(config: Partial<ManagedWindow>) {
         Object.keys(config).forEach(k => this[k] = config[k]);
         
         const app = Apps.find(a => a.appId == this.appId);
@@ -232,6 +237,20 @@ export class ManagedWindow {
         this.icon = app.icon;
         this.title = app.title;
         this.description = app.description;
+
+        if (config.appId == "native") {
+            const data = this._nativeWindow;
+
+            const isDesktop = data?.attributes?.metadata['window-type'].includes("DESKTOP");
+            const isNormal = data?.attributes?.metadata['window-type'].includes("NORMAL");
+
+            const isModal = !isDesktop && !isNormal;
+
+            if (isModal) {
+                this.isResizable = false;
+                this.isDraggable = false;
+            }
+        }
 
         ApplicationLoader.LoadApplication(this.appId)
             .then(async module => {
@@ -313,6 +332,7 @@ export class ManagedWindow {
         this.emit("onMaximizeChange", { isMaximized: true });
 
         this._isMaximized = true;
+        this.activate();
     }
     /**
      * Restore previous window dimensions
@@ -321,6 +341,7 @@ export class ManagedWindow {
         this.emit("onMaximizeChange", { isMaximized: false });
 
         this._isMaximized = false;
+        this.activate();
     }
     /**
      * Collapse the window to the taskbar
@@ -336,11 +357,14 @@ export class ManagedWindow {
      * Restore the window from it's collapsed state
      */
     uncollapse() {
+        console.log("uncollapse");
+
         this.emit("onCollapseChange", { isCollapsed: false });
 
         delete this._minimizedPreview;
         this._isCollapsed = false;
-        this._index = ManagedWindow.windowZindexCounter++;
+
+        this.activate();
     }
 
     /**
@@ -373,6 +397,10 @@ export class ManagedWindow {
 
         return srcEl?.innerHTML;
     }
+
+    getWindowElement() {
+        return document.querySelector("#window_" + this.id) as HTMLDivElement;
+    }
 }
 
 /**
@@ -400,16 +428,15 @@ export function Window(): Function {
                         if (error.stack) {
                             const lines = error.stack.split('\n');
                             const match = lines[1].match(/ (?<name>[a-zA-Z][a-zA-Z0-9]+)\.(?<func>ngOnInit) /);
-                            const { name, func } = match?.groups;
-                            if (name.endsWith("Component")) {
-                                
-                                // intercept the error
-                                if (func == "ngOnInit")
-                                    return component.__onError?.next(error);
+                            if (match) {
+                                const { name, func } = match?.groups;
+                                if (name.endsWith("Component")) {
+                                    
+                                    // intercept the error
+                                    if (func == "ngOnInit")
+                                        return component.__onError?.next(error);
+                                }
                             }
-                            // else if (name.endsWith("Module")) {
-
-                            // }
                         }
                         throw error;
                     }

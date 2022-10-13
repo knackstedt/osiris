@@ -1,4 +1,4 @@
-import { Component, OnInit, ComponentRef, Input, ViewChild, ElementRef, TemplateRef, ViewEncapsulation } from '@angular/core';
+import { Component, ComponentRef, HostListener, Input, ViewEncapsulation } from '@angular/core';
 import { ManagedWindow } from '../../services/window-manager.service';
 import { KeyboardService } from '../../services/keyboard.service';
 
@@ -14,6 +14,8 @@ export class WindowComponent {
     @Input() data: any;
 
     error: any;
+
+    isModal = false;
 
     constructor(private keyboard: KeyboardService) {
         keyboard.onKeyCommand({

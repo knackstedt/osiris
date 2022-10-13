@@ -1,4 +1,4 @@
-:host { 
+app-menu { 
     display: flex;
     background-color: #36322f;
     height: 100%;
@@ -8,50 +8,57 @@
     align-items: center;
 
     padding: 40px;
-}
+    
+    .search {
+        // width: 524px;
+        width: 27.29vw;
+        height: 38px;
+        font-size: 15.5px;
+        margin-bottom: 10px;
+    }
+    
+    hr {
+        width: 100%;
+        border: 1px solid black;
+        border-bottom: none;
+    }
 
-.search {
-    // width: 524px;
-    width: 27.29vw;
-    height: 38px;
-    font-size: 15.5px;
-    margin-bottom: 10px;
-}
-
-hr {
-    width: 100%;
-    border: 1px solid black;
-    border-bottom: none;
-}
-
-.drawer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 168px);
-    justify-content: space-around;
-    grid-auto-rows: min-content;
-    padding: 10px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    width: 100%;
-    flex: 1;
-
-    .app {
-        width: 168px;
-        height: 168px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    .mat-tab-group {
+        height: 0;
+        flex: 1;
+        flex-direction: column-reverse;
+        justify-content: space-between;
+    }
+    
+    .mat-tab-body-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 168px);
         justify-content: space-around;
-        border-radius: 8px;
-
-        transition: background-color 100ms ease;
-        &:hover {
-            background-color: #494542;
-        }
-
-        img {
-            width: 72px;
-            height: 72px;
+        grid-auto-rows: min-content;
+        padding: 10px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        width: 100%;
+        flex: 1;
+    
+        .app {
+            width: 168px;
+            height: 168px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            border-radius: 8px;
+    
+            transition: background-color 100ms ease;
+            &:hover {
+                background-color: #494542;
+            }
+    
+            img {
+                width: 72px;
+                height: 72px;
+            }
         }
     }
 }

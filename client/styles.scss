@@ -128,3 +128,35 @@ button {
         border-bottom-color: #272727;
     }
 }
+
+
+
+
+
+
+
+
+
+:root {}
+
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    padding-right: 6px;
+    border-radius: 10px;
+    background-color: #696766;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-corner {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}

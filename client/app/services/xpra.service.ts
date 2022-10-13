@@ -1,6 +1,8 @@
 import { HostListener, Injectable } from '@angular/core';
-import { XpraClient, XpraWindowManager, XpraWindowManagerWindow } from 'xpra-html5-client';
+import { BehaviorSubject } from 'rxjs';
+import { XpraChallengePrompt, XpraClient, XpraConnectionStats, XpraCursor, XpraPointerPosition, XpraWindow, XpraWindowIcon, XpraWindowManager, XpraWindowManagerWindow, XpraWindowMetadataUpdate, XpraXDGReducedMenu, XPRA_KEYBOARD_LAYOUTS } from 'xpra-html5-client';
 import { WindowManagerService, ManagedWindow } from './window-manager.service';
+
 
 @Injectable({
     providedIn: 'root'
@@ -23,6 +25,8 @@ export class XpraService {
 
     windows: XpraWindowManagerWindow[] = [];
 
+    xdgMenu = new BehaviorSubject<XpraXDGReducedMenu>(null);
+
     // Startup web workers and connection to server.
     async init() {
 
@@ -39,88 +43,193 @@ export class XpraService {
         await xpra.init();
         vm.init();
 
-        // ???
         const wmEl = document.querySelector(".windowManager") as HTMLElement;
+        // ??? Why do we set this
         this.wm.setDesktopElement(wmEl);
 
-        wmEl.onmousedown = evt => {
-            this.wm.mouseButton(null, evt, true)
-        };
+        // ! What are these even supposed to be for?
+        // wmEl.onmousedown = evt => this.wm.mouseButton(null, evt, true);
+        // wmEl.onmouseup = evt => this.wm.mouseButton(null, evt, false);
 
-        wmEl.onmousedown = evt => {
-            this.wm.mouseButton(null, evt, false)
-        };
-
-        // xpra.on('disconnect', () => console.warn('disconnected from host'));
-        // xpra.on('error', (message) => console.error('connection error', message));
-        // xpra.on('sessionStarted', () => console.info('session has been started'));
-
-        // this.vm.setDesktopElement(document.body);
-
-        xpra.on('connect', evt => console.log("__connect", evt))
-        xpra.on('disconnect', evt => console.log("__disconnect", evt))
-
-        xpra.on('windowIcon', evt => console.log("__windowIcon", evt))
-        // xpra.on('pong', evt => console.log("__pong", evt))
-        xpra.on('moveResizeWindow', evt => console.log("__moveResizeWindow", evt))
-        xpra.on('updateWindowMetadata', evt => console.log("__updateWindowMetadata", evt))
-        xpra.on('raiseWindow', evt => console.log("__raiseWindow", evt))
-        xpra.on('initiateMoveResize', evt => console.log("__initiateMoveResize", evt))
-        xpra.on('showNotification', evt => console.log("__showNotification", evt))
-        xpra.on('hideNotification', evt => console.log("__hideNotification", evt))
-        xpra.on('pointerPosition', evt => console.log("__pointerPosition", evt))
-        xpra.on('newTray', evt => console.log("__newTray", evt))
-        xpra.on('updateXDGMenu', evt => console.log("__updateXDGMenu", evt))
-        xpra.on('error', evt => console.error("__error", evt))
-        xpra.on('sessionStarted', () => console.log("__sessionStarted"))
-        xpra.on('challengePrompt', evt => console.log("__challengePrompt", evt))
-
+        this.bindEvents();
 
         xpra.connect('ws://localhost:3300', {
-            mouse: true
+            keyboard: true,
+            mouse: true,
+            keyboardLayout: "us",
             // username: 'user',
             // password: 'pass',
         });
+    }
+
+    private bindEvents() {
+        const xpra = this.xpra;
+
+        // Map event bindings
+        xpra.on('updateXDGMenu', evt => this.onXDGMenu(evt));
+        xpra.on('newWindow', evt => this.onNewWindow(evt));
+        xpra.on('updateWindowMetadata', evt => this.onUpdateWindow(evt));
+        xpra.on('removeWindow', evt => this.onRemoveWindow(evt));
+        xpra.on('cursor', evt => this.onCursor(evt));
+        xpra.on('connect', () => this.onConnect());
+        xpra.on('disconnect', () => this.onDisconnect());
+        xpra.on('raiseWindow', evt => this.onRaiseWindow(evt));
+
+        xpra.on('pointerPosition', evt => this.onPointerPosition(evt));
+        xpra.on('challengePrompt', evt => this.onChallengePrompt(evt));
+
+        xpra.on('pong', evt => this.onPong(evt))
+        xpra.on('windowIcon', evt => this.onWindowIcon(evt));
+        xpra.on('moveResizeWindow', evt => console.log("__moveResizeWindow", evt));
+        xpra.on('initiateMoveResize', evt => console.log("__initiateMoveResize", evt));
+        xpra.on('showNotification', evt => console.log("__showNotification", evt));
+        xpra.on('hideNotification', evt => console.log("__hideNotification", evt));
+        xpra.on('newTray', evt => console.log("__newTray", evt));
+        xpra.on('error', evt => console.error("__error", evt));
+        xpra.on('sessionStarted', () => console.log("__sessionStarted"));
 
 
-        this.xpra.on('newWindow', evt => {
-            console.log("__newWindow", evt);
-            const win = this.wm.getWindow(evt.id);
-            this.windowManager.openWindow({
-                appId: "native",
-                data: win,
-                width: win.attributes.dimension[0],
-                height: win.attributes.dimension[1],
-                title: win.attributes.metadata.title,
-                // _windowStyle: win.attributes.metadata['window-type']
-            })
-        })
+        xpra.on('eos', (evt) => console.log("__eos", evt));
+        xpra.on('infoResponse', (evt) => console.log("__infoResponse", evt));
 
-        // In the case of closing a window in the outer frame, this will be invoked redundantly.
-        xpra.on('removeWindow', evt => {
-            const window = this.windowManager.managedWindows.find(w => w.data.attributes.id == evt);
+        // draw
+        // drawScroll
+        // drawBuffer
+        // hello
+        // sendFile
+        // infoResponse
+        // newTray
+        // eos
+        // bell
+        // openUrl
+    }
 
-            if (window)
-                this.windowManager.closeWindow(window.id);
-        })
+    onXDGMenu(evt: XpraXDGReducedMenu) {
+        this.xdgMenu.next(evt);
+    }
 
-        xpra.on('cursor', evt => {
+    onConnect() {
+
+    }
+
+    onPong(evt: XpraConnectionStats) {
+        // console.log("pong")
+    }
+
+    onDisconnect() {
+
+    }
+
+    onCursor(evt: XpraCursor) {
+        if (this.hoverWindow)
             this.hoverWindow.customCss = evt ? `cursor: url(${evt.image}), auto` : '';
+    }
+
+    onNewWindow(evt: XpraWindow) {
+        console.log("New Window", evt);
+
+        const win = this.wm.getWindow(evt.id);
+
+        const isDialog = win.attributes.metadata['window-type'].includes("DIALOG");
+
+        let x = evt.position[0];
+        let y = evt.position[1];
+        let width  = Math.min(window.innerWidth, evt.dimension[0]);
+        let height = Math.min(window.innerHeight, evt.dimension[1]);
+
+        if (!isDialog) {
+            // Make sure the dialog is not drawn clipping off screen.
+            x = Math.min(window.innerWidth - width, Math.max(0, x));
+            y = Math.min(window.innerHeight - height, Math.max(0, y));
+        }
+
+        this.windowManager.openWindow({
+            appId: "native",
+            data: win,
+            width: width,
+            height: height,
+            x: x,
+            y: y,
+            title: win.attributes.metadata.title,
+            _nativeWindowType: win.attributes.metadata['window-type'],
+            _nativeWindow: win
+            // _windowStyle: win.attributes.metadata['window-type']
         })
+    }
 
-        xpra.on('connect', () => {
-            console.log('connected to host');
+    private getPos(window: ManagedWindow): [number, number] {
+        return [window.x, window.y];
+    }
+    private getDim(window: ManagedWindow): [number, number] {
 
-            setTimeout(() => {
-                this.xpra.sendStartCommand("gedit", "nautilus", false);
-                this.xpra.sendStartCommand("gedit", "gedit", false);
-                this.xpra.sendStartCommand("gedit", "code", false);
+        if (window._isMaximized)
+            return [globalThis.innerWidth, globalThis.innerHeight];
 
-            }, 5000)
-            // this.xpra.sendStartCommand("gedit", "nautilus", false);
+        window.width = Math.min(window.width, globalThis.innerWidth);
+        window.height = Math.min(window.height, globalThis.innerHeight);
 
-            // this.xpra.sendGeometryWindow
-        });
+        return [window.width, window.height];
+    }
+    private updateGeometry(window: ManagedWindow) {
+        this.wm.moveResize(window._nativeWindow, this.getPos(window), this.getDim(window));
+    }
+
+    onUpdateWindow(evt: XpraWindowMetadataUpdate) {
+        console.log("update window", evt);
+        const window = this.windowManager.managedWindows.find(w => w.data.attributes.id == evt.wid);
+
+        if (evt.metadata.maximized == true) {
+            window.maximize();
+            this.updateGeometry(window);
+        }
+        else if (evt.metadata.maximized == false) {
+            window.unmaximize();
+            this.updateGeometry(window);
+        }
+
+        if (evt.metadata.iconic == true) {
+            window.collapse();
+        }
+        else if (evt.metadata.iconic == false) {
+            window.uncollapse();
+            // this.updateGeometry(window);
+        }
+
+        if (evt.metadata.title)
+            window.title = evt.metadata.title;
+
+        // window.data.attributes.metadata.decorations
+        // Basically if it's NOT undefined or zero, we show the window...?
+        // missing => none?
+        // 0 => standard????????????????????
+        // 126 => full?
+
+        window.title = evt.metadata.title || window.title;
+    }
+
+    onRemoveWindow(evt: number) {
+        const window = this.windowManager.managedWindows.find(w => w.data.attributes.id == evt);
+
+        if (window)
+            this.windowManager.closeWindow(window.id);
+    }
+
+    onRaiseWindow(evt: number) {
+        const window = this.windowManager.managedWindows.find(w => w.data.attributes.id == evt);
+        window?.activate();
+    }
+
+    onWindowIcon(evt: XpraWindowIcon) {
+        const window = this.windowManager.managedWindows.find(w => w.data.attributes.id == evt.wid);
+        window.icon = evt.image;
+    }
+
+    onPointerPosition(evt: XpraPointerPosition) {
+        console.log("__onPointerPosition", evt);
+    }
+
+    onChallengePrompt(evt: XpraChallengePrompt) {
+
     }
 
     hoverTarget: XpraWindowManagerWindow;

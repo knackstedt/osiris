@@ -47,14 +47,25 @@ export class KeyboardService {
         window.addEventListener("keyup", (evt) => this.onKeyUp(evt));
         window.addEventListener("keypress", (evt) => this.onKeyPress(evt));
 
-        window.addEventListener("beforeunload", (evt) => {
-            console.log("Before Unload");
-        });
-
         window.addEventListener('hashchange', function () {
             console.log("Hash Change");
+            debugger;
         }, false);
 
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                console.log('This page was restored from the bfcache.');
+            } else {
+                console.log('This page was loaded normally.');
+            }
+        });
+        window.addEventListener('pagehide', (event) => {
+            if (event.persisted) {
+                console.log('This page was restored from the bfcache.');
+            } else {
+                console.log('This page was loaded normally.');
+            }
+        });
     }
 
     private onKeyDown(evt: KeyboardEvent) {
@@ -84,6 +95,7 @@ export class KeyboardService {
         commands.forEach(kc => kc.sub.next(evt));
             
     }
+
     private onKeyUp(evt: KeyboardEvent) {
         this.heldKeys[evt.key.toLowerCase()] = false;
     }
@@ -98,7 +110,6 @@ export class KeyboardService {
      * **NOT** interrupt the event chain.
      */
     public onKeyCommand(key: KeyCommand) {
-
         let item = {
             ...key,
             keys: (Array.isArray(key.key) ? key.key : [key.key]),

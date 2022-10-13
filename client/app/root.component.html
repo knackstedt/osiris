@@ -6,21 +6,22 @@
     >
             <app-window 
                 *ngFor="let window of windowManager.managedWindows"
-                class="draggable resizable" 
                 [id]="'window_' + window.id"
                 [style]="window.customCss"
                 [window]="window"
                 [data]="window.data"
                 (pointerDown)="window.activate()"
                 
-                [class.resizable]="window.isResizable"
-                [class.draggable]="window.isDraggable"
+                [class.native]="window.appId == 'native'"
+                [class.dialog]="window._nativeWindowType.includes('DIALOG')"
+                [class.resizable]="!window._isCollapsed && !window._isMaximized && window.isResizable"
+                [class.draggable]="!window._isCollapsed && !window._isMaximized && window.isDraggable"
 
                 [class.active]="window._isActive"
                 [class.draggedOver]="window._isDraggedOver"
                 [class.maximized]="window._isMaximized"
                 [class.collapsed]="window._isCollapsed"
-                [class.native]="window.appId == 'native'"
+                [class.borderless]="window._nativeWindow?.attributes?.metadata?.decorations"
 
                 [style.z-index]="window._index"
                 [style.width]="window.width + 'px'"

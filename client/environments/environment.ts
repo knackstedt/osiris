@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  showDebugStats: false
+  showDebugStats: false,
+  taskbarPosition: "left" // top left bottom right
 };
 
 /*

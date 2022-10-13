@@ -1,10 +1,8 @@
 <app-window-toolbar 
+    class="draghandle"
     [window]="window" 
     [template]="toolbar" 
     [class.active]="window._isActive">
 </app-window-toolbar>
-<!-- <div class="dragInterrupt"> -->
-    <ng-container *ngTemplateOutlet="content">
-    </ng-container>
-<!-- </div> -->
-
+<ng-container *ngTemplateOutlet="content">
+</ng-container>

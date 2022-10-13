@@ -1,1 +1,13 @@
-<div #canvas (mousedown)="$event.stopPropagation()"></div>
+
+<app-window-template [window]="windowRef" *ngIf="windowRef.data.attributes.metadata.decorations">
+    <ng-template #toolbar>
+        <p>{{windowRef.data.filename}}</p>
+    </ng-template>
+    <ng-template #content>
+        <div #canvas></div>
+    </ng-template>
+</app-window-template>
+<div>
+    <div class="draghandle"></div>
+    <div #canvas *ngIf="!windowRef.data.attributes.metadata.decorations"></div>
+</div>

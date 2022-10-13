@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Apps } from 'client/app/applications';
 import { WindowManagerService } from '../../services/window-manager.service';
 import { MatDialogRef } from '@angular/material/dialog';
+import { XpraService } from 'client/app/services/xpra.service';
+import { XpraXDGReducedMenu, XpraXDGReducedMenuEntry } from 'xpra-html5-client';
 
 const charMap = {
     "[": "\\[",
@@ -12,9 +14,10 @@ const charMap = {
 }
 
 @Component({
-    selector: 'app-app-menu',
+    selector: 'app-menu',
     templateUrl: './app-menu.component.html',
-    styleUrls: ['./app-menu.component.scss']
+    styleUrls: ['./app-menu.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
 export class AppMenuComponent {
     search = "";
@@ -58,5 +61,19 @@ export class AppMenuComponent {
         }
     ]
 
-    constructor(public windowManager: WindowManagerService, public dialogRef: MatDialogRef<any>) { }
+
+    menu: XpraXDGReducedMenu = null;
+
+    constructor(public windowManager: WindowManagerService, public dialogRef: MatDialogRef<any>, private xpra: XpraService) {
+        xpra.xdgMenu.subscribe(menu => {
+            // this.apps = Apps.concat()
+            this.menu = menu;
+        })
+    }
+
+    openApp(app: XpraXDGReducedMenuEntry) {
+        // this.xpra.wm.createWindow(app);
+
+        this.xpra.xpra.sendStartCommand(app.name, app.exec, false);
+    }
 }

@@ -8,7 +8,6 @@ import { WebglAddon } from 'xterm-addon-webgl';
 import { Unicode11Addon } from 'xterm-addon-unicode11';
 
 import io, { Socket } from "socket.io-client";
-// import fonts from "../../../assets/powerline-fonts/fonts.json";
 import { OnResize } from 'client/types/window';
 
 @Component({
@@ -48,10 +47,8 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
 
         // const socket = this.socket = io("https://localhost:3000/");
         const socket = this.socket = io();
-        console.log("AFTER VIEW")
 
         socket.on("connect", () => {
-            console.log("socket is connected");
             if (!this.terminal) {
                 // this.loadFont("ubuntumono");
 
@@ -59,7 +56,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
                 const terminal = this.terminal = new Terminal();
                 const fitAddon = this.fitAddon = new FitAddon();
 
-                // terminal.loadAddon(fitAddon);
+                terminal.loadAddon(fitAddon);
 
                 
                 
@@ -138,50 +135,4 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
         this.terminal.write("");
         this.prompt();
     }
-
-    clear() {
-        this.terminal.clear();
-    }
-
-
-    // font: string;
-    // loadFont(fontName: string) {
-    //     console.log("loading font...");
-    //     const font = fonts.find(f => fontName.toLowerCase() == f.name.toLowerCase());
-    //     if (document.querySelector("html>head>style.fontloader." + font.name))
-    //         return; // font is already loaded
-
-    //     this.font = font.name;
-
-    //     const el = document.createElement("style");
-    
-    //     let css = '';
-        
-    //     font.files.forEach(f => {
-    //         const isBold = /bold/i.test(f);
-    //         const isItalic = /italic/i.test(f);
-            
-    //         const format = {
-    //             "ttf": "truetype",
-    //             "woff": "",
-    //             "woff2": "",
-    //             "eof": "",
-    //             "otf": "embedded-opentype"
-    //         }[f.split('.').pop()]
-
-    //         css += `
-    //         @font-face {
-    //             font-family: '${font.name}-powerline';
-    //             src: url(/assets/powerline-fonts/${font.name}/${encodeURIComponent(f)}) format('${format}');
-    //             ${isBold ? "font-weight: bold;" : ""}
-    //             ${isItalic ? "font-style: italic;" : ""}
-    //         }`;
-    //     })
-
-    //     el.textContent = css;
-    //     el.classList.add("fontloader");
-    //     el.classList.add(font.name);
-
-    //     document.head.appendChild(el);
-    // }
 }
