@@ -58,6 +58,21 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
             ))
             return;
 
+        // Grouping for like xpra windows
+        if (opts.appId == "native") {
+            const id = opts._nativeWindow.attributes.metadata['class-instance'].join('_');
+            // Lookup if we already have a taskbar item
+            let taskbarItem = this.taskbarItems.find(t => t.appId == id);
+
+            // If not, create one
+            if (!taskbarItem)
+                this.taskbarItems.push(taskbarItem = { appId: id, windows: [], _isActive: false, _isHovered: false });
+
+            // Lastly add to the taskbar item.
+            taskbarItem.windows.push(window);
+            return;
+        }
+
         // Lookup if we already have a taskbar item
         let taskbarItem = this.taskbarItems.find(t => t.appId == opts.appId);
 
@@ -228,16 +243,16 @@ export class ManagedWindow {
     _nativeWindowType: XpraWindowMetadataType[];
     _nativeWindow: XpraWindowManagerWindow;
 
-    constructor(config: Partial<ManagedWindow>) {
+    constructor(config: WindowConfig) {
         Object.keys(config).forEach(k => this[k] = config[k]);
         
         const app = Apps.find(a => a.appId == this.appId);
         if (!app)
             throw new Error("Unknown application. Cannot create window");
 
-        this.icon = app.icon;
-        this.title = app.title;
-        this.description = app.description;
+        this.icon = config.icon || app.icon;
+        this.title = config.title || app.title;
+        this.description = config.description || app.description;
 
         if (config.appId == "native") {
             const data = this._nativeWindow;
