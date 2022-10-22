@@ -51,25 +51,10 @@ export class KeyboardService {
             console.log("Hash Change");
             debugger;
         }, false);
-
-        window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                console.log('This page was restored from the bfcache.');
-            } else {
-                console.log('This page was loaded normally.');
-            }
-        });
-        window.addEventListener('pagehide', (event) => {
-            if (event.persisted) {
-                console.log('This page was restored from the bfcache.');
-            } else {
-                console.log('This page was loaded normally.');
-            }
-        });
     }
 
     private onKeyDown(evt: KeyboardEvent) {
-        console.log("keydown", evt.key)
+        // console.log("keydown", evt.key)
         this.heldKeys[evt.key.toLowerCase()] = true;
 
         // Do a general filter where all of the modifiers must be matched if specified

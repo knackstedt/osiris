@@ -2,32 +2,34 @@ import { Injectable } from '@angular/core';
 import interact from 'interactjs';
 
 import { ManagedWindow, WindowManagerService } from './window-manager.service';
-import { environment } from '../../environments/environment';
+import { ConfigurationService } from './configuration.service';
+
+/**
+ * This file contains the window manager interactions for dragging
+ * and resizing of windows.
+ * 
+ * TODO: 
+ * - filter out snap edges that are obscured by other windows
+ * - snap to corners where two windows are on snapped to the same edge
+ */
 
 @Injectable({
     providedIn: 'root'
 })
 export class WindowInteractionService {
 
-    constructor(private windowManager: WindowManagerService) { this.bindEvents() }
+    constructor(private windowManager: WindowManagerService, private configuration: ConfigurationService) { this.bindEvents() }
 
     private bindEvents() {
 
         // TODO: line intersections.
-
-        const topOffset    = environment.taskbarPosition == "top"    ?  64 : 0;
-        const rightOffset  = environment.taskbarPosition == "right"  ? -64 : 0;
-        const bottomOffset = environment.taskbarPosition == "bottom" ? -64 : 0;
-        const leftOffset   = environment.taskbarPosition == "left"   ?  64 : 0;
 
         let snapPoints = [];
         let resizeBounds = {
             top: 0,
             right: 0,
             bottom: 0,
-            left: 0,
-            width: 300,
-            height: 200
+            left: 0
         };
         let window: ManagedWindow;
 
@@ -57,34 +59,41 @@ export class WindowInteractionService {
 
             // top
             createLineSnap({
-                y: topOffset,
-                x: leftOffset,
-                distance: globalThis.innerWidth - (leftOffset + rightOffset + window.width)
+                y: this.configuration.topOffset,
+                x: this.configuration.leftOffset,
+                distance: globalThis.innerWidth - (this.configuration.leftOffset + this.configuration.rightOffset + window.width)
             }, "x");
 
             // right
             createLineSnap({
-                y: topOffset,
-                x: globalThis.innerWidth - (rightOffset + window.width),
-                distance: globalThis.innerHeight - (topOffset + bottomOffset + window.height)
+                y: this.configuration.topOffset,
+                x: globalThis.innerWidth - (this.configuration.rightOffset + window.width),
+                distance: globalThis.innerHeight - (this.configuration.topOffset + this.configuration.bottomOffset + window.height)
             }, "y");
 
             // bottom
             createLineSnap({
-                y: topOffset + globalThis.innerHeight - window.height,
-                x: leftOffset,
-                distance: globalThis.innerWidth - (leftOffset + rightOffset + window.width)
+                y: this.configuration.topOffset + globalThis.innerHeight - window.height,
+                x: this.configuration.leftOffset,
+                distance: globalThis.innerWidth - (this.configuration.leftOffset + this.configuration.rightOffset + window.width)
             }, "x");
 
             // left
             createLineSnap({
-                y: topOffset,
-                x: leftOffset,
-                distance: globalThis.innerHeight - (topOffset + bottomOffset + window.height)
+                y: this.configuration.topOffset,
+                x: this.configuration.leftOffset,
+                distance: globalThis.innerHeight - (this.configuration.topOffset + this.configuration.bottomOffset + window.height)
             }, "y");
 
-            this.windowManager.managedWindows
+            let snapTargets = this.windowManager.managedWindows
+                // Omit the dragged window 
                 .filter(w => w.id != window.id)
+                // Omit collapsed windows
+                .filter(w => !w._isCollapsed)
+                // Omit windows that declare themselves to not be snapped to
+                .filter(w => w._isSnapTarget);
+
+            snapTargets
                 .forEach(win => {
                     const isWider = win.width > window.width;
                     const isTaller = win.height > window.height;
@@ -105,10 +114,10 @@ export class WindowInteractionService {
                     createLineSnap({
                         y: win.y - window.height,
                         x: isWider
-                            ? win.x + leftOffset
-                            : win.x - (window.width - win.width) + leftOffset,
+                            ? win.x + this.configuration.leftOffset
+                            : win.x - (window.width - win.width) + this.configuration.leftOffset,
                         distance: isWider
-                            ? (win.x + win.width + leftOffset - window.width) - (win.x + leftOffset)
+                            ? (win.x + win.width + this.configuration.leftOffset - window.width) - (win.x + this.configuration.leftOffset)
                             : window.width - win.width
                     }, "x");
 
@@ -125,7 +134,7 @@ export class WindowInteractionService {
                         y: isTaller
                             ? win.y
                             : win.y - (window.height - win.height),
-                        x: win.x + win.width + leftOffset,
+                        x: win.x + win.width + this.configuration.leftOffset,
                         distance: isTaller
                             ? (win.y + (win.height - window.height)) - (win.y)
                             : window.height - win.height
@@ -147,10 +156,10 @@ export class WindowInteractionService {
                     createLineSnap({
                         y: win.y + win.height,
                         x: isWider
-                            ? win.x + leftOffset
-                            : win.x - (window.width - win.width) + leftOffset,
+                            ? win.x + this.configuration.leftOffset
+                            : win.x - (window.width - win.width) + this.configuration.leftOffset,
                         distance: isWider
-                            ? (win.x + win.width + leftOffset - window.width) - (win.x + leftOffset)
+                            ? (win.x + win.width + this.configuration.leftOffset - window.width) - (win.x + this.configuration.leftOffset)
                             : window.width - win.width
                     }, "x")
 
@@ -168,7 +177,7 @@ export class WindowInteractionService {
                         y: isTaller
                             ? win.y
                             : win.y - (window.height - win.height),
-                        x: win.x - window.width + leftOffset,
+                        x: win.x - window.width + this.configuration.leftOffset,
                         distance: isTaller
                             ? (win.y + (win.height - window.height)) - (win.y)
                             : window.height - win.height
@@ -202,29 +211,31 @@ export class WindowInteractionService {
 
                 window.emit("onResizeStart", evt);
 
-                resizeBounds.top = 0;
-                resizeBounds.left = 0;
-                resizeBounds.right = globalThis.innerWidth;// - (window.width + window.x) + rightOffset;
-                resizeBounds.bottom = globalThis.innerHeight;
+                resizeBounds.top = this.configuration.leftOffset;
+                resizeBounds.left = this.configuration.topOffset;
+                resizeBounds.right = globalThis.innerWidth - this.configuration.rightOffset;// - (window.width + window.x) + rightOffset;
+                resizeBounds.bottom = globalThis.innerHeight - this.configuration.bottomOffset;
 
                 calculateEdges();
             },
             onend: evt => {
-                window.emit("onResizeEnd", evt);
-
                 evt.target.classList.remove("resizing");
                 snapPoints.splice(0);
+
+                window.emit("onResizeEnd", evt);
                 window = null;
             },
             onmove: evt => {
                 const numId = parseInt(evt.target.id.split('_').pop());
                 const window = this.windowManager.managedWindows.find(w => w.id == numId);
-                window.emit("onResize", evt);
+                
+                window.height = Math.max(evt.rect.height, window.minHeight);
+                window.width = Math.max(evt.rect.width, window.minWidth);
 
-                window.height = Math.max(evt.rect.height, 200);
-                window.width = Math.max(evt.rect.width, 300);
-                window.x = evt.rect.left;
-                window.y = evt.rect.top;
+                window.x = evt.rect.left - this.configuration.leftOffset;
+                window.y = evt.rect.top - this.configuration.topOffset;
+
+                window.emit("onResize", evt);
             }
         });
 

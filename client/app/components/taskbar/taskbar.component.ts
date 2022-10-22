@@ -63,7 +63,8 @@ export class TaskbarComponent {
         const xTx = xScale > yScale ? ((xMax - cWidth ) / 2 / scale) : 0;
         const yTx = yScale > xScale ? ((yMax - cHeight) / 2 / scale) : 0;
 
-        return `scale3d(${scale}, ${scale}, 1) translate3d(${xTx}px, ${yTx}px, 0px)`;
+        return `scale3d(${scale}, ${scale}, 1) translate3d(${xTx}px, 0px, 0px)`;
+        // return `scale3d(${scale}, ${scale}, 1) translate3d(${xTx}px, ${yTx}px, 0px)`;
     }
 
     showMenu(menu: TaskBarData) {

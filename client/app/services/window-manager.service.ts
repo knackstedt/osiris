@@ -5,7 +5,6 @@ import { AppId, ApplicationLoader, Apps } from '../applications';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { FileDescriptor } from '../apps/filemanager/filemanager.component';
 import { XpraWindowManagerWindow, XpraWindowMetadataType } from 'xpra-html5-client';
-import { openStdin } from 'process';
 
 const managedWindows: ManagedWindow[] = [];
 
@@ -177,9 +176,9 @@ type NonFunctionPropertyNames<T> = {
     [K in keyof T]: T[K] extends Function ? never : K;
 }[keyof T];
 // This excludes methods and private properties.
-type NonFunctionProperties<T> = Pick<T, NonFunctionPropertyNames<T>>;
+type OmitFunctions<T> = Pick<T, NonFunctionPropertyNames<T>>;
 
-export type WindowConfig = Partial<NonFunctionProperties<ManagedWindow>>;
+export type WindowConfig = Partial<OmitFunctions<ManagedWindow>>;
 
 export class ManagedWindow {
     private static windowIdCounter = 0;
@@ -199,11 +198,11 @@ export class ManagedWindow {
     isDraggable = true;
     
     maxWidth = "100vw";
-    minWidth = "300px"; 
+    minWidth = 300; 
     width = 800;
     
     maxHeight = "100vh";
-    minHeight = "200px";
+    minHeight = 200;
     height = 600;
     
     customCss: string = "";
@@ -216,6 +215,8 @@ export class ManagedWindow {
     _isLoading = false;
     _index = ManagedWindow.windowZindexCounter++; // z-index
     _isDraggedOver = false; // is something being dragged in front of this window?
+    _isBorderless = false;
+    _isSnapTarget = true;
 
     _portal?: Portal<any>;
     _module?: any;      // The module that gets loaded
@@ -329,41 +330,38 @@ export class ManagedWindow {
      * Maximize the window as big as we can 
      */    
     maximize() {
-        this.emit("onMaximizeChange", { isMaximized: true });
-
         this._isMaximized = true;
+
+        this.emit("onMaximizeChange", { isMaximized: true });
         this.activate();
     }
     /**
      * Restore previous window dimensions
      */
     unmaximize() {
-        this.emit("onMaximizeChange", { isMaximized: false });
-
         this._isMaximized = false;
+
+        this.emit("onMaximizeChange", { isMaximized: false });
         this.activate();
     }
     /**
      * Collapse the window to the taskbar
      */
     collapse() {
-        this.emit("onCollapseChange", { isCollapsed: true });
-
         this._minimizedPreview = this.getIHTML();
         this._isCollapsed = true;
+        
+        this.emit("onCollapseChange", { isCollapsed: true });
     }
     
     /**
      * Restore the window from it's collapsed state
      */
     uncollapse() {
-        console.log("uncollapse");
-
-        this.emit("onCollapseChange", { isCollapsed: false });
-
         delete this._minimizedPreview;
         this._isCollapsed = false;
-
+        
+        this.emit("onCollapseChange", { isCollapsed: false });
         this.activate();
     }
 
@@ -371,11 +369,13 @@ export class ManagedWindow {
      * Bring this window to top && grant it context.
      */
     activate() {
+        // console.log("Activate window")
         this.blurAllWindows(this);
-        this.emit("onActivateChange", { isActivated: true });
-
+        
         this._isActive = true;
         this._index = ManagedWindow.windowZindexCounter++;
+
+        this.emit("onActivateChange", { isActivated: true });
     }
 
     private blurAllWindows(skip?: ManagedWindow) {

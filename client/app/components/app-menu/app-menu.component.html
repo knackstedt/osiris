@@ -19,7 +19,11 @@
 
 
 <mat-tab-group>
-    <mat-tab *ngFor="let category of menu" [label]="category.name">
+    <mat-tab *ngFor="let category of menu">
+        <ng-template mat-tab-label>
+            <img [src]="category.icon">
+            <div>{{category.name}}</div>
+        </ng-template>
         <ng-container *ngFor="let app of category.entries">
             <div *ngIf="app.icon && app.name" class="app" (click)="openApp(app)">
                 <img [src]="app.icon" />

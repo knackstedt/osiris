@@ -1,4 +1,4 @@
-import { Component, ContentChild, Input, TemplateRef, ViewEncapsulation } from '@angular/core';
+import { Component, ContentChild, HostListener, Input, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { ManagedWindow } from '../../services/window-manager.service';
 
 @Component({
@@ -12,4 +12,9 @@ export class WindowTemplateComponent {
 
     @ContentChild("toolbar", {read: TemplateRef}) toolbar: TemplateRef<any>;
     @ContentChild("content", {read: TemplateRef}) content: TemplateRef<any>;
+
+    @HostListener("pointerdown", ["$event"])
+    onPointerDown() {
+        this.window.activate();
+    }
 }

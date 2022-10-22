@@ -1,5 +1,5 @@
 
-<app-window-template [window]="windowRef" *ngIf="windowRef.data.attributes.metadata.decorations">
+<app-window-template [window]="windowRef" *ngIf="!windowRef._isBorderless">
     <ng-template #toolbar>
         <p>{{windowRef.data.filename}}</p>
     </ng-template>
@@ -7,7 +7,8 @@
         <div #canvas></div>
     </ng-template>
 </app-window-template>
-<div>
+
+<div *ngIf="windowRef._isBorderless">
     <div class="draghandle"></div>
-    <div #canvas *ngIf="!windowRef.data.attributes.metadata.decorations"></div>
+    <div #canvas></div>
 </div>

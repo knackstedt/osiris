@@ -1,15 +1,15 @@
-import { Component, HostListener, ViewEncapsulation } from '@angular/core';
-// Observables
+import { Component, ViewEncapsulation } from '@angular/core';
 import { Fetch } from 'client/app/services/fetch.service';
 
 import { ThemeLoaderService } from 'client/app/services/themeloader.service';
-import { WindowManagerService, ManagedWindow } from './services/window-manager.service';
+import { WindowManagerService } from './services/window-manager.service';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'client/environments/environment';
 import { KeyboardService } from './services/keyboard.service';
 import { WallpaperService } from './services/wallpaper.service';
 import { XpraService } from './services/xpra.service';
 import { WindowInteractionService } from './services/window-interaction.service';
+import { ConfigurationService } from './services/configuration.service';
 
 
 @Component({
@@ -31,23 +31,24 @@ export class RootComponent {
         private keyboard: KeyboardService,
         public wallpaper: WallpaperService,
         public xpraService: XpraService,
-        private interactionService: WindowInteractionService
+        private interactionService: WindowInteractionService,
+        public configuration: ConfigurationService
     ) {
 
-        // this.windowManager.openWindow({
-        //     appId: "file-manager",
-        //     x: 50,
-        //     y: 800,
-        //     width: 800,
-        //     height: 200,
+        this.windowManager.openWindow({
+            appId: "file-manager",
+            x: 50,
+            y: 800,
+            width: 800,
+            height: 200,
 
-        //     // This is an arbitrary data object that gets loaded into the app
-        //     data: {
-        //         basePath: "/home/knackstedt/Downloads/_Test",
-        //         showHidden: false,
-        //         search: ""
-        //     }
-        // });
+            // This is an arbitrary data object that gets loaded into the app
+            data: {
+                basePath: "/home/knackstedt/Downloads/",
+                showHidden: false,
+                search: ""
+            }
+        });
 
         // this.windowManager.openWindow({
         //     appId: "terminal",
@@ -62,51 +63,5 @@ export class RootComponent {
         //         command: "bash"
         //     }
         // });
-
-        // this.windowManager.openWindow({
-        //     appId: "native",
-        //     x: 200,
-        //     y: 200,
-        //     width: 400,
-        //     height: 400,
-
-        //     // This is an arbitrary data object that gets loaded into the app
-        //     data: {
-        //         cwd: "/home/knackstedt/Downloads/",
-        //         command: "bash"
-        //     }
-        // });
-
-        // this.windowManager.openWindow({
-        //     appId: "native",
-        //     x: 100,
-        //     y: 100,
-        //     width: 600,
-        //     height: 600,
-
-        //     // This is an arbitrary data object that gets loaded into the app
-        //     data: {
-        //         cwd: "/home/knackstedt/Downloads/",
-        //         command: "gedit"
-        //     }
-        // });
-
     }
-
-    titleOverride = "";
-    subtitleOverride = "";
-    @HostListener('window:message', ['$event'])
-    private onMessage(event) {
-        const message = event.data;
-        switch (message.action) {
-            case "setTitle":
-                this.titleOverride = message.title;
-                break;
-            case "setSubtitle":
-                this.subtitleOverride = message.subtitle;
-                break;
-        }
-    }
-
-    
 }

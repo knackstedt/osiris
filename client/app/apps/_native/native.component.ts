@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
 import { ManagedWindow, Window } from 'client/app/services/window-manager.service';
 import { XpraService } from 'client/app/services/xpra.service';
 import { Fetch } from '../../services/fetch.service';
@@ -6,6 +6,8 @@ import { XpraWindowManagerWindow } from 'xpra-html5-client';
 import { OnClose, OnCollapseChange, OnDragEnd, OnMaximizeChange, OnResizeEnd } from 'client/types/window';
 import { KeyboardService } from '../../services/keyboard.service';
 import { EventListenerFocusTrapInertStrategy } from '@angular/cdk/a11y';
+import { environment } from '../../../environments/environment';
+import { ConfigurationService } from '../../services/configuration.service';
 
 @Window()
 @Component({
@@ -13,12 +15,17 @@ import { EventListenerFocusTrapInertStrategy } from '@angular/cdk/a11y';
     templateUrl: './native.component.html',
     styleUrls: ['./native.component.scss']
 })
-export class NativeComponent implements AfterViewInit, OnCollapseChange, OnMaximizeChange, OnClose, OnDragEnd, OnResizeEnd {
+export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChange, OnMaximizeChange, OnClose, OnDragEnd, OnResizeEnd {
     @ViewChild("canvas", {read: ElementRef}) elementRef;
     @Input() windowRef: ManagedWindow;
     @Input() data: XpraWindowManagerWindow;
     
-    constructor(private fetch: Fetch, public xpraService: XpraService, private keyboard: KeyboardService) {
+    constructor(
+        private fetch: Fetch, 
+        public xpraService: XpraService, 
+        private keyboard: KeyboardService,
+        private configuration: ConfigurationService
+        ) {
 
     }
     
@@ -35,31 +42,49 @@ export class NativeComponent implements AfterViewInit, OnCollapseChange, OnMaxim
 
         this.elementRef.nativeElement.appendChild(this.data.canvas);
         this.bindEvents();
-
-        // win.canvas.onmousedown = e => this.wm.mouseButton(null, e, true);
-        // win.canvas.onmouseup = e => this.wm.mouseButton(null, e, false);
-        // win.canvas.onmousemove = e => this.wm.mouseMove(null, e);
         this.updateGeometry();
     }
 
+    ngOnDestroy() {
+        window.removeEventListener("keydown", (evt) => this.onKeyDown(evt));
+        window.removeEventListener("keyup", (evt) => this.onKeyUp(evt));
+    }
+
     private getPos(): [number,number] {
-        return [this.windowRef.x, this.windowRef.y];
+        if (this.windowRef._isMaximized)
+            return [
+                this.configuration.leftOffset,
+                this.configuration.topOffset + (this.windowRef._isBorderless ? 0 : this.configuration.windowToolbarHeight)
+            ];
+
+        return [
+            this.windowRef.x + this.configuration.leftOffset, 
+            this.windowRef.y + (this.windowRef._isBorderless ? 0 : this.configuration.windowToolbarHeight)
+        ];
     }
     private getDim(): [number, number] {
+
+        if (this.windowRef._isMaximized)
+            return [
+                globalThis.innerWidth - (this.configuration.leftOffset + this.configuration.rightOffset), 
+                globalThis.innerHeight - (this.configuration.bottomOffset + this.configuration.topOffset + (this.windowRef._isBorderless ? 0 : this.configuration.windowToolbarHeight))
+            ];
+
         this.windowRef.width  = Math.min(this.windowRef.width, window.innerWidth);
         this.windowRef.height = Math.min(this.windowRef.height, window.innerHeight);
 
-        return [this.windowRef.width, this.windowRef.height];
+        return [this.windowRef.width, this.windowRef.height - (this.windowRef._isBorderless ? 0 : this.configuration.windowToolbarHeight)];
     }
     private updateGeometry() {
         this.xpraService.wm.moveResize(this.data, this.getPos(), this.getDim());
     }
 
     private bindEvents() {
+        // TODO: offload onto keyboard service
         window.addEventListener("keydown", (evt) => this.onKeyDown(evt));
         window.addEventListener("keyup", (evt) => this.onKeyUp(evt));
 
-        const el = this.windowRef.getWindowElement();
+        // const el = this.windowRef.getWindowElement();
         // el.onpointerdown = e => e.stopPropagation();
         // el.onpointerup = e => e.stopPropagation();
         // el.onpointermove = e => e.stopPropagation();
@@ -70,15 +95,14 @@ export class NativeComponent implements AfterViewInit, OnCollapseChange, OnMaxim
     }    
 
     onMaximizeChange(evt): void {
-        this.xpraService.wm.maximize(this.data, this.getPos(), this.getDim());        
+        this.updateGeometry();
     }
     
     onCollapseChange(evt: { isCollapsed: boolean; }): void {
         if (evt.isCollapsed)
             this.xpraService.wm.minimize(this.data);
-        // else
-            // this.xpraService.wm.maximize(this.data);
-
+        else
+            this.updateGeometry();
     }
     onResizeEnd(evt: MouseEvent): void {
         this.updateGeometry();        
@@ -116,35 +140,24 @@ export class NativeComponent implements AfterViewInit, OnCollapseChange, OnMaxim
         evt.preventDefault();
     }
 
-    onKeyDown(evt: KeyboardEvent) {
-        if (this.windowRef._isActive)
-            this.xpraService.wm.keyPress(this.data, evt, true);
-    }
-    onKeyUp(evt: KeyboardEvent) {
-        if (this.windowRef._isActive)
-            this.xpraService.wm.keyPress(this.data, evt, false);
-    }
-
     @HostListener("mousewheel", ["$event"])
     onPointerEnter(evt: PointerEvent) {
         this.xpraService.wm.mouseWheel(this.data, evt);
     }
 
-    // @HostListener("pointerleave", ["$event"])
-    // @HostListener("blur", ["$event"])
-    // onPointerLeave(evt: PointerEvent) {
-    //     this.xpraService.setHoverTarget(this.data);
-    // }
-
-    // @HostListener("resize", ["$event"])
-    // onResize(evt: any) {
-    //     // console.log("evt_resize")
-    //     this.xpraService.wm.moveResize(this.data, [
-    //         this.windowRef.x,
-    //         this.windowRef.y
-    //     ], [
-    //         this.windowRef.width,
-    //         this.windowRef.height
-    //     ]);
-    // }
+    /**
+     * This is bound on the window level
+     */
+    onKeyDown(evt: KeyboardEvent) {
+        if (this.windowRef._isActive) {
+            this.xpraService.wm.keyPress(this.data, evt, true);
+            evt.stopPropagation();
+        }
+    }
+    onKeyUp(evt: KeyboardEvent) {
+        if (this.windowRef._isActive) {
+            this.xpraService.wm.keyPress(this.data, evt, false);
+            evt.stopPropagation();
+        }
+    }
 }
