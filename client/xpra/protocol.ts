@@ -31,7 +31,7 @@ export default class XpraProtocolWorkerHost {
             return
         }
         // https://webpack.js.org/guides/web-workers/
-        this.worker = new Worker(new URL('./protocol_worker.js', import.meta.url))
+        this.worker = new Worker(new URL('./protocol.worker', import.meta.url))
         // Receive message from the Web Worker
         this.worker.onmessage = (e) => {
             e = e.data

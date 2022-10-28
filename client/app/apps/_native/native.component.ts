@@ -76,7 +76,7 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
         return [this.windowRef.width, this.windowRef.height - (this.windowRef._isBorderless ? 0 : this.configuration.windowToolbarHeight)];
     }
     private updateGeometry() {
-        this.xpraService.wm.moveResize(this.data, this.getPos(), this.getDim());
+        // this.xpraService.wm.moveResize(this.data, this.getPos(), this.getDim());
     }
 
     private bindEvents() {
@@ -91,7 +91,7 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
     }
 
     onClose(): void {
-        this.xpraService.wm.close(this.data);
+        // this.xpraService.wm.close(this.data);
     }    
 
     onMaximizeChange(evt): void {
@@ -99,10 +99,10 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
     }
     
     onCollapseChange(evt: { isCollapsed: boolean; }): void {
-        if (evt.isCollapsed)
-            this.xpraService.wm.minimize(this.data);
-        else
-            this.updateGeometry();
+        // if (evt.isCollapsed)
+        //     this.xpraService.wm.minimize(this.data);
+        // else
+        //     this.updateGeometry();
     }
     onResizeEnd(evt: MouseEvent): void {
         this.updateGeometry();        
@@ -120,19 +120,19 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
 
     @HostListener("mouseup", ["$event"])
     onMouseUp(evt) {
-        this.xpraService.wm.mouseButton(this.data, evt, false);
+        // this.xpraService.wm.mouseButton(this.data, evt, false);
     }
 
     @HostListener("mousedown", ["$event"])
     onMouseDown(evt: PointerEvent) {
         this.windowRef.activate();
-        this.xpraService.wm.mouseButton(this.data, evt, true);
+        // this.xpraService.wm.mouseButton(this.data, evt, true);
     }
 
     @HostListener("mousemove", ["$event"])
     onPointerMove(evt: PointerEvent) {
-        this.xpraService.setHoverTarget(this.data);
-        this.xpraService.wm.mouseMove(this.data, evt);
+        // this.xpraService.setHoverTarget(this.data);
+        // this.xpraService.wm.mouseMove(this.data, evt);
     }
 
     @HostListener("contextmenu", ["$event"])
@@ -142,7 +142,7 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
 
     @HostListener("mousewheel", ["$event"])
     onPointerEnter(evt: PointerEvent) {
-        this.xpraService.wm.mouseWheel(this.data, evt);
+        // this.xpraService.wm.mouseWheel(this.data, evt);
     }
 
     /**
@@ -150,13 +150,13 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
      */
     onKeyDown(evt: KeyboardEvent) {
         if (this.windowRef._isActive) {
-            this.xpraService.wm.keyPress(this.data, evt, true);
+            // this.xpraService.wm.keyPress(this.data, evt, true);
             evt.stopPropagation();
         }
     }
     onKeyUp(evt: KeyboardEvent) {
         if (this.windowRef._isActive) {
-            this.xpraService.wm.keyPress(this.data, evt, false);
+            // this.xpraService.wm.keyPress(this.data, evt, false);
             evt.stopPropagation();
         }
     }

@@ -77,7 +77,7 @@ class XpraDecoderWorkerHost {
      */
     constructor(serverAudioCodecs) {
         // https://webpack.js.org/guides/web-workers/
-        this.worker = new Worker(new URL('./decoder_worker.js', import.meta.url))
+        this.worker = new Worker(new URL('./decoder.worker', import.meta.url))
         // Receive message from the Web Worker
         this.worker.onmessage = (e) => {
             e = e.data

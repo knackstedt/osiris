@@ -63,5 +63,9 @@ export class RootComponent {
         //         command: "bash"
         //     }
         // });
+
+        this.fetch.get('/api/xorg').then(res => {
+            console.log("XPRA capable apps", res);
+        });
     }
 }

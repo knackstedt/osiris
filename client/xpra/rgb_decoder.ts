@@ -10,7 +10,6 @@
  *
  * This file is part of Xpra.
  */
-import { inflate } from 'zlib'
 import { lz4 } from './lz4'
 
 /**
@@ -92,17 +91,8 @@ export async function createBitmapFromCompressedRgb(data, width, height, encodin
             createBitmapFromRgb(
                 lz4.decode(data), width, height, encoding, rowStride)
                 .then(resolve).catch(reject)
-        } else if (options.zlib) {
-            inflate(data, (err, result) => {
-                if (err) {
-                    reject(err)
-                    return
-                }
-                createBitmapFromRgb(
-                    result, width, height, encoding, rowStride)
-                    .then(resolve).catch(reject)
-            })
-        } else
+        } 
+        else
             createBitmapFromRgb(
                 data, width, height, encoding, rowStride)
                 .then(resolve).catch(reject)

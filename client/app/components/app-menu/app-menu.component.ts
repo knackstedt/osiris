@@ -74,6 +74,6 @@ export class AppMenuComponent {
     openApp(app: XpraXDGReducedMenuEntry) {
         // this.xpra.wm.createWindow(app);
 
-        this.xpra.xpra.sendStartCommand(app.name, app.exec, false);
+        // this.xpra.xpra.sendStartCommand(app.name, app.exec, false);
     }
 }

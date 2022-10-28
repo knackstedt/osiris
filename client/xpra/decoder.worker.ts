@@ -14,7 +14,8 @@ import { createBitmapFromCompressedRgb } from './rgb_decoder'
 
 class WebCodecsImageDecoder {
     static get available() {
-        return ('ImageDecoder' in window)
+        // @ts-ignore
+        return typeof (ImageDecoder) != 'undefined'
     }
 
     /**
@@ -29,7 +30,8 @@ class WebCodecsImageDecoder {
 
         return new Promise((resolve) => {
             // https://developer.mozilla.org/en-US/docs/Web/API/ImageDecoder
-            new window['ImageDecoder']({
+            // @ts-ignore
+            new ImageDecoder({
                 data: data,
                 type: mime,
                 colorSpaceConversion: "none",
@@ -61,7 +63,8 @@ class WebCodecsVideoDecoder {
     outputRejector = null
 
     static get available() {
-        return ('VideoDecoder' in window)
+        // @ts-ignore
+        return typeof (VideoDecoder) != 'undefined'    
     }
 
     /**
@@ -78,7 +81,8 @@ class WebCodecsVideoDecoder {
         this.codec = codec
         this.onError = onError
 
-        this.decoder = new window['VideoDecoder']({
+        // @ts-ignore
+        this.decoder = new VideoDecoder({
             output: (frame) => {
                 // Someone is waiting for it
                 if (this.outputResolver) {
@@ -162,9 +166,8 @@ class WebCodecsVideoDecoder {
             throw 'first frame must be a key frame'
 
         // https://developer.mozilla.org/en-US/docs/Web/API/EncodedVideoChunk/EncodedVideoChunk
-        // Eslint do not recognize WebCodecs API currently.
-        /* eslint-disable no-undef */
-        this.decoder.decode(new window['EncodedVideoChunk']({
+        // @ts-ignore
+        this.decoder.decode(new EncodedVideoChunk({
             // Indicates if the chunk is a key chunk that
             // does not rely on other frames for encoding
             type: options.type == 'IDR' ? 'key' : 'delta',

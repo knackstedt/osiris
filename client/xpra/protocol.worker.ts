@@ -11,7 +11,8 @@
 import { WriteUint32BE, WriteLatin1, decodeLatin1, encodeLatin1, toHex } from './buffer'
 import { lz4 } from './lz4'
 import forge from 'node-forge'
-import { inflateSync, brotliDecompressSync } from 'zlib'
+// import { inflateSync, brotliDecompressSync } from 'browserify-zlib';
+import decompress from 'brotli/decompress';
 import { rencoder, rdecoder } from './rencode'
 
 function eventStr(event) {
@@ -369,9 +370,7 @@ class XpraProtocol {
             if (level & 0x10)
                 payload = lz4.decode(payload)
             else if (level & 0x40)
-                payload = brotliDecompressSync(payload)
-            else if (level != 0)
-                payload = inflateSync(payload)
+                payload = decompress(payload as any)
 
             if (index > 0) {
                 this.rawPackets[index] = payload
