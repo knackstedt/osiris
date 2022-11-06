@@ -38,7 +38,7 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
         let opts: Partial<WindowConfig> = {};
         if (typeof options == "string")
             opts.appId = options;
-        else 
+        else
             opts = options;
 
         opts.data = opts.data || data;
@@ -59,8 +59,15 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
             return;
 
         // Grouping for like xpra windows
-        if (opts.appId == "native") {
-            const id = opts._nativeWindow.attributes.metadata['class-instance'].join('_');
+        if (opts.appId == "native" && opts._nativeWindow.attributes.metadata['class-instance']) {
+            const id = opts._nativeWindow.attributes.metadata['class-instance']?.join('_');
+
+            if (!id) {
+                // ! Should we destroy the window in this case?
+                // Unclear why windows that are "NORMAL" would ever be like this.
+                return;
+            }
+
             // Lookup if we already have a taskbar item
             let taskbarItem = this.taskbarItems.find(t => t.appId == id);
 
@@ -104,10 +111,10 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
         taskbarGroup?.windows.splice(taskbarGroup.windows.findIndex(w => w.id == id), 1);
 
         // If the taskbar group is now empty, purge it.
-        if (taskbarGroup?.windows.length == 0) 
+        if (taskbarGroup?.windows.length == 0)
             instance.taskbarItems.splice(instance.taskbarItems.findIndex(tb => tb.appId == taskbarGroup.appId), 1);
 
-        // Last, purge the actual window if it's native. 
+        // Last, purge the actual window if it's native.
         globalThis.XpraService.closeWindow(instance);
     }
 
@@ -139,7 +146,7 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
 
         const fileArr = Array.isArray(files) ? files : [files];
 
-        // Use a map to deduplicate and get a discrete count of 
+        // Use a map to deduplicate and get a discrete count of
         // total mimetypes provided.
         let m = {};
         fileArr.map(d => this.getMimetype(d)).forEach(k => {
@@ -169,7 +176,7 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
             case "video": { return this.openWindow("video-player", files) }
             // case "archive": { return this.openWindow("", files) }
             case "text": { return this.openWindow("code-editor", files) }
-            // case "mixed": 
+            // case "mixed":
             // case "binary": { this.openWindow("", files) }
         }
         return null;
@@ -207,22 +214,22 @@ export class ManagedWindow {
     description = "";
 
     x = 100;
-    y = 100;    
-    
+    y = 100;
+
     isResizable = true;
     isDraggable = true;
-    
+
     maxWidth = "100vw";
-    minWidth = 300; 
+    minWidth = 300;
     width = 800;
-    
+
     maxHeight = "100vh";
     minHeight = 200;
     height = 600;
-    
+
     customCss: string = "";
 
-    data: any = {}; 
+    data: any = {};
 
     _isCollapsed = false;
     _isMaximized = false;
@@ -245,7 +252,7 @@ export class ManagedWindow {
 
     constructor(config: WindowConfig) {
         Object.keys(config).forEach(k => this[k] = config[k]);
-        
+
         const app = Apps.find(a => a.appId == this.appId);
         if (!app)
             throw new Error("Unknown application. Cannot create window");
@@ -317,7 +324,7 @@ export class ManagedWindow {
 
     emit(name: string, event?: any) {
         // console.log(name, event);
-        
+
         let res = this._component?.instance[name] && this._component.instance[name](event);
 
         // before and after events should be ignored.
@@ -342,8 +349,8 @@ export class ManagedWindow {
     }
 
     /**
-     * Maximize the window as big as we can 
-     */    
+     * Maximize the window as big as we can
+     */
     maximize() {
         this._isMaximized = true;
 
@@ -365,17 +372,17 @@ export class ManagedWindow {
     collapse() {
         this._minimizedPreview = this.getIHTML();
         this._isCollapsed = true;
-        
+
         this.emit("onCollapseChange", { isCollapsed: true });
     }
-    
+
     /**
      * Restore the window from it's collapsed state
      */
     uncollapse() {
         delete this._minimizedPreview;
         this._isCollapsed = false;
-        
+
         this.emit("onCollapseChange", { isCollapsed: false });
         this.activate();
     }
@@ -386,7 +393,7 @@ export class ManagedWindow {
     activate() {
         // console.log("Activate window")
         this.blurAllWindows(this);
-        
+
         this._isActive = true;
         this._index = ManagedWindow.windowZindexCounter++;
 
@@ -438,7 +445,7 @@ export function Window(): Function {
 
                     try {
                         return method.apply(component, args);
-                    } 
+                    }
                     catch (error) {
                         if (error.stack) {
                             const lines = error.stack.split('\n');
@@ -446,7 +453,7 @@ export function Window(): Function {
                             if (match) {
                                 const { name, func } = match?.groups;
                                 if (name.endsWith("Component")) {
-                                    
+
                                     // intercept the error
                                     if (func == "ngOnInit")
                                         return component.__onError?.next(error);

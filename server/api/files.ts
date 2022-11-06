@@ -80,17 +80,17 @@ router.use('/7z', route(async (req, res, next) => {
 router.use('/tar', route(async (req, res, next) => {
     const { dir, file,  } = req.body;
 
-    let entries = [];
-    tar.t({
-        file: dir + file
-    })
-    .on("onentry", (entry) => {
-        entries.push(entry);
-    })
-    .on("finish", () => {
-        res.send(entries);
-    })
-    .on("error", next);
+    // let entries = [];
+    // tar.t({
+    //     file: dir + file
+    // })
+    // .on("onentry", (entry) => {
+    //     entries.push(entry);
+    // })
+    // .on("finish", () => {
+    //     res.send(entries);
+    // })
+    // .on("error", next);
 
 }));
 
