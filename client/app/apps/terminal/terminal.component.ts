@@ -9,12 +9,17 @@ import { Unicode11Addon } from 'xterm-addon-unicode11';
 
 import io, { Socket } from "socket.io-client";
 import { OnResize } from 'client/types/window';
+import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
 
 @Component({
     selector: "window-terminal",
     templateUrl: './terminal.component.html',
     styleUrls: ['./terminal.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    imports: [
+        WindowTemplateComponent
+    ],
+    standalone: true
 })
 export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
     @ViewChild('terminal') terminalRef: ElementRef;
@@ -37,7 +42,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
 
     ngAfterViewInit(): void {
         // const socket = this.socket = io({
-        //     secure: true,            
+        //     secure: true,
         //     path: "/terminal.io",
         //     host: "localhost:3000",
         //     hostname: "localhost:3000",
@@ -58,20 +63,20 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
 
                 terminal.loadAddon(fitAddon);
 
-                
-                
+
+
                 // terminal.loadAddon(new WebLinksAddon());
                 const unicode11Addon = new Unicode11Addon();
                 terminal.loadAddon(unicode11Addon);
                 // terminal.unicode.activeVersion = '11';
-                
-                
+
+
                 // this.webglAddon.onContextLoss(e => {
                     //     // e.preventDefault();
                     //     this.webglAddon.dispose();
                     //     this.webglAddon = null;
                     // });
-                    
+
                 terminal.options.theme = {
                     background: "#333333",
                     foreground: "#F5F8FA",
@@ -83,7 +88,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
                 this.fitAddon.fit();
 
                 // terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
-                
+
                 this.startListening();
             }
         })

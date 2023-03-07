@@ -5,6 +5,11 @@ import { resolveIcon } from './icon-resolver';
 import { KeyboardService } from '../../services/keyboard.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ContextMenuItem } from '../../components/context-menu/context-menu.component';
+import { CommonModule } from '@angular/common';
+import { CommonAppModule } from '../../common.module';
+import { ButtonPopoutComponent } from 'client/app/components/button-popout/button-popout.component';
+import { WindowToolbarComponent } from 'client/app/components/window-template/window-toolbar/window-toolbar.component';
+import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
 // TODO:
 /**
  * Multiple music / video / image files selected turns into a playlist
@@ -55,7 +60,15 @@ export type FSDescriptor = DirectoryDescriptor | FileDescriptor;
 @Component({
     selector: 'app-filemanager',
     templateUrl: './filemanager.component.html',
-    styleUrls: ['./filemanager.component.scss']
+    styleUrls: ['./filemanager.component.scss'],
+    imports: [
+        CommonModule,
+        CommonAppModule,
+        ButtonPopoutComponent,
+        WindowToolbarComponent,
+        WindowTemplateComponent
+    ],
+    standalone: true
 })
 export class FilemanagerComponent implements OnInit {
 

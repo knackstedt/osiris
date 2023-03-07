@@ -5,7 +5,9 @@ import { WindowManagerService } from '../../../services/window-manager.service';
 @Component({
     selector: 'app-window-toolbar',
     templateUrl: './window-toolbar.component.html',
-    styleUrls: ['./window-toolbar.component.scss']
+    styleUrls: ['./window-toolbar.component.scss'],
+    imports: [],
+    standalone: true
 })
 export class WindowToolbarComponent implements OnInit {
 

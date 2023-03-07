@@ -1,10 +1,15 @@
 import { Component, ContentChild, HostListener, Input, OnInit, TemplateRef, ViewEncapsulation, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-button-popout',
     templateUrl: './button-popout.component.html',
     styleUrls: ['./button-popout.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    imports: [
+        CommonModule
+    ],
+    standalone: true
 })
 export class ButtonPopoutComponent {
     @Input() img: string;
@@ -39,12 +44,12 @@ export class ButtonPopoutComponent {
      */
     private checkForParentNode(test: string, currentNode: Element) {
         if (!currentNode) return;
-        
+
         if (currentNode.nodeName == "BODY" || currentNode.nodeName == "HTML")
             return false;
         else if (currentNode.nodeName == test.toUpperCase())
             return true;
-        else 
+        else
             return this.checkForParentNode(test, currentNode.parentElement);
     }
 }

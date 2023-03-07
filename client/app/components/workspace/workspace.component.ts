@@ -7,14 +7,13 @@ import { WindowManagerService } from 'client/app/services/window-manager.service
     templateUrl: './workspace.component.html',
     styleUrls: ['./workspace.component.scss']
 })
-export class WorkspaceComponent implements OnInit {
+export class WorkspaceComponent {
+
+    public windows: any[] = [];
 
     constructor(
         public configuration: ConfigurationService,
         public windowManager: WindowManagerService
-    ) { }
-
-    ngOnInit() {
+    ) {
     }
-
 }

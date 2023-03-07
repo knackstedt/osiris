@@ -1,4 +1,4 @@
-import { AppId } from 'client/app/applications';
+// import { AppId } from 'client/app/applications';
 
 export type WindowOptions = {
     /**
@@ -12,7 +12,7 @@ export type WindowOptions = {
     /**
      * App grouping ID
      */
-    appId: AppId,
+    appId: string,//AppId,
     /**
      * A brief description about what the app does
      */
@@ -31,7 +31,7 @@ export type WindowOptions = {
      */
     data?: any,
 
-    
+
 
     x: number,
     y: number
@@ -47,15 +47,15 @@ export declare interface OnResize {
 
 export declare interface OnResizeStart {
     /**
-     * This method is called when the dimensions of a window have 
-     * been resized by the user. 
+     * This method is called when the dimensions of a window have
+     * been resized by the user.
      */
     onResizeStart(evt: MouseEvent): void
 }
 export declare interface OnResizeEnd {
     /**
-     * This method is called when the dimensions of a window have 
-     * been resized by the user. 
+     * This method is called when the dimensions of a window have
+     * been resized by the user.
      */
     onResizeEnd(evt: MouseEvent): void
 }

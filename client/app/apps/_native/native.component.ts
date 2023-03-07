@@ -5,30 +5,35 @@ import { Fetch } from '../../services/fetch.service';
 import { XpraWindowManagerWindow } from 'xpra-html5-client';
 import { OnClose, OnCollapseChange, OnDragEnd, OnMaximizeChange, OnResizeEnd } from 'client/types/window';
 import { KeyboardService } from '../../services/keyboard.service';
-import { EventListenerFocusTrapInertStrategy } from '@angular/cdk/a11y';
-import { environment } from '../../../environments/environment';
 import { ConfigurationService } from '../../services/configuration.service';
+import { CommonModule } from '@angular/common';
+import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
 
 @Window()
 @Component({
-    // selector: 'native',
+    selector: 'native',
     templateUrl: './native.component.html',
-    styleUrls: ['./native.component.scss']
+    styleUrls: ['./native.component.scss'],
+    imports: [
+        CommonModule,
+        WindowTemplateComponent
+    ],
+    standalone: true
 })
 export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChange, OnMaximizeChange, OnClose, OnDragEnd, OnResizeEnd {
     @ViewChild("canvas", {read: ElementRef}) elementRef;
     @Input() windowRef: ManagedWindow;
     @Input() data: XpraWindowManagerWindow;
-    
+
     constructor(
-        private fetch: Fetch, 
-        public xpraService: XpraService, 
+        private fetch: Fetch,
+        public xpraService: XpraService,
         private keyboard: KeyboardService,
         private configuration: ConfigurationService
         ) {
 
     }
-    
+
     // onFileUpload = async () => {
     //     const files = await browserLoadFile()
     //     files.forEach(({ buffer, name, size, type }) =>
@@ -58,7 +63,7 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
             ];
 
         return [
-            this.windowRef.x + this.configuration.leftOffset, 
+            this.windowRef.x + this.configuration.leftOffset,
             this.windowRef.y + (this.windowRef._isBorderless ? 0 : this.configuration.windowToolbarHeight)
         ];
     }
@@ -66,7 +71,7 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
 
         if (this.windowRef._isMaximized)
             return [
-                globalThis.innerWidth - (this.configuration.leftOffset + this.configuration.rightOffset), 
+                globalThis.innerWidth - (this.configuration.leftOffset + this.configuration.rightOffset),
                 globalThis.innerHeight - (this.configuration.bottomOffset + this.configuration.topOffset + (this.windowRef._isBorderless ? 0 : this.configuration.windowToolbarHeight))
             ];
 
@@ -92,12 +97,12 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
 
     onClose(): void {
         this.xpraService.wm.close(this.data);
-    }    
+    }
 
     onMaximizeChange(evt): void {
         this.updateGeometry();
     }
-    
+
     onCollapseChange(evt: { isCollapsed: boolean; }): void {
         if (evt.isCollapsed)
             this.xpraService.wm.minimize(this.data);
@@ -105,12 +110,12 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
             this.updateGeometry();
     }
     onResizeEnd(evt: MouseEvent): void {
-        this.updateGeometry();        
+        this.updateGeometry();
     }
     onDragEnd(evt: MouseEvent): void {
         this.updateGeometry();
     }
-    
+
     // getEvent(evt) {
     //     // debugger
     //     let x = this.data.attributes.position[0] + (evt.clientX - this.windowRef.x);

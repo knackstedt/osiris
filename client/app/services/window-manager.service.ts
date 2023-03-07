@@ -207,8 +207,13 @@ export class ManagedWindow {
     private static windowIdCounter = 0;
     private static windowZindexCounter = 0;
 
+    // This is simply a unique identifier used to pick this out
     id = ManagedWindow.windowIdCounter++;
+    workspace: number;
     appId: string;
+
+    // Instance of the angular component
+    instance: Object;
 
     title = "Osiris Application";
     icon = "assets/icons/dialog-information-symbolic.svg";
@@ -253,16 +258,18 @@ export class ManagedWindow {
 
     constructor(config: WindowConfig) {
         Object.keys(config).forEach(k => this[k] = config[k]);
+    }
 
+    onInit() {
         const app = null;//Apps.find(a => a.appId == this.appId);
         if (!app)
             throw new Error("Unknown application. Cannot create window");
 
-        this.icon = config.icon || app.icon;
-        this.title = config.title || app.title;
-        this.description = config.description || app.description;
+        this.icon = this.icon || app.icon;
+        this.title = this.title || app.title;
+        this.description = this.description || app.description;
 
-        if (config.appId == "native") {
+        if (this.appId == "native") {
             const data = this._nativeWindow;
 
             const isDesktop = data?.attributes?.metadata['window-type'].includes("DESKTOP");
@@ -275,31 +282,6 @@ export class ManagedWindow {
                 this.isDraggable = false;
             }
         }
-
-        // ApplicationLoader.LoadApplication(this.appId)
-        //     .then(async module => {
-        //         // no module, there is no remote app to load.
-        //         if (!module) {
-        //             this._isLoading = false;
-        //             return;
-        //         }
-        //         this._module = module;
-
-        //         // Parse the APP id so we can do a tolerant match
-        //         const appId = this.appId.toLowerCase().replace(/-/g, '');
-        //         const component = module['ɵmod'].declarations
-        //             .find(c => {
-        //                 const ccn = c.name.toLowerCase().replace(/-/g, '').replace(/component$/, '');
-        //                 return ccn == appId;
-        //             });
-
-        //         if (!component)
-        //             throw `Could not find appId ${this.appId} on module ${module.name}!`;
-
-        //         // Create the componentportal and render the elements.
-        //         this._portal = new ComponentPortal(component);
-        //         this._isLoading = false;
-        //     });
     }
 
     toJSON() {
