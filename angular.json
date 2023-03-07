@@ -44,7 +44,7 @@
               "client/manifest.webmanifest"
             ],
             "styles": [
-              "client/main.scss"
+              "client/style/main.scss"
             ],
             "scripts": [],
             "serviceWorker": true,
