@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { WindowManagerService } from '../../../services/window-manager.service';
@@ -6,7 +7,9 @@ import { WindowManagerService } from '../../../services/window-manager.service';
     selector: 'app-window-toolbar',
     templateUrl: './window-toolbar.component.html',
     styleUrls: ['./window-toolbar.component.scss'],
-    imports: [],
+    imports: [
+        CommonModule
+    ],
     standalone: true
 })
 export class WindowToolbarComponent implements OnInit {

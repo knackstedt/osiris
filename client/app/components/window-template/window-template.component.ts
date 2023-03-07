@@ -1,6 +1,7 @@
 import { Component, ContentChild, HostListener, Input, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { ManagedWindow } from '../../services/window-manager.service';
 import { WindowToolbarComponent } from './window-toolbar/window-toolbar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-window-template',
@@ -8,6 +9,7 @@ import { WindowToolbarComponent } from './window-toolbar/window-toolbar.componen
     styleUrls: ['./window-template.component.scss'],
     encapsulation: ViewEncapsulation.None,
     imports: [
+        CommonModule,
         WindowToolbarComponent
     ],
     standalone: true

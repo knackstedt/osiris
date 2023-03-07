@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ContextMenuDirective } from './directives/context-menu.directive';
 import { UrlSanitizer, HTMLSanitizer } from './pipes/urlsanitizer.pipe';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { UrlSanitizer, HTMLSanitizer } from './pipes/urlsanitizer.pipe';
         ContextMenuDirective,
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        MatDialogModule
     ],
     exports: [
         UrlSanitizer,

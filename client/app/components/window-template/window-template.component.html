@@ -1,8 +1,8 @@
-<app-window-toolbar 
+<app-window-toolbar
     class="draghandle"
-    [window]="window" 
-    [template]="toolbar" 
-    [class.active]="window._isActive">
+    [window]="window"
+    [template]="toolbar"
+    [class.active]="window?._isActive">
 </app-window-toolbar>
 <ng-container *ngTemplateOutlet="content">
 </ng-container>

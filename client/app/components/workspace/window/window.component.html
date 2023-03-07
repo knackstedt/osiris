@@ -1,9 +1,10 @@
 <div class="window">
     <div class="content">
         <ngx-lazy-loader
+            *ngIf="inputs"
             [component]="window.appId"
             [group]="'app'"
-            [inputs]="window.data"
+            [inputs]="inputs"
             (componentLoaded)="window.instance; window.onInit();"
         />
     </div>

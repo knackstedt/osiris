@@ -25,7 +25,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
     @ViewChild('terminal') terminalRef: ElementRef;
 
 
-    @Input() windowRef: ManagedWindow;
+    @Input("window") windowRef: ManagedWindow;
     @Input() data: any;
 
 

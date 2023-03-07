@@ -261,13 +261,13 @@ export class ManagedWindow {
     }
 
     onInit() {
-        const app = null;//Apps.find(a => a.appId == this.appId);
-        if (!app)
-            throw new Error("Unknown application. Cannot create window");
+        // const app = null;//Apps.find(a => a.appId == this.appId);
+        // if (!app)
+        //     throw new Error("Unknown application. Cannot create window");
 
-        this.icon = this.icon || app.icon;
-        this.title = this.title || app.title;
-        this.description = this.description || app.description;
+        this.icon = this.icon;
+        this.title = this.title;
+        this.description = this.description;
 
         if (this.appId == "native") {
             const data = this._nativeWindow;

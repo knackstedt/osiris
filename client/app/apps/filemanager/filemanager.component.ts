@@ -74,7 +74,7 @@ export class FilemanagerComponent implements OnInit {
 
     resolveIcon = resolveIcon;
 
-    @Input() windowRef: ManagedWindow;
+    @Input("window") windowRef: ManagedWindow;
 
     directoryContents: FSDescriptor[] = [];
     selected: string[] = [];
