@@ -1,9 +1,9 @@
 import { Portal, ComponentPortal } from '@angular/cdk/portal';
 import { ComponentRef, Injectable, EventEmitter } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { AppId, ApplicationLoader, Apps } from '../applications';
+// import { AppId, ApplicationLoader, Apps } from '../applications';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
-import { FileDescriptor } from '../apps/filemanager/filemanager.component';
+// import { FileDescriptor } from '../apps/filemanager/filemanager.component';
 import { XpraWindowManagerWindow, XpraWindowMetadataType } from 'xpra-html5-client';
 
 const managedWindows: ManagedWindow[] = [];
@@ -13,6 +13,7 @@ const isAudio = /\.(wav|mp3|ogg|adts|webm|flac)$/;
 const isVideo = /\.(mp4|webm|ogv)$/;
 const isArchive = /\.(7z|zip|rar|tar\.?(gz|xz)?)$/;
 type FileType = "image" | "text" | "video" | "archive" | "binary" | "mixed";
+type FileDescriptor = any;
 
 
 @Injectable({
@@ -34,7 +35,7 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
     // public managedWindows$ = new BehaviorSubject<ManagedWindow[]>([]);
     // public taskbarData$ = new BehaviorSubject<ManagedWindow[]>([]);
 
-    public async openWindow(options: WindowConfig | AppId, data?) {
+    public async openWindow(options: WindowConfig, data?) {
         let opts: Partial<WindowConfig> = {};
         if (typeof options == "string")
             opts.appId = options;
@@ -172,10 +173,10 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
         // Open dialog!
 
         switch(fileType) {
-            case "image": { return this.openWindow("image-viewer", files) }
-            case "video": { return this.openWindow("video-player", files) }
+            // case "image": { return this.openWindow("image-viewer", files) }
+            // case "video": { return this.openWindow("video-player", files) }
             // case "archive": { return this.openWindow("", files) }
-            case "text": { return this.openWindow("code-editor", files) }
+            // case "text": { return this.openWindow("code-editor", files) }
             // case "mixed":
             // case "binary": { this.openWindow("", files) }
         }
@@ -253,7 +254,7 @@ export class ManagedWindow {
     constructor(config: WindowConfig) {
         Object.keys(config).forEach(k => this[k] = config[k]);
 
-        const app = Apps.find(a => a.appId == this.appId);
+        const app = null;//Apps.find(a => a.appId == this.appId);
         if (!app)
             throw new Error("Unknown application. Cannot create window");
 
@@ -275,30 +276,30 @@ export class ManagedWindow {
             }
         }
 
-        ApplicationLoader.LoadApplication(this.appId)
-            .then(async module => {
-                // no module, there is no remote app to load.
-                if (!module) {
-                    this._isLoading = false;
-                    return;
-                }
-                this._module = module;
+        // ApplicationLoader.LoadApplication(this.appId)
+        //     .then(async module => {
+        //         // no module, there is no remote app to load.
+        //         if (!module) {
+        //             this._isLoading = false;
+        //             return;
+        //         }
+        //         this._module = module;
 
-                // Parse the APP id so we can do a tolerant match
-                const appId = this.appId.toLowerCase().replace(/-/g, '');
-                const component = module['ɵmod'].declarations
-                    .find(c => {
-                        const ccn = c.name.toLowerCase().replace(/-/g, '').replace(/component$/, '');
-                        return ccn == appId;
-                    });
+        //         // Parse the APP id so we can do a tolerant match
+        //         const appId = this.appId.toLowerCase().replace(/-/g, '');
+        //         const component = module['ɵmod'].declarations
+        //             .find(c => {
+        //                 const ccn = c.name.toLowerCase().replace(/-/g, '').replace(/component$/, '');
+        //                 return ccn == appId;
+        //             });
 
-                if (!component)
-                    throw `Could not find appId ${this.appId} on module ${module.name}!`;
+        //         if (!component)
+        //             throw `Could not find appId ${this.appId} on module ${module.name}!`;
 
-                // Create the componentportal and render the elements.
-                this._portal = new ComponentPortal(component);
-                this._isLoading = false;
-            });
+        //         // Create the componentportal and render the elements.
+        //         this._portal = new ComponentPortal(component);
+        //         this._isLoading = false;
+        //     });
     }
 
     toJSON() {

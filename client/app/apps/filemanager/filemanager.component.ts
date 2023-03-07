@@ -58,11 +58,11 @@ export type FSDescriptor = DirectoryDescriptor | FileDescriptor;
     styleUrls: ['./filemanager.component.scss']
 })
 export class FilemanagerComponent implements OnInit {
-    
+
     resolveIcon = resolveIcon;
-    
+
     @Input() windowRef: ManagedWindow;
-    
+
     directoryContents: FSDescriptor[] = [];
     selected: string[] = [];
 
@@ -150,13 +150,13 @@ export class FilemanagerComponent implements OnInit {
     }
 
     constructor(
-        private fetch: Fetch, 
+        private fetch: Fetch,
         private windowManager: WindowManagerService,
         private keyboard: KeyboardService,
         private dialog: MatDialog
         ) {
 
-        // ctrl + a => select all 
+        // ctrl + a => select all
         keyboard.onKeyCommand({
             key: "a",
             ctrl: true,
@@ -171,7 +171,7 @@ export class FilemanagerComponent implements OnInit {
             ctrl: true,
             window: this.windowRef
         }).subscribe(evt => {
-            
+
         })
 
         // ctrl + h => toggle hidden files
@@ -232,12 +232,12 @@ export class FilemanagerComponent implements OnInit {
                 const parts = this.windowRef.data.basePath.split('/');
 
                 // TODO Refactor.
-                // this.location = 
+                // this.location =
                 this.breadcrumb = parts.map((p, i) => {
                     const path = parts.slice(0, i + 1).join('/');
 
                     return {
-                        path, 
+                        path,
                         label: p || ""
                     };
                 });
@@ -247,16 +247,16 @@ export class FilemanagerComponent implements OnInit {
 
     // This will only ever be one file
     openFile(file: FSDescriptor, evt: MouseEvent) {
-        if (file.kind == "directory") 
+        if (file.kind == "directory")
             this.loadFolder(file.path + file.name);
         else {
-            this.fetch.post<any>(`/api/filesystem/file?only=stat`, [file.path + file.name ]).then(res => {
-                if (res[0].type == "text")
-                    this.windowManager.openWindow("code-editor", file);
-                else 
-                    this.downloadFile(file);
-                // this.fileData = res;
-            });
+            // this.fetch.post<any>(`/api/filesystem/file?only=stat`, [file.path + file.name ]).then(res => {
+            //     if (res[0].type == "text")
+            //         this.windowManager.openWindow("code-editor", file);
+            //     else
+            //         this.downloadFile(file);
+            //     // this.fileData = res;
+            // });
         }
     }
 
@@ -277,8 +277,8 @@ export class FilemanagerComponent implements OnInit {
             if (start == -1)
                 start = end;
 
-            let items = start > end 
-                ? this.directoryContents.slice(end, start+1) 
+            let items = start > end
+                ? this.directoryContents.slice(end, start+1)
                 : this.directoryContents.slice(start, end+1);
 
             this.selected = items.map(i => i.name);
@@ -289,7 +289,7 @@ export class FilemanagerComponent implements OnInit {
             else // Case that we selected the same item twice
                 this.selected.splice(this.selected.indexOf(item.name), 1);
         }
-        else 
+        else
             this.selected = [item.name];
 
         console.log(this.selected);
@@ -300,15 +300,15 @@ export class FilemanagerComponent implements OnInit {
         const fileCount = this.selected.filter(s => !s.endsWith('/')).length;
 
         if (dirCount + fileCount == 0) return "";
-        
+
         const totalSize = (this.directoryContents
             .filter(d => d.kind == "file") as FileDescriptor[])
             .filter(d => this.selected?.includes(d.name))
             .map(d => d.stats.size).reduce((a,b) => a+b, 0);
 
-        if (dirCount + fileCount == 1) 
+        if (dirCount + fileCount == 1)
             return `"${this.selected[0]}" selected (${this.bytesToString(totalSize)})`;
-    
+
         if (dirCount > 0 && fileCount == 0)
             return `"${dirCount}" folders selected`;
         if (fileCount > 0 && dirCount == 0)

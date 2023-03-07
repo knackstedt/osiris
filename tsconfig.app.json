@@ -6,8 +6,7 @@
     "types": []
   },
   "files": [
-    "client/main.ts",
-    "client/polyfills.ts"
+    "client/main.ts"
   ],
   "include": [
     "client/**/*.d.ts"

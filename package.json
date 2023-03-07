@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 4200 --ssl --proxy-config ./proxy.config.json",
+    "dev": "ng serve --port 4200 --ssl --proxy-config ./proxy.config.json",
     "dev:mobile": "ng serve --host 192.168.1.246 --port 4200 --ssl --proxy-config ./proxy.config.json",
     "build": "ng build",
     "build:server": "tsc --project tsconfig.server.json",

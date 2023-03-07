@@ -1,35 +1,6 @@
-:host, .root { 
+:host, .root {
     height: 100%;
     width: 100%;
     display: flex;
 }
 
-.windowManager {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-
-    background-image: url(https://unsplash.com/photos/KNhVlMjkNjs/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjYzMzc5ODAw&force=true);
-    background-repeat: no-repeat;
-    background-size: cover;
-    
-    .window {
-        pointer-events: auto;
-    }
-}
-
-.wallpaper-credits {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-
-    a {
-        color: rgb(157, 149, 136);
-        text-decoration-skip-ink: auto;
-        transition: color .1s ease-in-out, opacity .1s ease-in-out;
-        &:hover {
-            color: #fff;
-        }
-    }
-}

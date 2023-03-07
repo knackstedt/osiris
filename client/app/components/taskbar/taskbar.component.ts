@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AppId } from 'client/app/applications';
+// import { AppId } from 'client/app/applications';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { WindowManagerService } from '../../services/window-manager.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,17 +23,17 @@ export type TaskBarData = {
 export class TaskbarComponent {
 
     favorites: {
-        appId: AppId,
+        appId: any,//AppId,
         icon: string,
         title: string,
         taskbar?: TaskBarData
     }[] = [];
 
-    constructor(public windowManager: WindowManagerService, private dialog: MatDialog) { 
+    constructor(public windowManager: WindowManagerService, private dialog: MatDialog) {
 
         // Watch for changes to the list of windows
         windowManager.subscribe(data => {
-            
+
             // this.favorites = [
             //     { appId: "application-menu", icon: "assets/icons/apps/nautilus-symbolic.svg", title: "Show Applications" }
             // ];
@@ -54,7 +54,7 @@ export class TaskbarComponent {
         const dyMax = 181;
         const xScale = xMax / window.width;
         const yScale = yMax / window.height;
-        
+
         const scale = Math.min(xScale, yScale);
 
         const cWidth  = window.width * scale;

@@ -1,0 +1,15 @@
+.wallpaper-credits {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    a {
+        color: rgb(157, 149, 136);
+        text-decoration-skip-ink: auto;
+        transition: color .1s ease-in-out, opacity .1s ease-in-out;
+
+        &:hover {
+            color: #fff;
+        }
+    }
+}

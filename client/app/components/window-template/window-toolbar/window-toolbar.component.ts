@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { WindowManagerService } from '../../../services/window-manager.service';
-import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-window-toolbar',
@@ -9,8 +8,6 @@ import { environment } from '../../../../environments/environment';
     styleUrls: ['./window-toolbar.component.scss']
 })
 export class WindowToolbarComponent implements OnInit {
-
-    environment = environment;
 
     @Input() template: TemplateRef<any>;
 

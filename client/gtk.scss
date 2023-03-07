@@ -1,37 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
-
-@import "material.scss";
-@import "layout.scss";
-
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-html, body { 
-    background: #242424;
-    color: #eee;
-    height: 100%; 
-    width: 100%;
-    overflow: hidden;
-}
-
-html.cdk-global-scrollblock {
-    overflow: hidden;
-}
-.windowManager>.cdk-overlay-pane {
-    pointer-events: none;
-}
-
-* {
-    box-sizing: border-box;
-    user-select: none;
-}
-
-p, span {
-    user-select: all;
-}
-
 input[type=radio] {
     position: relative;
 
-    &::before, &::after {
+    &::before,
+    &::after {
         content: " ";
         position: absolute;
 
@@ -50,6 +21,7 @@ input[type=radio] {
         background-color: #353535;
         border: 1px solid #717171;
     }
+
     &::after {
         background-color: transparent;
         height: 6px;
@@ -68,10 +40,11 @@ input[type=text] {
 
     padding: 8px 8px 8px 8px;
     height: 38px;
-    
+
     &:focus {
         border-color: #fbb86c;
     }
+
     &::placeholder {
         color: #b5b5b5;
     }
@@ -127,36 +100,4 @@ button {
         background-color: #343434;
         border-bottom-color: #272727;
     }
-}
-
-
-
-
-
-
-
-
-
-:root {}
-
-
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-    background-color: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    padding-right: 6px;
-    border-radius: 10px;
-    background-color: #696766;
-}
-
-::-webkit-scrollbar-track {
-    border-radius: 10px;
-    background-color: transparent;
-}
-
-::-webkit-scrollbar-corner {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }

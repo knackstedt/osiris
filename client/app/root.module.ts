@@ -1,11 +1,9 @@
-import { NgModule } from '@angular/core';
+import { isDevMode, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { RootComponent } from './root.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AppLibModule } from 'client/app/app-lib.module';
 import { HttpClientModule } from '@angular/common/http';
-import { MaterialModule } from './material.module';
 import { AppMenuComponent } from './components/app-menu/app-menu.component';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
@@ -13,7 +11,14 @@ import { TaskbarComponent } from './components/taskbar/taskbar.component';
 import { WindowComponent } from './components/window/window.component';
 import { WindowErrorComponent } from './components/window/error/error.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
+import { ComponentResolveStrategy, NgxLazyLoaderModule } from '@dotglitch/ngx-lazy-loader';
+import { NotFoundComponent } from 'client/app/apps/@framework/not-found/not-found.component';
+import { LazyProgressDistractorComponent } from 'client/app/apps/@framework/lazy-progress-distractor/lazy-progress-distractor.component';
+import { RegisteredApplications } from 'client/app/app.registry';
+import { WorkspaceComponent } from 'client/app/components/workspace/workspace.component';
+import { WindowTemplateComponent } from './components/window-template/window-template.component';
+import { WindowToolbarComponent } from './components/window-template/window-toolbar/window-toolbar.component';
+import { CommonAppModule } from './common.module';
 
 @NgModule({
     declarations: [
@@ -21,21 +26,30 @@ import { environment } from '../environments/environment';
         TaskbarComponent,
         AppMenuComponent,
         WindowErrorComponent,
-        WindowComponent
+        WindowTemplateComponent,
+        WindowComponent,
+        WindowToolbarComponent,
+        WorkspaceComponent
     ],
     imports: [
         CommonModule,
+        CommonAppModule,
         BrowserModule,
         BrowserAnimationsModule,
-        AppLibModule,
-        MaterialModule,
         PortalModule,
         HttpClientModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
-          enabled: environment.production,
+          enabled: !isDevMode(),
           // Register the ServiceWorker as soon as the application is stable
           // or after 30 seconds (whichever comes first).
           registrationStrategy: 'registerWhenStable:30000'
+        }),
+        NgxLazyLoaderModule.forRoot({
+            // TODO: add additional registries
+            entries: [...RegisteredApplications],
+            componentResolveStrategy: ComponentResolveStrategy.PickFirst,
+            notFoundComponent: NotFoundComponent,
+            loaderDistractorComponent: LazyProgressDistractorComponent
         })
     ],
     providers: [],

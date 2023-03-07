@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { Apps } from 'client/app/applications';
+// import { Apps } from 'client/app/applications';
 import { WindowManagerService } from '../../services/window-manager.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { XpraService } from 'client/app/services/xpra.service';
@@ -22,7 +22,7 @@ const charMap = {
 export class AppMenuComponent {
     search = "";
 
-    apps = Apps;
+    apps = []//Apps;
 
     isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent)
 

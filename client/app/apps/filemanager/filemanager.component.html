@@ -56,9 +56,9 @@
                             <img src="assets/icons/actions/zoom-in-symbolic.svg" />
                         </button>
                     </div>
-                    
+
                     <span class="seperator">Sort</span>
-                    
+
                     <li (click)="sortOrder = 'a-z'" [class.selected]="sortOrder == 'a-z'">A-Z <input type="radio" /></li>
                     <li (click)="sortOrder = 'z-a'" [class.selected]="sortOrder == 'z-a'">Z-A <input type="radio" /></li>
                     <li (click)="sortOrder = 'lastmod'" [class.selected]="sortOrder == 'lastmod'">Last Modified <input type="radio" /></li>
@@ -66,9 +66,9 @@
                     </li>
                     <li (click)="sortOrder = 'size'" [class.selected]="sortOrder == 'size'">Size <input type="radio" /></li>
                     <li (click)="sortOrder = 'type'" [class.selected]="sortOrder == 'type'">Type <input type="radio" /></li>
-                    
+
                     <hr />
-                    
+
                     <div (click)="ngOnInit()">reload</div>
                 </ng-template>
             </app-button-popout>
@@ -140,7 +140,7 @@
                 </ul>
             </div>
             <div class="files" [class.active]="windowRef._isActive" (click)="selected = []">
-                <div class="file" 
+                <div class="file"
                     *ngFor="let item of _sortFilter()"
                     [class.selected]="selected.includes(item.name)"
                     (click)="onClick(item, $event)"

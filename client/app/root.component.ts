@@ -4,7 +4,6 @@ import { Fetch } from 'client/app/services/fetch.service';
 import { ThemeLoaderService } from 'client/app/services/themeloader.service';
 import { WindowManagerService } from './services/window-manager.service';
 import { MatDialog } from '@angular/material/dialog';
-import { environment } from 'client/environments/environment';
 import { KeyboardService } from './services/keyboard.service';
 import { WallpaperService } from './services/wallpaper.service';
 import { XpraService } from './services/xpra.service';
@@ -19,7 +18,6 @@ import { ConfigurationService } from './services/configuration.service';
     encapsulation: ViewEncapsulation.None
 })
 export class RootComponent {
-    environment = environment;
 
     taskbarPosition: "top" | "right" | "bottom" | "left" = "left";
 
@@ -29,10 +27,8 @@ export class RootComponent {
         public dialog: MatDialog,
         public windowManager: WindowManagerService,
         private keyboard: KeyboardService,
-        public wallpaper: WallpaperService,
         public xpraService: XpraService,
         private interactionService: WindowInteractionService,
-        public configuration: ConfigurationService
     ) {
 
         this.windowManager.openWindow({

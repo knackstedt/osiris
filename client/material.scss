@@ -1,80 +1,38 @@
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
-// Plus imports for other components in your app.
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
+@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());
+@include mat.all-legacy-component-typographies();
 @include mat.core();
 
-// // Define the palettes for your theme using the Material Design palettes available in palette.scss
-// // (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// // hue. Available color palettes: https://material.io/design/color/
-// $app-primary: mat.define-palette(mat.$indigo-palette);
-// $app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+// Light palette
+$light-primary: mat.define-palette(mat.$blue-palette);
+$light-accent: mat.define-palette(mat.$blue-grey-palette, A200, A100, A400);
+$light-warn: mat.define-palette(mat.$red-palette);
 
-// // The warn palette is optional (defaults to red).
-// $app-warn: mat.define-palette(mat.$red-palette);
+$light-theme: mat.define-light-theme((
+    color: (
+        primary: $light-primary,
+        accent: $light-accent,
+        warn: $light-warn,
+    ),
+));
 
-// // Create the theme object. A theme consists of configurations for individual
-// // theming systems such as "color" or "typography".
-// $app-theme: mat.define-dark-theme((color: (
-//                 primary: $app-primary,
-//                 accent: $app-accent,
-//                 warn: $app-warn,
-//             )));
+// Dark palette
+$dark-primary: mat.define-palette(mat.$blue-palette, A100, A100, A100);
+$dark-accent: mat.define-palette(mat.$blue-palette, 500, 600, 700);
+$dark-warn: mat.define-palette(mat.$red-palette);
 
-// // Include theme styles for core and each component used in your app.
-// // Alternatively, you can import and @include the theme mixins for each component
-// // that you are using.
-// @include mat.all-component-themes($app-theme);
+$dark-theme: mat.define-dark-theme((
+    color: (
+        primary: $dark-primary,
+        accent: $dark-accent,
+        warn: $dark-warn,
+    )
+));
 
-
-
-
-
-$light-app-theme: mat.define-light-theme((color: (
-    primary: mat.define-palette(mat.$indigo-palette),
-    accent: mat.define-palette(mat.$pink-palette, A200, A100, A400),
-    warn: mat.define-palette(mat.$red-palette),
-)));
-
-$dark-app-theme: mat.define-dark-theme((color: (
-    primary: mat.define-palette(mat.$cyan-palette),
-    accent: mat.define-palette(mat.$blue-gray-palette, A200, A100, A400),
-    warn: mat.define-palette(mat.$amber-palette),
-)));
-
-@include mat.all-component-themes($dark-app-theme);
-
-.dark-theme {
-    @include mat.all-component-colors($dark-app-theme);
+.light {
+    @include mat.all-component-themes($light-theme);
 }
-
-
-/* You can add global styles to this file, and also import other style files */
-
-
-.mat-form-field-appearance-outline .mat-form-field-outline {
-    color: transparent;
+.dark {
+    @include mat.all-component-themes($dark-theme);
 }
-
-/*
- * All styles below are customized overrides of the base material
- * theme system
- * 
- */
-
-.mat-progress-spinner circle,
-.mat-spinner circle {
-    stroke: white;
-}
-
-
-.cdk-overlay-container .mat-dialog-container {
-    padding: 0;
-}
-
-
 

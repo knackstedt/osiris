@@ -26,11 +26,6 @@
       "es2020",
       "dom"
     ],
-    "paths": {
-      "path": [
-        "client/polyfills.ts"
-      ]
-    },
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
