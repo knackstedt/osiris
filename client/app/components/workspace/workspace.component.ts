@@ -10,6 +10,7 @@ import { WindowManagerService } from 'client/app/services/window-manager.service
 export class WorkspaceComponent implements OnDestroy {
 
     @Input() workspaceId = 0;
+    @Input() background: string;
 
     constructor(
         public configuration: ConfigurationService,

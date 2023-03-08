@@ -1,19 +1,20 @@
 <app-taskbar></app-taskbar>
-<app-background></app-background>
 
 <!-- Root contains each workspace -->
 <div class="root taskbar-{{taskbarPosition}}">
-    <ng-container *ngFor="let workspace of workspaces">
+    <ng-container *ngFor="let workspace of workspaces; let id = index">
         <!-- *ngIf="workspace.id == currentWorkspace" -->
+        <!-- *ngIf="id >= (currentWorkspace - 1) && id <= (currentWorkspace + 1)" -->
+        <!-- TODO: tell workspace when to hide it's children -->
         <app-workspace
-            *ngIf="workspace.id >= (currentWorkspace - 1) && workspace.id <= (currentWorkspace + 1)"
-            [workspaceId]="workspace.id"
+            [workspaceId]="id"
+            [background]="workspace.background"
             [@activeWorkspace]="
-                workspace.id == currentWorkspace
+                id == currentWorkspace
                     ? 'current' :
-                workspace.id < currentWorkspace
+                id < currentWorkspace
                     ? 'previous' :
-                workspace.id > currentWorkspace
+                id > currentWorkspace
                     ? 'next'
                     : 'inactive'
             "

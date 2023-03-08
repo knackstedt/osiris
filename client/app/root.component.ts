@@ -36,17 +36,16 @@ export class RootComponent {
     taskbarPosition: "top" | "right" | "bottom" | "left" = "left";
 
     workspaces = [
-        { label: "default", id: 0 },
-        { label: "avalon", id: 1 },
-        { label: "gaia", id: 2 },
-        { label: "brunhild", id: 3 },
-        { label: "kronos", id: 4 },
-        { label: "osiris", id: 5 },
-        { label: "anubis", id: 6 },
-        { label: "thor", id: 7 },
+        { label: "default",  background: "#000"},
+        { label: "avalon",   background: "#111"},
+        { label: "gaia",     background: "#222"},
+        { label: "brunhild", background: "#333"},
+        { label: "kronos",   background: "#444"},
+        { label: "osiris",   background: "#555"},
+        { label: "anubis",   background: "#666"},
+        { label: "thor",     background: "#777"},
     ]
 
-    isAnimating = true;
     currentWorkspace = 0;
 
     constructor(
@@ -93,30 +92,16 @@ export class RootComponent {
             key: "ArrowUp",
             window: false,
         }).subscribe(() => {
-
-            // this.workspaces[this.currentWorkspace].i
-
-            // this.isAnimating = true;
-            this.currentWorkspace--;
-            console.log(this.currentWorkspace);
-            // setTimeout(() => {
-            //     this.isAnimating = false;
-            // }, 1000);
+            if (this.currentWorkspace > 0)
+                this.currentWorkspace--;
         })
 
         keyboard.onKeyCommand({
             key: "ArrowDown",
             window: false,
         }).subscribe(() => {
-
-            // this.workspaces[this.currentWorkspace].i
-            // this.isAnimating = true;
-
-            this.currentWorkspace++;
-            console.log(this.currentWorkspace);
-            // setTimeout(() => {
-            //     this.isAnimating = false;
-            // }, 1000);
+            if (this.currentWorkspace < (this.workspaces.length - 1))
+                this.currentWorkspace++;
         })
     }
 }

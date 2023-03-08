@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { WallpaperService } from 'client/app/services/wallpaper.service';
 
 @Component({
@@ -8,11 +8,14 @@ import { WallpaperService } from 'client/app/services/wallpaper.service';
 })
 export class BackgroundComponent implements OnInit {
 
+    @Input() background: string;
+
     constructor(
         public wallpaper: WallpaperService,
     ) { }
 
     ngOnInit() {
+        console.log(this.background)
     }
 
 }

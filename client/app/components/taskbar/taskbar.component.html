@@ -1,4 +1,4 @@
-<div class="task-button" 
+<div class="task-button"
         (click)="openApplicationMenu()"
     >
 
@@ -25,17 +25,17 @@
 <!-- Favorite applications -->
 <ng-container *ngFor="let favorite of favorites">
 
-    <!-- 
-        ! This is a shorthand way to resolve the 'item' variable. 
+    <!--
+        ! This is a shorthand way to resolve the 'item' variable.
         This is not actually a real loop -- the method will always return 1 item.
     -->
-    <div 
-        class="task-button" 
-        (click)="favorite.taskbar?.windows.length > 0 ? showMenu(favorite.taskbar) : windowManager.openWindow(favorite.appId)" 
+    <div
+        class="task-button"
+        (click)="favorite.taskbar?.windows.length > 0 ? showMenu(favorite.taskbar) : windowManager.openWindow(favorite.appId)"
         (hover)="favorite.taskbar._isHovered = true"
-        (blur)="favorite.taskbar._isHovered = false" 
+        (blur)="favorite.taskbar._isHovered = false"
         [class.hover]="favorite.taskbar._isHovered">
-        
+
         <div class="dots">
             <div class="dot" *ngIf="favorite.taskbar.windows.length > 0"></div>
             <div class="dot" *ngIf="favorite.taskbar.windows.length > 1"></div>
@@ -51,8 +51,11 @@
                 {{favorite.title}}
             </div>
         </div>
-        <div class="picker count_{{favorite.taskbar.windows.length}}" *ngIf="favorite.taskbar._isActive"
-            (click)="hideMenu(favorite.taskbar); $event.stopPropagation()">
+        <div
+            *ngIf="favorite.taskbar._isActive"
+            class="picker count_{{favorite.taskbar.windows.length}}"
+            (click)="hideMenu(favorite.taskbar); $event.stopPropagation()"
+        >
             <div class="picker_backdrop"></div>
             <div class="contents">
                 <div class="windowPreview" *ngFor="let window of favorite.taskbar.windows" (click)="window.uncollapse()">
@@ -77,11 +80,11 @@
 
 <!-- Open applications -->
 <ng-container *ngFor="let item of windowManager.taskbarItems">
-    <div 
-        *ngIf="!isFavorite(item)" 
-        class="task-button" 
-        (click)="showMenu(item)" 
-        (hover)="item._isHovered = true" 
+    <div
+        *ngIf="!isFavorite(item)"
+        class="task-button"
+        (click)="showMenu(item)"
+        (hover)="item._isHovered = true"
         (blur)="item._isHovered = false"
         [class.hover]="item._isHovered" >
         <!-- (click)="item.windows[item.windows.length-1]._isCollapsed = false" -->

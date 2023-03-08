@@ -4,9 +4,9 @@
     position: absolute;
     z-index: 1;
 
-    background-image: url(https://unsplash.com/photos/KNhVlMjkNjs/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjYzMzc5ODAw&force=true);
-    background-repeat: no-repeat;
-    background-size: cover;
+    // background-image: url(https://unsplash.com/photos/KNhVlMjkNjs/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjYzMzc5ODAw&force=true);
+    // background-repeat: no-repeat;
+    // background-size: cover;
 
     // Index via the top left corner
     left: 0;
@@ -17,4 +17,10 @@
     .window {
         pointer-events: auto;
     }
+}
+
+app-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }

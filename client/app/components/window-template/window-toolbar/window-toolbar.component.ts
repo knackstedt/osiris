@@ -8,7 +8,7 @@ import { WindowManagerService } from '../../../services/window-manager.service';
     templateUrl: './window-toolbar.component.html',
     styleUrls: ['./window-toolbar.component.scss'],
     imports: [
-        CommonModule
+        CommonModule,
     ],
     standalone: true
 })
