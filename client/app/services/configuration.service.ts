@@ -14,6 +14,22 @@ export class ConfigurationService {
     rightOffset  = this.taskbarPosition == "right"  ? -this.taskbarWidth : 0;
     bottomOffset = this.taskbarPosition == "bottom" ? -this.taskbarWidth : 0;
     leftOffset   = this.taskbarPosition == "left"   ?  this.taskbarWidth : 0;
-    
+
+    workspaces = [
+        { label: "default",  background: "" },
+        { label: "avalon",   background: "" },
+        { label: "gaia",     background: "" },
+        { label: "brunhild", background: "" },
+        { label: "kronos",   background: "" },
+        { label: "osiris",   background: "" },
+        { label: "anubis",   background: "" },
+        { label: "thor",     background: "" },
+    ]
+
+    workspaceDirection: "vertical" | "horizontal" = "vertical";
+
+    // background = "url(./assets/img/wallpaper/madison-oren-gE1phX0Lbos-unsplash.jpg)";
+    background = "url(./assets/img/wallpaper/alberto-bobbera-KNhVlMjkNjs-unsplash.jpg)";
+
     constructor() { }
 }

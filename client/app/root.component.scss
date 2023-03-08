@@ -4,3 +4,59 @@
     display: flex;
 }
 
+.bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    // filter: blur(2px);
+    transition-property: background-position, background-color;
+    transition-timing-function: ease;
+    transition-duration: 300ms;
+
+    &.vertical {
+        background-size: 100% auto;
+    }
+    &.horizontal {
+        background-size: auto 100%;
+    }
+}
+
+.dots {
+    position: absolute;
+    left: 72px;
+    top: 50%;
+    width: 64px;
+    border-radius: 32px;
+    background-color: #55555570;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 40px 0;
+    transform: translateY(-50%);
+    z-index: 99999;
+
+    .dot {
+        background-color: #fff;
+        width: 6px;
+        height: 6px;
+        display: block;
+        border-radius: 50%;
+        opacity: .6;
+        transition: width 400ms ease, height 400ms ease, opacity 400ms ease;
+
+        &.active {
+            opacity: .9;
+            width: 10px;
+            height: 10px;
+        }
+    }
+}
+
+app-workspace {
+    z-index: 1;
+    transform: translate3d(0, -100%, 0)
+}

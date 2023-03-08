@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { debounceTime } from 'rxjs';
 import { Fetch } from 'client/app/services/fetch.service';
 import { ThemeLoaderService } from 'client/app/services/themeloader.service';
 import { WindowManagerService } from './services/window-manager.service';
 import { KeyboardService } from './services/keyboard.service';
 import { XpraService } from './services/xpra.service';
 import { WindowInteractionService } from './services/window-interaction.service';
+import { ConfigurationService } from 'client/app/services/configuration.service';
 
 @Component({
     selector: 'app-root',
@@ -25,7 +27,18 @@ import { WindowInteractionService } from './services/window-interaction.service'
             state('void', style({
                 transform: ""
             })),
-            transition('previous => current, current => previous, current => next, next => current', [
+            transition('* <=> *', [
+                animate('250ms ease')
+            ]),
+        ]),
+        trigger('switchingWorkspace', [
+            state('on', style({
+                opacity: 1
+            })),
+            state('off', style({
+                opacity: 0
+            })),
+            transition('on <=> off', [
                 animate('250ms ease')
             ]),
         ])
@@ -35,18 +48,17 @@ export class RootComponent {
 
     taskbarPosition: "top" | "right" | "bottom" | "left" = "left";
 
-    workspaces = [
-        { label: "default",  background: "#000"},
-        { label: "avalon",   background: "#111"},
-        { label: "gaia",     background: "#222"},
-        { label: "brunhild", background: "#333"},
-        { label: "kronos",   background: "#444"},
-        { label: "osiris",   background: "#555"},
-        { label: "anubis",   background: "#666"},
-        { label: "thor",     background: "#777"},
-    ]
-
     currentWorkspace = 0;
+
+    switchingWorkspace = false;
+    showWorkspaceDots = false;
+
+    switchWorkspaceEmitter = new EventEmitter();
+    switchWorkspace$ = this.switchWorkspaceEmitter.pipe(debounceTime(800));
+
+    dotEmitter = new EventEmitter();
+    showDots$ = this.dotEmitter.pipe(debounceTime(1200));
+    // showDots$ = this.dotEmitter.pipe(auditTime(2000));
 
     constructor(
         private fetch: Fetch,
@@ -55,6 +67,7 @@ export class RootComponent {
         private keyboard: KeyboardService,
         public xpraService: XpraService,
         private interactionService: WindowInteractionService,
+        public config: ConfigurationService
     ) {
 
         this.windowManager.openWindow({
@@ -92,16 +105,36 @@ export class RootComponent {
             key: "ArrowUp",
             window: false,
         }).subscribe(() => {
-            if (this.currentWorkspace > 0)
+            if (this.currentWorkspace > 0) {
+                this.transitionWorkspaces();
+
                 this.currentWorkspace--;
+            }
         })
 
         keyboard.onKeyCommand({
             key: "ArrowDown",
             window: false,
         }).subscribe(() => {
-            if (this.currentWorkspace < (this.workspaces.length - 1))
+            if (this.currentWorkspace < (this.config.workspaces.length - 1)) {
+                this.transitionWorkspaces();
                 this.currentWorkspace++;
+            }
         })
+
+        this.showDots$.subscribe(d => {
+            this.showWorkspaceDots = false;
+        });
+        this.switchWorkspace$.subscribe(d => {
+            this.switchingWorkspace = false;
+        })
+    }
+
+    transitionWorkspaces() {
+        this.switchingWorkspace = true;
+        this.showWorkspaceDots = true;
+
+        this.switchWorkspaceEmitter.next(null);
+        this.dotEmitter.next(null);
     }
 }

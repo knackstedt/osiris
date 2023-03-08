@@ -1,12 +1,33 @@
 <app-taskbar></app-taskbar>
 
+<div
+    class="bg"
+    [style.background]="config.background"
+    [style.background-position-y]="config.workspaceDirection == 'horizontal' ? 'auto' : (-100 * currentWorkspace) + 'px'"
+    [style.background-position-x]="config.workspaceDirection == 'vertical' ? 'auto' : (-100 * currentWorkspace) + 'px'"
+    [class.vertical]="config.workspaceDirection == 'vertical'"
+    [class.horizontal]="config.workspaceDirection == 'horizontal'"
+></div>
+
+<div
+    *ngIf="showWorkspaceDots"
+    class="dots"
+    [@switchingWorkspace]="switchingWorkspace ? 'on' : 'off'"
+>
+    <div
+        *ngFor="let workspace of config.workspaces; let i = index"
+        class="dot"
+        [class.active]="currentWorkspace == i"
+    ></div>
+</div>
+
 <!-- Root contains each workspace -->
 <div class="root taskbar-{{taskbarPosition}}">
-    <ng-container *ngFor="let workspace of workspaces; let id = index">
+    <ng-container *ngFor="let workspace of config.workspaces; let id = index">
         <!-- *ngIf="workspace.id == currentWorkspace" -->
-        <!-- *ngIf="id >= (currentWorkspace - 1) && id <= (currentWorkspace + 1)" -->
         <!-- TODO: tell workspace when to hide it's children -->
         <app-workspace
+            *ngIf="id >= (currentWorkspace - 1) && id <= (currentWorkspace + 1)"
             [workspaceId]="id"
             [background]="workspace.background"
             [@activeWorkspace]="
