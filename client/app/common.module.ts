@@ -11,12 +11,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 @NgModule({
     declarations: [
         UrlSanitizer,
-        HTMLSanitizer,
-        ContextMenuDirective,
+        HTMLSanitizer
     ],
     imports: [
         CommonModule,
-        MatDialogModule
+        MatDialogModule,
+        ContextMenuDirective
     ],
     exports: [
         UrlSanitizer,

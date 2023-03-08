@@ -60,25 +60,27 @@ export class KeyboardService {
         // Do a general filter where all of the modifiers must be matched if specified
         // Then check that the actual keys match what was specified
         let commands = this.keyCommands
-            .filter(kc => 
+            .filter(kc =>
                 (kc.ctrl == undefined || kc.ctrl === evt.ctrlKey) &&
                 (kc.alt == undefined || kc.alt === evt.altKey) &&
                 (kc.shift == undefined || kc.shift === evt.shiftKey) &&
                 (kc.super == undefined || kc.super === evt.metaKey) &&
-                kc.keys.length == kc.keys.filter(k => this.heldKeys[k])?.length
+                kc.keys.length == kc.keys.filter(k => this.heldKeys[k.toLowerCase()])?.length
             )
             .filter(kc => kc.window == false || !kc.window || kc.window._isActive)
-        
+
         if (evt.ctrlKey && commands.length > 0 || commands.find(c => c.interrupt)) {
             evt.stopPropagation();
             evt.preventDefault();
         }
-            
+
         if (evt.key == "Pause")
             debugger;
 
         commands.forEach(kc => kc.sub.next(evt));
-            
+
+        console.log("keys matched", this.heldKeys)
+
     }
 
     private onKeyUp(evt: KeyboardEvent) {

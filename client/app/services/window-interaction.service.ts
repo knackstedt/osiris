@@ -7,8 +7,8 @@ import { ConfigurationService } from './configuration.service';
 /**
  * This file contains the window manager interactions for dragging
  * and resizing of windows.
- * 
- * TODO: 
+ *
+ * TODO:
  * - filter out snap edges that are obscured by other windows
  * - snap to corners where two windows are on snapped to the same edge
  */
@@ -21,7 +21,7 @@ export class WindowInteractionService {
     constructor(private windowManager: WindowManagerService, private configuration: ConfigurationService) { this.bindEvents() }
 
     private bindEvents() {
-
+        console.log("binding events")
         // TODO: line intersections.
 
         let snapPoints = [];
@@ -86,7 +86,7 @@ export class WindowInteractionService {
             }, "y");
 
             let snapTargets = this.windowManager.managedWindows
-                // Omit the dragged window 
+                // Omit the dragged window
                 .filter(w => w.id != window.id)
                 // Omit collapsed windows
                 .filter(w => !w._isCollapsed)
@@ -102,7 +102,7 @@ export class WindowInteractionService {
                      * (TL -> BL)
                      * ▒▒▒▒▒
                      * ▒   ▒
-                     * ▒   ▒ 
+                     * ▒   ▒
                      * ▒▒▒▒▒
                      * ███████████
                      * █      -+x█
@@ -148,9 +148,9 @@ export class WindowInteractionService {
                      * █        █
                      * █        █
                      * ██████████
-                     *      ▒▒▒▒▒    
-                     *      ▒   ▒    
-                     *      ▒   ▒    
+                     *      ▒▒▒▒▒
+                     *      ▒   ▒
+                     *      ▒   ▒
                      *      ▒▒▒▒▒
                      */
                     createLineSnap({
@@ -205,16 +205,18 @@ export class WindowInteractionService {
                 })
             ],
             onstart: evt => {
+                console.log("resizing")
+
                 evt.target.classList.add("resizing");
                 const numId = parseInt(evt.target.id.split('_').pop());
                 window = this.windowManager.managedWindows.find(w => w.id == numId);
 
                 window.emit("onResizeStart", evt);
 
-                resizeBounds.top = this.configuration.leftOffset;
-                resizeBounds.left = this.configuration.topOffset;
-                resizeBounds.right = globalThis.innerWidth - this.configuration.rightOffset;// - (window.width + window.x) + rightOffset;
-                resizeBounds.bottom = globalThis.innerHeight - this.configuration.bottomOffset;
+                resizeBounds.top = 0;
+                resizeBounds.left = 0;
+                resizeBounds.right = globalThis.innerWidth;
+                resizeBounds.bottom = globalThis.innerHeight;
 
                 calculateEdges();
             },
@@ -228,12 +230,12 @@ export class WindowInteractionService {
             onmove: evt => {
                 const numId = parseInt(evt.target.id.split('_').pop());
                 const window = this.windowManager.managedWindows.find(w => w.id == numId);
-                
+
                 window.height = Math.max(evt.rect.height, window.minHeight);
                 window.width = Math.max(evt.rect.width, window.minWidth);
 
-                window.x = evt.rect.left - this.configuration.leftOffset;
-                window.y = evt.rect.top - this.configuration.topOffset;
+                window.x = evt.rect.left;
+                window.y = evt.rect.top;
 
                 window.emit("onResize", evt);
             }
@@ -257,6 +259,8 @@ export class WindowInteractionService {
                 })
             ],
             onstart: evt => {
+                console.log("start dragging");
+
                 const numId = parseInt(evt.target.id.split('_').pop());
                 window = this.windowManager.managedWindows.find(w => w.id == numId);
 
@@ -296,7 +300,7 @@ export class WindowInteractionService {
                         yOverlap = true;
                     else if (dragBottom > w.y && dragBottom < w.y + w.height)
                         yOverlap = true;
-                    
+
                     if (dragRight > w.x + w.width && dragLeft < w.x)
                         xOverlap = true;
                     if (dragBottom > w.y + w.height && dragTop < w.y)

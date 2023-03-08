@@ -1,9 +1,23 @@
-<!-- TODO: multiple workspaces -->
+<app-taskbar></app-taskbar>
+<app-background></app-background>
 
+<!-- Root contains each workspace -->
 <div class="root taskbar-{{taskbarPosition}}">
-    <app-taskbar></app-taskbar>
-    <app-background></app-background>
-
-    <app-workspace></app-workspace>
-    <app-workspace></app-workspace>
+    <ng-container *ngFor="let workspace of workspaces">
+        <!-- *ngIf="workspace.id == currentWorkspace" -->
+        <app-workspace
+            *ngIf="workspace.id >= (currentWorkspace - 1) && workspace.id <= (currentWorkspace + 1)"
+            [workspaceId]="workspace.id"
+            [@activeWorkspace]="
+                workspace.id == currentWorkspace
+                    ? 'current' :
+                workspace.id < currentWorkspace
+                    ? 'previous' :
+                workspace.id > currentWorkspace
+                    ? 'next'
+                    : 'inactive'
+            "
+        >
+        </app-workspace>
+    </ng-container>
 </div>

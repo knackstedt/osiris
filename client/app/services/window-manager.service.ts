@@ -340,6 +340,7 @@ export class ManagedWindow {
         this.emit("onMaximizeChange", { isMaximized: true });
         this.activate();
     }
+
     /**
      * Restore previous window dimensions
      */
@@ -349,6 +350,7 @@ export class ManagedWindow {
         this.emit("onMaximizeChange", { isMaximized: false });
         this.activate();
     }
+
     /**
      * Collapse the window to the taskbar
      */
@@ -394,7 +396,7 @@ export class ManagedWindow {
     }
 
     getIHTML() {
-        const srcEl = document.querySelector("#window_" + this.id + " .window");
+        const srcEl = document.getElementById("window_" + this.id + " .window");
 
         // Native apps are just a canvas, so we can use a screenshot.
         if (this.appId == "native")
@@ -405,6 +407,20 @@ export class ManagedWindow {
 
     getWindowElement() {
         return document.querySelector("#window_" + this.id) as HTMLDivElement;
+    }
+
+    private hibernationValue: string;
+    hibernate() {
+        const srcEl = document.getElementById("window_" + this.id + " .window");
+
+        // Native apps are just a canvas, so we can use a screenshot.
+        if (this.appId == "native") {
+
+            this.hibernationValue = `<img src="${srcEl.querySelector("canvas").toDataURL()}"/>`;
+            return;
+        }
+
+        this.hibernationValue = srcEl.innerHTML;
     }
 }
 

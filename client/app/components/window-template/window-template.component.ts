@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
     selector: 'app-window-template',
     templateUrl: './window-template.component.html',
     styleUrls: ['./window-template.component.scss'],
-    encapsulation: ViewEncapsulation.None,
     imports: [
         CommonModule,
         WindowToolbarComponent

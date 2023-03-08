@@ -6,7 +6,7 @@ import { KeyboardService } from '../../../services/keyboard.service';
     selector: 'app-window',
     templateUrl: './window.component.html',
     styleUrls: ['./window.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    // encapsulation: ViewEncapsulation.None
 })
 export class WindowComponent implements OnInit {
 

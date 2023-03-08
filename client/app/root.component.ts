@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { trigger, state, style, animate, transition } from '@angular/animations';
 import { Fetch } from 'client/app/services/fetch.service';
 import { ThemeLoaderService } from 'client/app/services/themeloader.service';
 import { WindowManagerService } from './services/window-manager.service';
@@ -10,11 +10,44 @@ import { WindowInteractionService } from './services/window-interaction.service'
 @Component({
     selector: 'app-root',
     templateUrl: './root.component.html',
-    styleUrls: ['./root.component.scss']
+    styleUrls: ['./root.component.scss'],
+    animations: [
+        trigger('activeWorkspace', [
+            state('previous', style({
+                transform: "translate3d(0, -100%, 0)"
+            })),
+            state('current', style({
+                transform: "translate3d(0, 0, 0)"
+            })),
+            state('next', style({
+                transform: "translate3d(0, 100%, 0)"
+            })),
+            state('void', style({
+                transform: ""
+            })),
+            transition('previous => current, current => previous, current => next, next => current', [
+                animate('250ms ease')
+            ]),
+        ])
+    ]
 })
 export class RootComponent {
 
     taskbarPosition: "top" | "right" | "bottom" | "left" = "left";
+
+    workspaces = [
+        { label: "default", id: 0 },
+        { label: "avalon", id: 1 },
+        { label: "gaia", id: 2 },
+        { label: "brunhild", id: 3 },
+        { label: "kronos", id: 4 },
+        { label: "osiris", id: 5 },
+        { label: "anubis", id: 6 },
+        { label: "thor", id: 7 },
+    ]
+
+    isAnimating = true;
+    currentWorkspace = 0;
 
     constructor(
         private fetch: Fetch,
@@ -43,7 +76,7 @@ export class RootComponent {
 
         this.windowManager.openWindow({
             appId: "terminal",
-            workspace: 2,
+            workspace: 0,
             x: 500,
             y: 100,
             width: 400,
@@ -55,5 +88,35 @@ export class RootComponent {
                 command: "bash"
             }
         });
+
+        keyboard.onKeyCommand({
+            key: "ArrowUp",
+            window: false,
+        }).subscribe(() => {
+
+            // this.workspaces[this.currentWorkspace].i
+
+            // this.isAnimating = true;
+            this.currentWorkspace--;
+            console.log(this.currentWorkspace);
+            // setTimeout(() => {
+            //     this.isAnimating = false;
+            // }, 1000);
+        })
+
+        keyboard.onKeyCommand({
+            key: "ArrowDown",
+            window: false,
+        }).subscribe(() => {
+
+            // this.workspaces[this.currentWorkspace].i
+            // this.isAnimating = true;
+
+            this.currentWorkspace++;
+            console.log(this.currentWorkspace);
+            // setTimeout(() => {
+            //     this.isAnimating = false;
+            // }, 1000);
+        })
     }
 }

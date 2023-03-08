@@ -30,10 +30,17 @@ import { BackgroundComponent } from 'client/app/components/background/background
     ],
     imports: [
         CommonModule,
+        NgxLazyLoaderModule.forRoot({
+            // TODO: add additional registries
+            entries: RegisteredApplications,
+            componentResolveStrategy: ComponentResolveStrategy.PickFirst,
+            notFoundComponent: NotFoundComponent,
+            loaderDistractorComponent: LazyProgressDistractorComponent,
+            errorComponent: WindowErrorComponent
+        }),
         CommonAppModule,
         BrowserModule,
         BrowserAnimationsModule,
-        PortalModule,
         HttpClientModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
           enabled: !isDevMode(),
@@ -41,14 +48,6 @@ import { BackgroundComponent } from 'client/app/components/background/background
           // or after 30 seconds (whichever comes first).
           registrationStrategy: 'registerWhenStable:30000'
         }),
-        NgxLazyLoaderModule.forRoot({
-            // TODO: add additional registries
-            entries: [...RegisteredApplications],
-            componentResolveStrategy: ComponentResolveStrategy.PickFirst,
-            notFoundComponent: NotFoundComponent,
-            loaderDistractorComponent: LazyProgressDistractorComponent,
-            errorComponent: WindowErrorComponent
-        })
     ],
     providers: [],
     bootstrap: [RootComponent]

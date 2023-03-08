@@ -1,27 +1,6 @@
-app-window-template {
+:host {
     display: flex;
     flex-direction: column;
     overflow: hidden;
     flex: 1;
-
-
-    ::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
-        background-color: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        border-radius: 2px;
-        background-color: #696766;
-    }
-
-    ::-webkit-scrollbar-track {
-        border-radius: 2px;
-        background-color: transparent;
-    }
-
-    ::-webkit-scrollbar-corner {
-        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    }
 }
