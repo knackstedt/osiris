@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { RootComponent } from 'client/app/root.component';
+import { DialogService } from 'client/app/services/dialog.service';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { WindowManagerService } from '../../services/window-manager.service';
 
@@ -26,7 +28,11 @@ export class TaskbarComponent {
         taskbar?: TaskBarData
     }[] = [];
 
-    constructor(public windowManager: WindowManagerService) {
+    constructor(
+        private rootComponent: RootComponent,
+        public windowManager: WindowManagerService,
+        private dialog: DialogService
+    ) {
 
         // Watch for changes to the list of windows
         windowManager.subscribe(data => {
@@ -102,5 +108,15 @@ export class TaskbarComponent {
         //     width: "65.52vw",
         //     height: "66.38vh"
         // });
+        this.dialog.open("start-menu");
+    }
+
+    activateWindow(window: ManagedWindow) {
+        // TODO: optionally add facility to move window to current workspace.
+
+        if (this.rootComponent.currentWorkspace != window.workspace)
+            this.rootComponent.selectWorkspace(window.workspace);
+
+        window.uncollapse();
     }
 }

@@ -26,10 +26,11 @@ export class ConfigurationService {
         { label: "thor",     background: "" },
     ]
 
+    // ! We expect a tall image for vertical, and a wide image for horizontal
+    // TODO: work on resolving this
     workspaceDirection: "vertical" | "horizontal" = "vertical";
-
-    // background = "url(./assets/img/wallpaper/madison-oren-gE1phX0Lbos-unsplash.jpg)";
-    background = "url(./assets/img/wallpaper/alberto-bobbera-KNhVlMjkNjs-unsplash.jpg)";
-
-    constructor() { }
+    // workspaceDirection: "vertical" | "horizontal" = "horizontal";
+    background = "./assets/img/wallpaper/madison-oren-gE1phX0Lbos-unsplash.jpg";
+    // background = "./assets/img/wallpaper/alberto-bobbera-KNhVlMjkNjs-unsplash.jpg";
+    // background = "./assets/img/wallpaper/Canyon2.png";
 }

@@ -88,6 +88,8 @@ export class WindowInteractionService {
             let snapTargets = this.windowManager.managedWindows
                 // Omit the dragged window
                 .filter(w => w.id != window.id)
+                // Omit windows on different workspaces
+                .filter(w => w.workspace != window.workspace)
                 // Omit collapsed windows
                 .filter(w => !w._isCollapsed)
                 // Omit windows that declare themselves to not be snapped to

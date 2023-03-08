@@ -31,34 +31,39 @@
     -->
     <div
         class="task-button"
-        (click)="favorite.taskbar?.windows.length > 0 ? showMenu(favorite.taskbar) : windowManager.openWindow(favorite.appId)"
+
         (hover)="favorite.taskbar._isHovered = true"
         (blur)="favorite.taskbar._isHovered = false"
         [class.hover]="favorite.taskbar._isHovered">
 
-        <div class="dots">
-            <div class="dot" *ngIf="favorite.taskbar.windows.length > 0"></div>
-            <div class="dot" *ngIf="favorite.taskbar.windows.length > 1"></div>
-            <div class="dot" *ngIf="favorite.taskbar.windows.length > 2"></div>
-            <div class="dot" *ngIf="favorite.taskbar.windows.length > 3"></div>
-            <div class="dot" *ngIf="favorite.taskbar.windows.length > 4"></div>
-        </div>
-        <div class="icon">
-            <img [src]="favorite.icon" />
-        </div>
-        <div class="tooltip">
-            <div>
-                {{favorite.title}}
+        <div
+            class="button"
+            (click)="favorite.taskbar?.windows.length > 0 ? showMenu(favorite.taskbar) : windowManager.openWindow(favorite.appId)"
+        >
+            <div class="dots">
+                <div class="dot" *ngIf="favorite.taskbar.windows.length > 0"></div>
+                <div class="dot" *ngIf="favorite.taskbar.windows.length > 1"></div>
+                <div class="dot" *ngIf="favorite.taskbar.windows.length > 2"></div>
+                <div class="dot" *ngIf="favorite.taskbar.windows.length > 3"></div>
+                <div class="dot" *ngIf="favorite.taskbar.windows.length > 4"></div>
+            </div>
+            <div class="icon">
+                <img [src]="favorite.icon" />
+            </div>
+            <div class="tooltip">
+                <div>
+                    {{favorite.title}}
+                </div>
             </div>
         </div>
         <div
             *ngIf="favorite.taskbar._isActive"
             class="picker count_{{favorite.taskbar.windows.length}}"
-            (click)="hideMenu(favorite.taskbar); $event.stopPropagation()"
         >
+            <div class="exit" (click)="hideMenu(favorite.taskbar)"></div>
             <div class="picker_backdrop"></div>
             <div class="contents">
-                <div class="windowPreview" *ngFor="let window of favorite.taskbar.windows" (click)="window.uncollapse()">
+                <div class="windowPreview" *ngFor="let window of favorite.taskbar.windows" (click)="activateWindow(window)">
                     <button class="close" (click)="window.close(); $event.preventDefault()">
                         <img src="assets/icons/window-close-symbolic.svg" />
                     </button>
@@ -83,31 +88,34 @@
     <div
         *ngIf="!isFavorite(item)"
         class="task-button"
-        (click)="showMenu(item)"
         (hover)="item._isHovered = true"
         (blur)="item._isHovered = false"
         [class.hover]="item._isHovered" >
         <!-- (click)="item.windows[item.windows.length-1]._isCollapsed = false" -->
-        <div class="dots">
-            <div class="dot"></div>
-            <div class="dot" *ngIf="item.windows.length > 1"></div>
-            <div class="dot" *ngIf="item.windows.length > 2"></div>
-            <div class="dot" *ngIf="item.windows.length > 3"></div>
-            <div class="dot" *ngIf="item.windows.length > 4"></div>
-        </div>
-        <div class="icon">
-            <img [src]="item.windows[0].icon" />
-        </div>
-        <div class="tooltip">
-            <div>
-                {{item.windows[0].description}}
+        <div class="button"
+            (click)="showMenu(item)"
+        >
+            <div class="dots">
+                <div class="dot"></div>
+                <div class="dot" *ngIf="item.windows.length > 1"></div>
+                <div class="dot" *ngIf="item.windows.length > 2"></div>
+                <div class="dot" *ngIf="item.windows.length > 3"></div>
+                <div class="dot" *ngIf="item.windows.length > 4"></div>
+            </div>
+            <div class="icon">
+                <img [src]="item.windows[0].icon" />
+            </div>
+            <div class="tooltip">
+                <div>
+                    {{item.windows[0].description}}
+                </div>
             </div>
         </div>
-        <div class="picker count_{{item.windows.length}}" *ngIf="item._isActive"
-            (click)="hideMenu(item); $event.stopPropagation()">
+        <div class="picker count_{{item.windows.length}}" *ngIf="item._isActive">
+            <div class="exit" (click)="hideMenu(item)"></div>
             <div class="picker_backdrop"></div>
             <div class="contents">
-                <div class="windowPreview" *ngFor="let window of item.windows" (click)="window.uncollapse()">
+                <div class="windowPreview" *ngFor="let window of item.windows" (click)="activateWindow(window)">
                     <button class="close" (click)="window.close(); $event.preventDefault()">
                         <img src="assets/icons/window-close-symbolic.svg" />
                     </button>

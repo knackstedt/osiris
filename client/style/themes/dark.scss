@@ -1,3 +1,4 @@
+@import "../../assets//lib/gtk/pop-os/gtk-dark.scss";
 
 @mixin dark-theme() {
 
@@ -6,8 +7,6 @@
     --text-color: #dfdfdf;
     --text-bright-color: #fff;
     --text-subdued-color: #aaa;
-    --text-muted-color: #a4a4a4;
-    --link-text-color: #81d4fa;
 
     --menu-background: linear-gradient(180deg, #818181, #e1e2eb 32px);
     --menu-background-color: #212121;

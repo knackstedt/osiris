@@ -15,17 +15,20 @@ import { ConfigurationService } from 'client/app/services/configuration.service'
     styleUrls: ['./root.component.scss'],
     animations: [
         trigger('activeWorkspace', [
-            state('previous', style({
-                transform: "translate3d(0, -100%, 0)"
-            })),
             state('current', style({
                 transform: "translate3d(0, 0, 0)"
             })),
-            state('next', style({
+            state('above', style({
+                transform: "translate3d(0, -100%, 0)"
+            })),
+            state('below', style({
                 transform: "translate3d(0, 100%, 0)"
             })),
-            state('void', style({
-                transform: ""
+            state('left', style({
+                transform: "translate3d(-100%, 0, 0)"
+            })),
+            state('right', style({
+                transform: "translate3d(100%, 0, 0)"
             })),
             transition('* <=> *', [
                 animate('250ms ease')
@@ -58,7 +61,6 @@ export class RootComponent {
 
     dotEmitter = new EventEmitter();
     showDots$ = this.dotEmitter.pipe(debounceTime(1200));
-    // showDots$ = this.dotEmitter.pipe(auditTime(2000));
 
     constructor(
         private fetch: Fetch,
@@ -74,9 +76,9 @@ export class RootComponent {
             appId: "file-manager",
             workspace: 1,
             x: 50,
-            y: 800,
+            y: 600,
             width: 800,
-            height: 200,
+            height: 300,
 
             // This is an arbitrary data object that gets loaded into the app
             data: {
@@ -90,6 +92,21 @@ export class RootComponent {
             appId: "terminal",
             workspace: 0,
             x: 500,
+            y: 100,
+            width: 400,
+            height: 400,
+
+            // This is an arbitrary data object that gets loaded into the app
+            data: {
+                cwd: "/home/knackstedt/Downloads/",
+                command: "bash"
+            }
+        });
+
+        this.windowManager.openWindow({
+            appId: "start-menu",
+            workspace: 0,
+            x: 900,
             y: 100,
             width: 400,
             height: 400,
@@ -136,5 +153,9 @@ export class RootComponent {
 
         this.switchWorkspaceEmitter.next(null);
         this.dotEmitter.next(null);
+    }
+
+    selectWorkspace(workspace: number) {
+        this.currentWorkspace = workspace;
     }
 }
