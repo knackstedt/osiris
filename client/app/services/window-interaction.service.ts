@@ -208,8 +208,8 @@ export class WindowInteractionService {
                 console.log("resizing")
 
                 evt.target.classList.add("resizing");
-                const numId = parseInt(evt.target.id.split('_').pop());
-                window = this.windowManager.managedWindows.find(w => w.id == numId);
+                const id = evt.target.id.split('_')[1];
+                window = this.windowManager.managedWindows.find(w => w.id == id);
 
                 window.emit("onResizeStart", evt);
 
@@ -228,8 +228,8 @@ export class WindowInteractionService {
                 window = null;
             },
             onmove: evt => {
-                const numId = parseInt(evt.target.id.split('_').pop());
-                const window = this.windowManager.managedWindows.find(w => w.id == numId);
+                const id = evt.target.id.split('_')[1];
+                const window = this.windowManager.managedWindows.find(w => w.id == id);
 
                 window.height = Math.max(evt.rect.height, window.minHeight);
                 window.width = Math.max(evt.rect.width, window.minWidth);
@@ -261,8 +261,8 @@ export class WindowInteractionService {
             onstart: evt => {
                 console.log("start dragging");
 
-                const numId = parseInt(evt.target.id.split('_').pop());
-                window = this.windowManager.managedWindows.find(w => w.id == numId);
+                const id = evt.target.id.split('_')[1];
+                window = this.windowManager.managedWindows.find(w => w.id == id);
 
                 evt.target.classList.add("dragging");
                 window.emit("onDragStart", evt);

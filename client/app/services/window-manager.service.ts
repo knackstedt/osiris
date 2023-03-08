@@ -93,12 +93,12 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
 
     }
 
-    public closeWindow(id: number) {
+    public closeWindow(id: string) {
         WindowManagerService.closeWindow(id);
         this.next(this.managedWindows);
     }
 
-    public static closeWindow(id: number) {
+    public static closeWindow(id: string) {
         // Get the instance of the window manager.
         const instance = this.registeredInstances.find(ri => ri.managedWindows.find(mw => mw.id == id));
 
@@ -204,11 +204,11 @@ type OmitFunctions<T> = Pick<T, NonFunctionPropertyNames<T>>;
 export type WindowConfig = Partial<OmitFunctions<ManagedWindow>>;
 
 export class ManagedWindow {
-    private static windowIdCounter = 0;
     private static windowZindexCounter = 0;
 
     // This is simply a unique identifier used to pick this out
-    id = ManagedWindow.windowIdCounter++;
+    readonly id = crypto.randomUUID();
+
     workspace: number;
     appId: string;
 
