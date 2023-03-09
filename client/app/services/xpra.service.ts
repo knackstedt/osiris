@@ -12,11 +12,11 @@ export class XpraService {
 
     private static services: XpraService[] = [];
 
-    constructor(private windowManager: WindowManagerService, private configuration: ConfigurationService) { 
-        this.init(); 
+    constructor(private windowManager: WindowManagerService, private configuration: ConfigurationService) {
+        this.init();
 
         // Register this service
-        XpraService.services.push(this); 
+        XpraService.services.push(this);
     }
 
     private worker: Worker;
@@ -54,8 +54,8 @@ export class XpraService {
 
         this.bindEvents();
 
-        // xpra.connect('ws://localhost:3300', {
-        xpra.connect('ws://192.168.1.246:3300', {
+        xpra.connect('ws://localhost:3300', {
+        // xpra.connect('wss://192.168.1.246:3300', {
             keyboard: true,
             mouse: true,
             keyboardLayout: "us",
@@ -143,7 +143,7 @@ export class XpraService {
             win.attributes.metadata['window-type'].includes("TOOLTIP") ||
             win.attributes.metadata['window-type'].includes("DROPDOWN");
 
-        let isSnapTarget = 
+        let isSnapTarget =
             !(
                 win.attributes.metadata['window-type'].includes("COMBO") ||
                 win.attributes.metadata['window-type'].includes("POPUP_MENU") ||
@@ -163,6 +163,7 @@ export class XpraService {
         }
 
         this.windowManager.openWindow({
+            workspace: 0,
             appId: "native",
             data: win,
             width: width,

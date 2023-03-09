@@ -22,8 +22,14 @@ import { WindowTemplateComponent } from 'client/app/components/window-template/w
 })
 export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChange, OnMaximizeChange, OnClose, OnDragEnd, OnResizeEnd {
     @ViewChild("canvas", {read: ElementRef}) elementRef;
-    @Input() windowRef: ManagedWindow;
-    @Input() data: XpraWindowManagerWindow;
+
+    @Input("window") windowRef: ManagedWindow;
+    // @Input() data: XpraWindowManagerWindow;
+    @Input() canvas: HTMLCanvasElement;
+
+    get data() {
+        return this.windowRef.data
+    }
 
     constructor(
         private fetch: Fetch,
@@ -42,10 +48,10 @@ export class NativeComponent implements AfterViewInit, OnDestroy, OnCollapseChan
     // }
 
     async ngAfterViewInit() {
-        if (!this.data)
+        if (!this.canvas)
             throw new Error("Cannot create native window without data reference!");
 
-        this.elementRef.nativeElement.appendChild(this.data.canvas);
+        this.elementRef.nativeElement.appendChild(this.canvas);
         this.bindEvents();
         this.updateGeometry();
     }

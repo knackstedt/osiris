@@ -110,6 +110,7 @@ export class RootComponent {
             y: 100,
             width: 400,
             height: 400,
+            icon: "",
 
             // This is an arbitrary data object that gets loaded into the app
             data: {

@@ -6,5 +6,6 @@ export const RegisteredApplications: ComponentRegistration[] = [
     { id: 'terminal', group: "app", load: () => import('client/app/apps/terminal/terminal.component'), icon: "home", order: 0 },
     { id: 'file-manager', group: "app", load: () => import('client/app/apps/filemanager/filemanager.component'), icon: "home", order: 0 },
     { id: 'start-menu', group: "app", load: () => import('client/app/apps/start-menu/start-menu.component'), icon: "home", order: 0 },
+    { id: 'client-settings', group: "app", load: () => import('client/app/apps/client-settings/client-settings.component'), icon: "home", order: 0 },
 ];
 

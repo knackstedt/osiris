@@ -1,4 +1,4 @@
-:host { 
+:host {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -32,8 +32,8 @@
             transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
         }
     }
-
 }
+
 .active .sidebar {
     background-color: #2c2c2c;
     border-right-color: #1c1c1c;
@@ -125,6 +125,7 @@
     border-top-right-radius: 5px;
     border-bottom: none;
     border-right: none;
+    z-index: 9999;
 
     &:hover {
         display: none;
