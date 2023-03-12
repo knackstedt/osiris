@@ -13,6 +13,7 @@ import { ErrorHandler } from './errors';
 import { route } from './util';
 import { FilesystemApi } from "./api/files";
 import { SocketService } from "./pty";
+import { XOrgApi } from './api/xorg';
 
 (async () => {
 
@@ -132,6 +133,7 @@ import { SocketService } from "./pty";
     app.use(express.static(__dirname + '/../client/'));
 
     app.use("/api/filesystem", FilesystemApi);
+    app.use("/api/xorg", XOrgApi);
 
     app.use((req, res, next) => next(404));
     app.use(ErrorHandler);

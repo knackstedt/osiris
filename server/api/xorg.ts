@@ -56,10 +56,10 @@ router.get('/icon/:source/:slug', route(async (req, res, next) => {
 
 
 
-    res.send({
-        system: sysApps,
-        user: userApps
-    });
+    // res.send({
+    //     system: sysApps,
+    //     user: userApps
+    // });
 }));
 
 const pathMap = [
@@ -133,9 +133,13 @@ const loadDesktopFiles = async (path, source) => {
 router.get('/', route(async (req, res, next) => {
     const out = await Promise.all(pathMap.map(pair => loadDesktopFiles(pair.path, pair.source)));
 
-    res.send(out.reduce((a, b) => ({ ...a, ...b }), {}));
+    res.send(out.flat());
 }));
 
-
+// TODO: Get all flatpaks?
+// Get all APT installation
+// ~/.local/share/flatpak/app/org.gimp.GIMP/current/active/metadata
+// The current configuration sucks ass.
+// inventory_2
 
 export const XOrgApi = router;
