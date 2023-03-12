@@ -15,7 +15,7 @@ export class BackgroundComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        console.log(this.background)
+        // console.log(this.background)
     }
 
 }

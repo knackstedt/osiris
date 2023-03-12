@@ -3,6 +3,7 @@ import { RootComponent } from 'client/app/root.component';
 import { DialogService } from 'client/app/services/dialog.service';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { WindowManagerService } from '../../services/window-manager.service';
+import { ConfigurationService } from 'client/app/services/configuration.service';
 
 export type TaskBarData = {
   appId: string,
@@ -31,7 +32,8 @@ export class TaskbarComponent {
     constructor(
         private rootComponent: RootComponent,
         public windowManager: WindowManagerService,
-        private dialog: DialogService
+        private dialog: DialogService,
+        private config: ConfigurationService
     ) {
 
         // Watch for changes to the list of windows
@@ -108,13 +110,13 @@ export class TaskbarComponent {
         //     width: "65.52vw",
         //     height: "66.38vh"
         // });
-        this.dialog.open("start-menu");
+        this.dialog.open("start-menu", "app");
     }
 
     activateWindow(window: ManagedWindow) {
         // TODO: optionally add facility to move window to current workspace.
 
-        if (this.rootComponent.currentWorkspace != window.workspace)
+        if (this.config.currentWorkspace != window.workspace)
             this.rootComponent.selectWorkspace(window.workspace);
 
         window.uncollapse();

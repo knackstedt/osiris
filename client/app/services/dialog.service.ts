@@ -34,19 +34,19 @@ export class DialogService {
      * @param name Which dialog to open
      * @returns promise<result>
      */
-    open(name: string, data: DialogOptions = {}): Promise<any> {
+    open(name: string, group = "defualt", data: DialogOptions = {}): Promise<any> {
         log("Open dialog " + name, data);
 
         return new Promise((resolve, reject) => {
 
-            if (!this.lazyLoader.isComponentRegistered(name)) return;
-
+            if (!this.lazyLoader.isComponentRegistered(name, group)) {
+                console.warn(name, "does not exist in", group)
+                return;
+            }
             // default options. can be overridden.
             const defaults: any = {
                 maxHeight: "90vh",
                 maxWidth: "90vw",
-                minWidth: "450px",
-                minHeight: "520px",
                 closeOnNavigation: true,
                 restoreFocus: true,
             };
@@ -57,8 +57,9 @@ export class DialogService {
                 ...data,
                 data: {
                     id: name,
-                    inputs: data.inputs,
-                    outputs: data.outputs
+                    group,
+                    inputs: data.inputs || {},
+                    outputs: data.outputs || {}
                 }
             };
 

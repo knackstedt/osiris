@@ -9,7 +9,12 @@
         <div class="content" [class.active]="windowRef._isActive">
             <mat-tab-group>
                 <mat-tab *ngFor="let file of files" [label]="file.name">
-                    <app-monaco-editor [code]="file.content" [path]="windowRef.data.path + file.name"></app-monaco-editor>
+                    <ngx-lazy-loader
+                        component="vscode"
+                        [inputs]="{
+                            code: file.content
+                        }"
+                    />
                 </mat-tab>
             </mat-tab-group>
         </div>

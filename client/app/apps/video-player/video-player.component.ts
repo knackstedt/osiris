@@ -1,11 +1,20 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { FileDescriptor } from '../filemanager/filemanager.component';
+import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
+import { ButtonPopoutComponent } from 'client/app/components/button-popout/button-popout.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-video-player',
     templateUrl: './video-player.component.html',
-    styleUrls: ['./video-player.component.scss']
+    styleUrls: ['./video-player.component.scss'],
+    imports: [
+        CommonModule,
+        WindowTemplateComponent,
+        ButtonPopoutComponent
+    ],
+    standalone: true
 })
 export class VideoPlayerComponent implements OnInit {
 

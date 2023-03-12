@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
     providedIn: 'root'
 })
 export class ConfigurationService {
+    currentWorkspace = 0;
 
     windowToolbarHeight = 46;
 
@@ -17,7 +18,7 @@ export class ConfigurationService {
 
     workspaces = [
         { label: "default",  background: "" },
-        { label: "avalon",   background: "" },
+        { label: "avalon",   background: "#ff000022" },
         { label: "gaia",     background: "" },
         { label: "brunhild", background: "" },
         { label: "kronos",   background: "" },
@@ -29,8 +30,25 @@ export class ConfigurationService {
     // ! We expect a tall image for vertical, and a wide image for horizontal
     // TODO: work on resolving this
     workspaceDirection: "vertical" | "horizontal" = "vertical";
+
     // workspaceDirection: "vertical" | "horizontal" = "horizontal";
     background = "./assets/img/wallpaper/madison-oren-gE1phX0Lbos-unsplash.jpg";
     // background = "./assets/img/wallpaper/alberto-bobbera-KNhVlMjkNjs-unsplash.jpg";
     // background = "./assets/img/wallpaper/Canyon2.png";
+
+    constructor() {
+        this.apply();
+    }
+
+    // This method invokes to apply any configurations that are stateful across
+    // the application.
+    apply() {
+        // Clear out any old classes
+        [...document.body.classList as any as string[]]
+            .filter(c => c.startsWith("taskbar-"))
+            .forEach(c => document.body.classList.remove(c));
+
+
+        document.body.classList.add(`taskbar-${this.taskbarPosition}`);
+    }
 }

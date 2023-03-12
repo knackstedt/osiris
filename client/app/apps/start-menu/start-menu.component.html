@@ -17,7 +17,7 @@
     <div>Create folder</div>
 </div> -->
 
-
+<!--
 <mat-tab-group>
     <mat-tab *ngFor="let category of menu">
         <ng-template mat-tab-label>
@@ -32,4 +32,27 @@
             </div>
         </ng-container>
     </mat-tab>
+</mat-tab-group> -->
+
+
+<mat-tab-group>
+    <ng-container *ngFor="let menu of menus">
+        <mat-tab *ngIf="menu.apps.length > 0">
+
+            <ng-template mat-tab-label>
+                <img [src]="menu.icon">
+                <div>{{menu.label}}</div>
+            </ng-template>
+
+            <ng-container *ngFor="let app of menu.apps">
+                <div *ngIf="app.id" class="app" (click)="openApp(app)">
+                    <ng-container [ngSwitch]="app.iconType">
+                        <mat-icon *ngSwitchCase="'mat-icon'" [fontIcon]="app.iconSrc" />
+                        <img *ngSwitchCase="'src'" [src]="app.iconSrc" />
+                    </ng-container>
+                    <p>{{app.label || app.id}}</p>
+                </div>
+            </ng-container>
+        </mat-tab>
+    </ng-container>
 </mat-tab-group>

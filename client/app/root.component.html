@@ -8,9 +8,9 @@
     <img
         [src]="config.background"
         [style.transform]="'translate3d(' +
-            (config.workspaceDirection == 'vertical' ? '0' : (-(currentWorkspace+1)/config.workspaces.length*50) + '%') +
+            (config.workspaceDirection == 'vertical' ? '0' : (-(config.currentWorkspace+1)/config.workspaces.length*50) + '%') +
             ',' +
-            (config.workspaceDirection == 'horizontal' ? '0' : (-(currentWorkspace+1)/config.workspaces.length*50) + '%') +
+            (config.workspaceDirection == 'horizontal' ? '0' : (-(config.currentWorkspace+1)/config.workspaces.length*50) + '%') +
         ',0)'"
     />
 </div>
@@ -26,7 +26,7 @@
         <div
             *ngFor="let workspace of config.workspaces; let i = index"
             class="dot"
-            [class.active]="currentWorkspace == i"
+            [class.active]="config.currentWorkspace == i"
         ></div>
     </div>
 
@@ -38,9 +38,9 @@
             [workspaceId]="id"
             [background]="workspace.background"
             [@activeWorkspace]="
-                id == currentWorkspace
+                id == config.currentWorkspace
                     ? 'current' :
-                id < currentWorkspace
+                id < config.currentWorkspace
                     ? (config.workspaceDirection == 'vertical' ? 'above' : 'left')
                     : (config.workspaceDirection == 'vertical' ? 'below' : 'right')
             "

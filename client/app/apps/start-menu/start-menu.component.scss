@@ -1,13 +1,18 @@
 :host {
     display: flex;
     background-color: #36322f;
-    height: 100%;
 
     justify-content: center;
     flex-direction: column;
     align-items: center;
 
     padding: 40px;
+
+    // height: 100%;
+    // width: 100%;
+    height: 717px;
+    width: 1258px;
+    user-select: none;
 }
 
 .search {
@@ -24,18 +29,28 @@ hr {
     border-bottom: none;
 }
 
+mat-icon {
+    width: 84px;
+    height: 84px;
+    font-size: 84px;
+}
+
 :host ::ng-deep {
     .mat-mdc-tab-group {
-        height: 0;
         flex: 1;
         flex-direction: column-reverse;
         justify-content: space-between;
+        width: 100%;
+    }
+
+    .mat-mdc-tab-label-container {
+        flex-grow: 0;
     }
 
     .mat-mdc-tab-body-content {
         display: grid;
         grid-template-columns: repeat(auto-fill, 168px);
-        justify-content: space-around;
+        justify-content: center;
         grid-auto-rows: min-content;
         padding: 10px;
         overflow-y: auto;

@@ -51,8 +51,6 @@ export class RootComponent {
 
     taskbarPosition: "top" | "right" | "bottom" | "left" = "left";
 
-    currentWorkspace = 0;
-
     switchingWorkspace = false;
     showWorkspaceDots = false;
 
@@ -74,11 +72,11 @@ export class RootComponent {
 
         this.windowManager.openWindow({
             appId: "file-manager",
-            workspace: 1,
-            x: 50,
-            y: 600,
-            width: 800,
-            height: 300,
+            workspace: 0,
+            x: 100,
+            y: 50,
+            width: 1200,
+            height: 800,
 
             // This is an arbitrary data object that gets loaded into the app
             data: {
@@ -88,45 +86,30 @@ export class RootComponent {
             }
         });
 
-        this.windowManager.openWindow({
-            appId: "terminal",
-            workspace: 0,
-            x: 500,
-            y: 100,
-            width: 400,
-            height: 400,
+        // this.windowManager.openWindow({
+        //     appId: "terminal",
+        //     workspace: 0,
+        //     x: 500,
+        //     y: 100,
+        //     width: 400,
+        //     height: 400,
 
-            // This is an arbitrary data object that gets loaded into the app
-            data: {
-                cwd: "/home/knackstedt/Downloads/",
-                command: "bash"
-            }
-        });
+        //     // This is an arbitrary data object that gets loaded into the app
+        //     data: {
+        //         cwd: "/home/knackstedt/Downloads/",
+        //         command: "bash"
+        //     }
+        // });
 
-        this.windowManager.openWindow({
-            appId: "start-menu",
-            workspace: 0,
-            x: 900,
-            y: 100,
-            width: 400,
-            height: 400,
-            icon: "",
-
-            // This is an arbitrary data object that gets loaded into the app
-            data: {
-                cwd: "/home/knackstedt/Downloads/",
-                command: "bash"
-            }
-        });
 
         keyboard.onKeyCommand({
             key: "ArrowUp",
             window: false,
         }).subscribe(() => {
-            if (this.currentWorkspace > 0) {
+            if (this.config.currentWorkspace > 0) {
                 this.transitionWorkspaces();
 
-                this.currentWorkspace--;
+                this.config.currentWorkspace--;
             }
         })
 
@@ -134,9 +117,9 @@ export class RootComponent {
             key: "ArrowDown",
             window: false,
         }).subscribe(() => {
-            if (this.currentWorkspace < (this.config.workspaces.length - 1)) {
+            if (this.config.currentWorkspace < (this.config.workspaces.length - 1)) {
                 this.transitionWorkspaces();
-                this.currentWorkspace++;
+                this.config.currentWorkspace++;
             }
         })
 
@@ -157,6 +140,7 @@ export class RootComponent {
     }
 
     selectWorkspace(workspace: number) {
-        this.currentWorkspace = workspace;
+        this.transitionWorkspaces();
+        this.config.currentWorkspace = workspace;
     }
 }

@@ -12,7 +12,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { ComponentResolveStrategy, NgxLazyLoaderModule } from '@dotglitch/ngx-lazy-loader';
 import { NotFoundComponent } from 'client/app/apps/@framework/not-found/not-found.component';
 import { LazyProgressDistractorComponent } from 'client/app/apps/@framework/lazy-progress-distractor/lazy-progress-distractor.component';
-import { RegisteredApplications } from 'client/app/app.registry';
+import { RegisteredApplications, LazyComponents } from 'client/app/app.registry';
 import { WorkspaceComponent } from 'client/app/components/workspace/workspace.component';
 import { CommonAppModule } from './common.module';
 import { BackgroundComponent } from 'client/app/components/background/background.component';
@@ -29,7 +29,10 @@ import { BackgroundComponent } from 'client/app/components/background/background
         CommonModule,
         NgxLazyLoaderModule.forRoot({
             // TODO: add additional registries
-            entries: RegisteredApplications,
+            entries: [
+                ...RegisteredApplications,
+                ...LazyComponents
+            ],
             componentResolveStrategy: ComponentResolveStrategy.PickFirst,
             notFoundComponent: NotFoundComponent,
             loaderDistractorComponent: LazyProgressDistractorComponent,
