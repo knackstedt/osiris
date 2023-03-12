@@ -2,13 +2,15 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "types": []
+    "outDir": "./out-tsc/app"
   },
   "files": [
     "client/main.ts"
   ],
   "include": [
-    "client/**/*.d.ts"
+    "client/**/*.d.ts",
+    "node_modules/xpra-html5/src/**/*.ts",
+    "node_modules/material-icon-theme/src/models/**/*.ts",
+    "node_modules/material-icon-theme/src/icons/**/*.ts"
   ]
 }

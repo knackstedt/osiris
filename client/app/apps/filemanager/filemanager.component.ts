@@ -231,7 +231,7 @@ export class FilemanagerComponent implements OnInit {
 
     loadFolder(absPath?: string) {
         this.windowRef.data.basePath = absPath || this.windowRef.data.basePath;
-        this.fetch.post(`/api/filesystem/`, { path: this.windowRef.data.basePath, showHidden: this.showHiddenFiles })
+        this.fetch.post(`/api/filesystem/`, { path: this.windowRef.data.basePath || "~", showHidden: this.showHiddenFiles })
             .then((data: any) => {
                 const files: FileDescriptor[] = data.files || [];
                 const dirs: DirectoryDescriptor[] = data.dirs;

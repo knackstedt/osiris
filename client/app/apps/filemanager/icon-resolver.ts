@@ -1,7 +1,9 @@
-import { fileIcons } from "./mit-file-icons";
-import { folderIcons } from "./mit-folder-icons";
+import { fileIcons } from "material-icon-theme/src/icons/fileIcons";
+import { folderIcons } from "material-icon-theme/src/icons/folderIcons";
 import { FSDescriptor } from './filemanager.component';
 import textExtensions from 'textextensions';
+
+console.log("bootstrapping icons", fileIcons, folderIcons)
 
 function isText(file: string) {
     const ext = file.split('.').pop();
@@ -9,33 +11,41 @@ function isText(file: string) {
 }
 
 // Build maps of extension/filename => icon id.
-const exts = [];
-const filenames = [];
-const dirnames = [];
+const fileIconExtensionList = [];
+const fileIconNameList: {
+    val: string,
+    iconName: string,
+    light: boolean // is there a _light variant?
+}[] = [];
+
+const folderIconNameList = [];
 fileIcons.icons.forEach(i => {
     i.fileNames?.forEach(name => {
-        filenames.push({
-            val: name, 
-            iconName: i.name
+        fileIconNameList.push({
+            val: name,
+            iconName: i.name,
+            light: i.light
         });
     })
     i.fileExtensions?.forEach(ext => {
-        exts.push({
-            val: ext, 
-            iconName: i.name
+        fileIconExtensionList.push({
+            val: ext,
+            iconName: i.name,
+            light: i.light
         });
     })
 });
 folderIcons.find(f => f.name == "specific").icons.forEach(dir => {
     dir.folderNames.forEach(fn => {
-        dirnames.push({
-            val: fn, 
-            iconName: dir.name
+        folderIconNameList.push({
+            val: fn,
+            iconName: dir.name,
+            light: dir.light
         });
     })
 });
 
-const extMapIcons = [
+const builtinIcons = [
     "7z",
     "apk",
     "arc",
@@ -79,34 +89,39 @@ const getBestMatch = (data: {val: string, iconName: string}[], filename) => {
         [0]?.iconName; // Return the first result.
 }
 
+// TODO: resolve dynamic thumbnails for media documents
 export const resolveIcon = (file: FSDescriptor): {path: string, needsBackdrop: boolean} => {
 
-    // const mimeType = MimeTypeBase[ext];
-    // MimeTypes[ext] ||
-    // .includes(MimeTypeBase[ext])
-    // ? MimeTypeBase[ext] 
-    // || "application-x-generic";
-    // if (mimeType)
-    //     return `icons/mimetypes/${mimeType}.svg`;
-
-
-    
-    // VS Code Material Icon Theme pack
     if (file.kind == "directory") {
-        const dirnameMatch = getBestMatch(dirnames, file.name);
-        return {
-            path: dirnameMatch ? `lib/mit/${dirnameMatch}.svg` : "lib/mit/folder-app.svg",
-            needsBackdrop: false
-        };
+        return resolveDirIcon(file);
     }
-    const baseExt = extMapIcons.find(ext => file.name.endsWith('.' + ext));
-    if (baseExt)
+
+    return resolveFileIcon(file);
+}
+
+const resolveDirIcon = (file: FSDescriptor) => {
+    const dirnameMatch = getBestMatch(folderIconNameList, file.name);
+    // VS Code Material Icon Theme pack
+
+    // TODO: default to a clear icon that doesn't have decoration
+    return {
+        path: dirnameMatch ? `lib/mit/${dirnameMatch}.svg` : "lib/mit/folder-app.svg",
+        needsBackdrop: false
+    };
+}
+
+const resolveFileIcon = (file: FSDescriptor) => {
+    // Folders always use the material-icon-theme
+    const baseExt = builtinIcons.find(ext => file.name.endsWith('.' + ext));
+    if (baseExt) {
         return {
             path: `assets/file-icons/exts/${baseExt}.svg`,
             needsBackdrop: false
         };
-    
-    const base2Ext = 
+    }
+
+    // Resolve a base MIME type via path extension
+    const base2Ext =
         (/\.(ogg|mp3|m4a|flac|wav|aiff|aac|wma|midi?)$/.test(file.name) && "music") ||
         (/\.(appimage)$/.test(file.name) && "compressed") ||
         (/\.(pot|potx|pps|ppsx|ppt|pptm|pptx)$/.test(file.name) && "presentation") ||
@@ -115,46 +130,43 @@ export const resolveIcon = (file: FSDescriptor): {path: string, needsBackdrop: b
         (/\.(stp|max|fbx|obj|x3d|vrml|3ds|3mf|stl|dae|dwg|blend)$/.test(file.name) && "model") ||
         (/\.(mp4|mkv|webm|mpg|avi|mov|flv|wmv|)$/.test(file.name) && "video");
 
-    if (base2Ext)
+    // If we get a path extension, we can easily map the icon
+    if (base2Ext) {
         return {
             path: `assets/file-icons/${base2Ext}.svg`,
             needsBackdrop: false
         };
+    }
 
-    const filename = filenames
+
+    // Lookup a filename from material-icon-theme
+    const filename = fileIconNameList
         .filter(d => file.name.toLowerCase() == d.val.toLowerCase())
         .sort((a, b) => b.val.length - a.val.length)
     [0]?.iconName;
 
-    if (filename) return {
-        path: `lib/mit/${filename}.svg`,
-        needsBackdrop: true
+    if (filename) {
+        return {
+            path: `lib/mit/${filename}.svg`,
+            needsBackdrop: true
+        };
     }
 
-    const fileext = exts
+    // Check the file's extension -- we may
+    const fileext = fileIconExtensionList
         .filter(d => file.name.toLowerCase().endsWith('.' + d.val.toLowerCase()))
         .sort((a, b) => b.val.length - a.val.length)
     [0]?.iconName;
     if (fileext) return {
         path: `lib/mit/${fileext}.svg`,
         needsBackdrop: true
-    }
-
-    return {
-        path: textExtensions.includes(file.path.split('.').pop()) ? 'assets/file-icons/text.svg' : 'assets/file-icons/binary.svg',
-        needsBackdrop: false
     };
 
-    // if (isText(file.path))
-        
+    // If the file doesn't have a text extension, we're going to assume it's binary data.
+    const isFileBinary = !textExtensions.includes(file.path.split('.').pop());
 
-    // const filenameMatch = getBestMatch(filenames, file.name);
-    // const extMatch = getBestMatch(exts, file.name);
-
-    // return {
-    //     path: filenameMatch ? `lib/mit/${filenameMatch}.svg` :
-    //                extMatch ? `lib/mit/${extMatch}.svg` :
-    //                           "lib/mit/file.svg",
-    //     needsBackdrop: true
-    // }
+    return {
+        path: isFileBinary ? 'assets/file-icons/text.svg' : 'assets/file-icons/binary.svg',
+        needsBackdrop: false
+    };
 }
