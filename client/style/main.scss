@@ -1,8 +1,13 @@
 @import "./themes/dark.scss";
 @import "./themes/light.scss";
+@import "./layout.scss";
+
+@import "@fontsource/roboto";
+@import "@fontsource/material-icons";
 
 @import "material.scss";
 @import "gtk.scss";
+
 
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 html, body {
@@ -20,6 +25,7 @@ html, body {
 .dark {
     @include dark-theme;
 }
+
 
 * {
     box-sizing: border-box;

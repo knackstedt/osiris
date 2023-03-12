@@ -36,3 +36,8 @@ $dark-theme: mat.define-dark-theme((
     @include mat.all-component-themes($dark-theme);
 }
 
+
+
+.cdk-global-scrollblock {
+    overflow: hidden;
+}
