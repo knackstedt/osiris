@@ -14,6 +14,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { FileGridComponent } from './file-grid/file-grid.component';
 import { OnResize } from 'client/types/window';
+import { getMimeType } from 'client/app/apps/filemanager/mimetype';
 // TODO:
 /**
  * Multiple music / video / image files selected turns into a playlist
@@ -35,28 +36,19 @@ export type DirectoryDescriptor = {
 export type FileDescriptor = {
     kind: "file",
     stats: {
-        dev: number;
-        ino: number;
-        mode: number;
-        nlink: number;
-        uid: number;
-        gid: number;
-        rdev: number;
         size: number;
-        blksize: number;
-        blocks: number;
+        // Size for zipped file
+        compressedSize?: number,
         atimeMs: number;
         mtimeMs: number;
         ctimeMs: number;
         birthtimeMs: number;
-        atime: Date;
-        mtime: Date;
-        ctime: Date;
-        birthtime: Date;
     },
     path: string
     name: string,
-    ext: string
+    ext: string,
+    // Comment for entries in a zip file.
+    comment?: string
 };
 
 export type FSDescriptor = DirectoryDescriptor | FileDescriptor;
@@ -122,6 +114,17 @@ export class FilemanagerComponent implements OnInit {
         private keyboard: KeyboardService,
         private dialog: MatDialog
         ) {
+        keyboard.onKeyCommand({
+            ctrl: true,
+            key: "t",
+            window: this.windowRef,
+            interrupt: true
+        }).subscribe(() => {
+            this.tabs.push({
+                ...this.currentTab
+            });
+            this.currentTab = this.tabs[this.tabs.length-1];
+        })
     }
 
     ngOnInit(): void {
@@ -170,7 +173,7 @@ export class FilemanagerComponent implements OnInit {
         return path.split('/').filter(p => p).pop();
     }
 
-    onFileOpen(file: FSDescriptor | FSDescriptor[]) {
+    onFileOpen(files: FSDescriptor[]) {
         // this.fetch.post<any>(`/api/filesystem/file?only=stat`, [file.path + file.name ]).then(res => {
         //     if (res[0].type == "text")
         //         this.windowManager.openWindow("code-editor", file);
@@ -178,6 +181,42 @@ export class FilemanagerComponent implements OnInit {
         //         this.downloadFile(file);
         //     // this.fileData = res;
         // });
+
+        let mimetype = files
+            .map(f => getMimeType(f.name))
+            .reduce((a, b) => {
+                if (a != b)
+                    return "mixed";
+                return a;
+            }, getMimeType(files[0].name));
+
+        // switch(mimetype) {
+        //     case "music": {
+
+        //     }
+        //     case "compressed": {
+
+        //     }
+        //     case "presentation": {
+
+        //     }
+        //     case "richtext": {
+
+        //     }
+        //     case "spreadsheet": {
+
+        //     }
+        //     case "model": {
+
+        //     }
+        //     case "video": {
+
+        //     }
+        // }
+    }
+
+    private openWindow(id, args) {
+
     }
 
     onPathChange() {

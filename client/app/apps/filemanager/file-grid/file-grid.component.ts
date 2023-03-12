@@ -37,8 +37,8 @@ export class FileGridComponent implements OnInit {
 
     @Input() showHiddenFiles = false;
 
-    @Output() fileSelect = new EventEmitter<FSDescriptor | FSDescriptor[]>();
-    @Output() fileOpen = new EventEmitter<FSDescriptor | FSDescriptor[]>();
+    @Output() fileSelect = new EventEmitter<FSDescriptor[]>();
+    @Output() fileOpen = new EventEmitter<FSDescriptor[]>();
     @Output() newTab = new EventEmitter<{ path: string; }>();
 
     directoryContents: FSDescriptor[] = [];
@@ -377,7 +377,7 @@ export class FileGridComponent implements OnInit {
         if (file.kind == "directory")
             this.loadFolder(file.path + file.name);
         else {
-            this.fileOpen.next(file);
+            this.fileOpen.next([file]);
         }
     }
 
@@ -401,7 +401,7 @@ export class FileGridComponent implements OnInit {
                 .map(d => d['stats'].size).reduce((a, b) => a + b, 0);
 
         if (dirCount + fileCount == 1)
-            return `"${this.selectedItems[0]}" selected (${this.bytesToString(totalSize)})`;
+            return `"${this.selectedItems[0].name}" selected (${this.bytesToString(totalSize)})`;
 
         if (dirCount > 0 && fileCount == 0)
             return `"${dirCount}" folders selected`;

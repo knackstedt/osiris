@@ -9,7 +9,7 @@
     <cdk-virtual-scroll-viewport
         itemSize="134"
         scrollViewport
-        (click)="selectedItems = []"
+        (click)="selectedItems = []; selectionText = ''"
     >
         <div class="row" *cdkVirtualFor="let row of sortedFolders">
             <div class="file"

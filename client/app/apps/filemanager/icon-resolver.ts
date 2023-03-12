@@ -2,6 +2,7 @@ import { fileIcons } from "material-icon-theme/src/icons/fileIcons";
 import { folderIcons } from "material-icon-theme/src/icons/folderIcons";
 import { FSDescriptor } from './filemanager.component';
 import textExtensions from 'textextensions';
+import { getMimeType } from 'client/app/apps/filemanager/mimetype';
 
 console.log("bootstrapping icons", fileIcons, folderIcons)
 
@@ -121,14 +122,7 @@ const resolveFileIcon = (file: FSDescriptor) => {
     }
 
     // Resolve a base MIME type via path extension
-    const base2Ext =
-        (/\.(ogg|mp3|m4a|flac|wav|aiff|aac|wma|midi?)$/.test(file.name) && "music") ||
-        (/\.(appimage)$/.test(file.name) && "compressed") ||
-        (/\.(pot|potx|pps|ppsx|ppt|pptm|pptx)$/.test(file.name) && "presentation") ||
-        (/\.(odt|rtf|doc|docm|docx|dot|dotm|dotx)$/.test(file.name) && "richtext") ||
-        (/\.(ods|xls|xlsm|xlsx|xps|xlsx|csv)$/.test(file.name) && "spreadsheet") ||
-        (/\.(stp|max|fbx|obj|x3d|vrml|3ds|3mf|stl|dae|dwg|blend)$/.test(file.name) && "model") ||
-        (/\.(mp4|mkv|webm|mpg|avi|mov|flv|wmv|)$/.test(file.name) && "video");
+    const base2Ext = getMimeType(file.name);
 
     // If we get a path extension, we can easily map the icon
     if (base2Ext) {
