@@ -9,8 +9,10 @@
             </button>
         </div>
         <span></span>
-        <div class="breadcrumb" style="flex: 1">
-            <button *ngFor="let crumb of breadcrumb" (click)="crumb.path && loadFolder(crumb.path)">{{crumb.label}}</button>
+        <div class="breadcrumb" *ngIf="currentTab" style="flex: 1">
+            <ng-container *ngFor="let crumb of currentTab.breadcrumb">
+                <button *ngIf="crumb.label.trim()" (click)="crumb.path ? currentTab.path = crumb.path : 1">{{crumb.label}}</button>
+            </ng-container>
         </div>
         <app-button-popout img="assets/icons/actions/view-more-symbolic.svg">
             <ng-template #dialogTemplate>
@@ -92,7 +94,7 @@
                         <label>
                             Show hidden files
                         </label>
-                        <input type="checkbox" [(ngModel)]="showHiddenFiles" (ngModelChange)="loadFolder()">
+                        <input type="checkbox" [(ngModel)]="showHiddenFiles" (ngModelChange)="1">
                     </li>
                     <li>
                         <label>
@@ -112,7 +114,7 @@
     <ng-template #content>
         <as-split direction="horizontal" [gutterSize]="1">
             <as-split-area [size]="20">
-                <div class="sidebar" *ngIf="showSidebar" (click)="selected = []">
+                <div class="sidebar" *ngIf="showSidebar" (click)="currentTab.selection = []">
                     <ul>
                         <li>Recent</li>
                         <li>Starred</li>
@@ -141,34 +143,19 @@
                     </ul>
                 </div>
             </as-split-area>
-            <as-split-area [size]="80">
-                <div class="content" [class.active]="windowRef._isActive">
-                    <ng-scrollbar
-                        style="height: 100%; width: 100%"
-                        track="vertical"
-                        pointerEventsMethod="scrollbar"
-                    >
-                        <div class="files" [class.active]="windowRef._isActive" (click)="selected = []">
-                            <div class="file"
-                                *ngFor="let item of _sortFilter()"
-                                [class.selected]="selected.includes(item.name)"
-                                (click)="onClick(item, $event)"
-                                (dblclick)="openFile(item, $event)"
-
-                                contextMenu
-                                [contextMenuData]="item"
-                                [contextMenuItems]="folderContextMenu"
-                                [class.generic]="item['_icon'].needsBackdrop"
-                            >
-                                <img [src]="item['_icon'].path"/>
-                                <p>{{item.name}}</p>
-                            </div>
-                        </div>
-                    </ng-scrollbar>
-
+            <as-split-area [size]="80" style="background-color: #272727;">
+                <div class="content"
+                    [class.active]="windowRef._isActive"
+                    [style.--tab-height]="true ? '48px' : '0'"
+                >
+                    <app-file-grid
+                        [window]="windowRef"
+                        [(path)]="currentTab.path"
+                        [(selection)]="currentTab.selection"
+                        (fileOpen)="onFileOpen($event)"
+                    />
                 </div>
             </as-split-area>
         </as-split>
-        <div class="select-hint" *ngIf="getSelectionText()">{{getSelectionText()}}</div>
     </ng-template>
 </app-window-template>

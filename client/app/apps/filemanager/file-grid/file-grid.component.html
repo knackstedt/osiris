@@ -1,0 +1,29 @@
+<ng-scrollbar
+    style="height: 100%; width: 100%"
+    track="vertical"
+    pointerEventsMethod="scrollbar"
+>
+    <div class="files"
+        [class.active]="windowRef._isActive"
+        (click)="selectedItems = []"
+    >
+        <div class="file"
+            *ngFor="let item of _sortFilter()"
+            [class.selected]="selectedItems.includes(item.name)"
+            (click)="onSelect(item, $event)"
+            (dblclick)="onItemClick(item)"
+
+            contextMenu
+            [contextMenuData]="item"
+            [contextMenuItems]="folderContextMenu"
+            [class.generic]="item['_icon'].needsBackdrop"
+        >
+            <img [src]="item['_icon'].path"/>
+            <p>{{item.name}}</p>
+        </div>
+    </div>
+</ng-scrollbar>
+
+<div class="select-hint" *ngIf="selectionText">
+    {{selectionText}}
+</div>

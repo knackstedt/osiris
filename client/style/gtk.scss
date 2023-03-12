@@ -53,28 +53,29 @@ input[type=text] {
 .breadcrumb {
     border: 1px solid #171717;
     border-bottom-color: #000;
-    height: 100%;
     font-size: 14px;
     display: flex;
     align-items: center;
     margin: 0;
+    gap: 6px; // approx width of a slash `/`
 
     &>button {
         position: relative;
-        padding: 0px 12px;
-        background-color: #00000000;
+        padding: 0px 6px;
+        background-color: #0000;
         border: none;
         transition: color 200ms ease;
 
         &:hover {
             background-color: #4a4a4a;
-            color: white;
+            color: #fff;
         }
 
         &::after {
             content: "/";
             position: absolute;
-            left: calc(100% - 0.25em);
+            left: calc(100% + 1px);
+            z-index: 999;
         }
 
         &:last-of-type {

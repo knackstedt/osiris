@@ -80,7 +80,7 @@ export class RootComponent {
 
             // This is an arbitrary data object that gets loaded into the app
             data: {
-                basePath: "/home/knackstedt/Downloads/",
+                path: "/home/knackstedt/Downloads/",
                 showHidden: false,
                 search: ""
             }
