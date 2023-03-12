@@ -1,11 +1,12 @@
 import * as express from "express";
 import { route, getFilesInFolder } from '../util';
-import fs from 'fs';
 import { readFile, stat, access } from "fs-extra";
 import { isText } from 'istextorbinary';
 import mime from "mime-types";
 import AdmZip from "adm-zip";
-import tar from "tar";
+import fs from "fs-extra";
+import crypto from 'crypto';
+
 
 process.on('uncaughtException', function (exception) {
     console.log(exception); // to see your exception details in the console
@@ -121,7 +122,7 @@ router.use('/download', route(async (req, res, next) => {
             const stream = fs.createReadStream(dir + file);
             stream.on('error', err => next(err));
             res.setHeader("content-length", stats.size);
-    
+
             stream.pipe(res);
         }
     }
@@ -185,9 +186,39 @@ router.use('/file', route(async (req, res, next) => {
     .catch(err => next(err));
 }));
 
+/**
+ * Calculate a specified checksum via a read stream.
+ */
+router.use('/checksum/:type', route(async (req, res, next) => {
+    const checksum = req.params['type']?.toLowerCase();
+
+    if (!["md5", "sha1", "sha256", "sha512"].includes(checksum)) return next(400);
+
+    // TODO: secure this properly.
+    const stream = await fs.createReadStream(req.body.path);
+
+    const hash = crypto.createHash(checksum);
+
+    stream.pipe(hash);
+
+
+    stream.on("close", () => {
+        const sum = hash.digest("hex");
+
+        res.send({
+            sum,
+            length: stream.bytesRead
+        });
+    })
+
+    stream.on('error', (error) => {
+        next(error);
+    });
+}));
+
 router.use('/', route(async (req, res, next) => {
     const { path, showHidden } = req.body;
-    
+
     if (!path) return next(400);
 
     // If the file doesn't exist
@@ -196,7 +227,7 @@ router.use('/', route(async (req, res, next) => {
         .catch(e => {
             next(e);
         })
-    
+
     if (!hasAccess) return;
 
     let stats = await stat(path);
@@ -212,7 +243,7 @@ router.use('/', route(async (req, res, next) => {
             stats.isCharacterDevice() && "character device" ||
             stats.isFIFO() && "pipe/fifo" ||
             stats.isSocket() && "socket" ||
-            stats.isSymbolicLink() && "symlink" || 
+            stats.isSymbolicLink() && "symlink" ||
             "unknown";
         next({
             status: 400,

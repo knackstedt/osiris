@@ -6,9 +6,9 @@ import { KeyboardService } from 'client/app/services/keyboard.service';
 import { ManagedWindow, WindowManagerService } from 'client/app/services/window-manager.service';
 import { Fetch } from 'client/app/services/fetch.service';
 import { DirectoryDescriptor, FileDescriptor, FSDescriptor } from 'client/app/apps/filemanager/filemanager.component';
-import { ContextMenuDirective } from '../../../directives/context-menu.directive';
+import { ContextMenuDirective, ContextMenuItem } from '../../../directives/context-menu.directive';
 import { resolveIcon } from 'client/app/apps/filemanager/icon-resolver';
-import { ContextMenuItem } from 'client/app/components/context-menu/context-menu.component';
+import { DialogService } from 'client/app/services/dialog.service';
 
 @Component({
     selector: 'app-file-grid',
@@ -51,19 +51,20 @@ export class FileGridComponent implements OnInit {
     }
     sortOrder: "a-z" | "z-a" | "lastmod" | "firstmod" | "size" | "type" = "a-z";
 
-    folderContextMenu: ContextMenuItem[] = [
+
+    folderContextMenu: ContextMenuItem<FSDescriptor>[] = [
         {
             label: "New _F_older",
             shortcutLabel: "Shift+Ctrl+N",
-            action: <FSDescriptor>(evt: MouseEvent, data: FSDescriptor) => {
+            action: (data) => {
                 console.log("New folder goodness");
-                console.log(evt, data);
+                console.log(data);
             }
         },
         {
             label: "Add to _B_ookmarks",
             shortcutLabel: "Ctrl+D",
-            action: (evt: MouseEvent) => {
+            action: (evt) => {
 
             },
         },
@@ -71,42 +72,168 @@ export class FileGridComponent implements OnInit {
         {
             disabled: true,
             label: "_P_aste",
-            action: (evt: MouseEvent) => {
+            action: (evt) => {
             },
         },
         {
             label: "Select _A_ll",
             shortcutLabel: "Ctrl+A",
-            action: (evt: MouseEvent) => {
+            action: (evt) => {
 
             },
         },
         "seperator",
         {
             label: "Open in _T_erminal",
-            action: (evt: MouseEvent) => {
+            action: (evt) => {
 
             },
         },
         {
             label: "Open VS Code here",
-            action: (evt: MouseEvent) => {
+            action: (evt) => {
 
             },
         },
         "seperator",
         {
             label: "P_r_operties",
-            action: (evt: MouseEvent) => {
+            action: (evt) => {
 
             },
         }
     ]
 
+
+    fileContextMenu: ContextMenuItem<FSDescriptor>[] = [
+        {
+            label: "Open",
+            shortcutLabel: "Shift+Ctrl+N",
+            action: (data) => {
+                console.log("New folder goodness");
+                console.log(data);
+            }
+        },
+        {
+            label: "Open with Application...",
+            shortcutLabel: "Ctrl+D",
+            action: (evt) => {
+
+            },
+        },
+        "seperator",
+        {
+            disabled: true,
+            label: "Cut",
+            action: (evt) => {
+            },
+        },
+        {
+            disabled: true,
+            label: "Copy",
+            action: (evt) => {
+            },
+        },
+        {
+            label: "Move To...",
+            shortcutLabel: "Ctrl+A",
+            action: (evt) => {
+
+            },
+        },
+        {
+            label: "Copy To...",
+            shortcutLabel: "Ctrl+A",
+            action: (evt) => {
+
+            },
+        },
+        {
+            label: "Move to Trash",
+            shortcutLabel: "Ctrl+A",
+            action: (evt) => {
+
+            },
+        },
+        {
+            label: "Rename",
+            shortcutLabel: "Ctrl+A",
+            action: (evt) => {
+
+            },
+        },
+
+        // Extract Here
+        // Extract To...
+
+        {
+            label: "Compress...",
+            shortcutLabel: "Ctrl+A",
+            action: (evt) => {
+            },
+        },
+        {
+            label: "CRC SHA",
+            children: [
+                {
+                    label: "MD5",
+                    action: (evt) => this.performChecksum(evt.path + evt.name, "md5"),
+                },
+                {
+                    label: "SHA1",
+                    action: (evt) => this.performChecksum(evt.path + evt.name, "sha1"),
+                },
+                {
+                    label: "SHA256",
+                    action: (evt) => this.performChecksum(evt.path + evt.name, "sha256"),
+                },
+                {
+                    label: "SHA512",
+                    action: (evt) => this.performChecksum(evt.path + evt.name, "sha512"),
+                },
+            ],
+            canActivate(data) {
+                return data.kind == "file";
+            },
+        },
+        {
+            label: "Send To...",
+            shortcutLabel: "Ctrl+A",
+            action: (evt) => {
+
+            },
+        },
+        {
+            label: "Star",
+            shortcutLabel: "Ctrl+A",
+            action: (evt) => {
+
+            },
+        },
+        "seperator",
+        {
+            label: "P_r_operties",
+            action: (evt) => {
+
+            },
+        }
+    ]
+
+    performChecksum(path, digest) {
+        this.windowManager.openWindow({
+            appId: "checksum",
+            data: { digest, path },
+            workspace: this.windowRef.workspace,
+            width: 300,
+            height: 200
+        })
+    }
+
     constructor(
         private fetch: Fetch,
         private windowManager: WindowManagerService,
         private keyboard: KeyboardService,
+        private dialog: DialogService
     ) {
         // ctrl + a => select all
         keyboard.onKeyCommand({
@@ -189,7 +316,7 @@ export class FileGridComponent implements OnInit {
             .catch(err => console.error(err));
     }
 
-    onSelect(item: FileDescriptor, evt: MouseEvent) {
+    onSelect(item: FileDescriptor, evt) {
         evt.stopPropagation();
 
         if (this.keyboard.shiftPressed) {

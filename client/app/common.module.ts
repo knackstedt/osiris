@@ -1,11 +1,12 @@
 // Base Angular Components
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
+import { NgScrollbarModule } from 'ngx-scrollbar';
+
 import { ContextMenuDirective } from './directives/context-menu.directive';
 import { UrlSanitizer, HTMLSanitizer } from './pipes/urlsanitizer.pipe';
-import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     imports: [
         CommonModule,
         MatDialogModule,
+        NgScrollbarModule,
         ContextMenuDirective
     ],
     exports: [
@@ -24,6 +26,7 @@ import { MatDialogModule } from '@angular/material/dialog';
         ContextMenuDirective,
         CommonModule,
         FormsModule,
+        NgScrollbarModule,
         ReactiveFormsModule
     ],
 })

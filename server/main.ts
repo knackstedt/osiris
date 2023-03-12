@@ -1,16 +1,12 @@
 import { SecureServer } from "@dt-esa/secure-webserver";
 
 import express, { Express } from 'express';
-import session from 'express-session';
-import Redis from 'ioredis';
-import connectRedis from "connect-redis";
 import helmet from 'helmet';
 import morgan from 'morgan';
 
 import { environment } from './environment';
 
 import { ErrorHandler } from './errors';
-import { route } from './util';
 import { FilesystemApi } from "./api/files";
 import { SocketService } from "./pty";
 import { XOrgApi } from './api/xorg';
@@ -52,6 +48,7 @@ import { XOrgApi } from './api/xorg';
         errorHandler: false,
         domain: environment.domain,
         title: "Osiris System",
+        timeout: Number.MAX_SAFE_INTEGER,
         description: "Main client interface for Osiris NAS",
         accessLog: morgan((tokens, req, res) => {
             const status = tokens.status(req, res);

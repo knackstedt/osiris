@@ -2,6 +2,8 @@
     style="height: 100%; width: 100%"
     track="vertical"
     pointerEventsMethod="scrollbar"
+    contextMenu
+    [contextMenuItems]="folderContextMenu"
 >
     <div class="files"
         [class.active]="windowRef._isActive"
@@ -15,7 +17,7 @@
 
             contextMenu
             [contextMenuData]="item"
-            [contextMenuItems]="folderContextMenu"
+            [contextMenuItems]="fileContextMenu"
             [class.generic]="item['_icon'].needsBackdrop"
         >
             <img [src]="item['_icon'].path"/>

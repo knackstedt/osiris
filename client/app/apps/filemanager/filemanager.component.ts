@@ -4,16 +4,13 @@ import { Fetch } from '../../services/fetch.service';
 import { resolveIcon } from './icon-resolver';
 import { KeyboardService } from '../../services/keyboard.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ContextMenuItem } from '../../components/context-menu/context-menu.component';
 import { CommonModule } from '@angular/common';
 import { CommonAppModule } from '../../common.module';
 import { ButtonPopoutComponent } from 'client/app/components/button-popout/button-popout.component';
 import { WindowToolbarComponent } from 'client/app/components/window-template/window-toolbar/window-toolbar.component';
 import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
-import { NgScrollbarModule } from 'ngx-scrollbar';
 import { AngularSplitModule } from 'angular-split';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FileGridComponent } from './file-grid/file-grid.component';
 // TODO:
