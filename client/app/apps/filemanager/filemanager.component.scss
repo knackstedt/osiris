@@ -17,6 +17,18 @@
     .mat-mdc-tab-header {
         height: var(--tab-height, 0);
         transition: height 250ms ease;
+
+        .mdc-tab {
+            height: var(--tab-height, 0);
+            background-color: #303030;
+        }
+    }
+    .mat-mdc-tab .mdc-tab__content {
+        position: static;
+    }
+    .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label,
+    .mat-mdc-tab-link:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label {
+        color: var(--text-subdued-color);
     }
 }
 
@@ -54,5 +66,15 @@
         &:hover {
             background-color: #343434
         }
+    }
+}
+
+.close {
+    position: absolute;
+    right: 12px;
+    color: #666;
+    transition: color 250ms ease;
+    &:hover {
+        color: #ccc;
     }
 }

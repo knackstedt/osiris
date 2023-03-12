@@ -146,14 +146,30 @@
             <as-split-area [size]="80" style="background-color: #272727;">
                 <div class="content"
                     [class.active]="windowRef._isActive"
-                    [style.--tab-height]="true ? '48px' : '0'"
+                    [style.--tab-height]="tabs.length > 1 ? '36px' : '0'"
                 >
-                    <app-file-grid
-                        [window]="windowRef"
-                        [(path)]="currentTab.path"
-                        [(selection)]="currentTab.selection"
-                        (fileOpen)="onFileOpen($event)"
-                    />
+                    <mat-tab-group>
+                        <mat-tab *ngFor="let tab of tabs">
+                            <ng-template mat-tab-label>
+                                {{tab.label}}
+                                <mat-icon
+                                    class="close"
+                                    (click)="closeTab(tab)">
+                                    close
+                                </mat-icon>
+                            </ng-template>
+
+                            <ng-template matTabContent>
+                                <app-file-grid
+                                    [window]="windowRef"
+                                    [(path)]="tab.path"
+                                    (pathChange)="tabPathChange(tab)"
+                                    [(selection)]="tab.selection"
+                                    (fileOpen)="onFileOpen($event)"
+                                />
+                            </ng-template>
+                        </mat-tab>
+                    </mat-tab-group>
                 </div>
             </as-split-area>
         </as-split>

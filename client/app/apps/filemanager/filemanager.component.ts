@@ -63,8 +63,12 @@ export type FileDescriptor = {
 
 export type FSDescriptor = DirectoryDescriptor | FileDescriptor;
 
+// TODO: enable virtual scrolling
+
 
 type FileViewTab = {
+    id: string,
+    label: string,
     breadcrumb: {
         path: string,
         label: string
@@ -84,7 +88,9 @@ type FileViewTab = {
         WindowToolbarComponent,
         WindowTemplateComponent,
         AngularSplitModule,
-        FileGridComponent
+        FileGridComponent,
+        MatTabsModule,
+        MatIconModule
     ],
     standalone: true
 })
@@ -126,10 +132,23 @@ export class FilemanagerComponent implements OnInit {
 
     initTab(path) {
         this.tabs.push({
+            id: crypto.randomUUID(),
+            label: this.getTabLabel(path),
             breadcrumb: this.calcBreadcrumb(path),
             path,
             selection: []
         })
+        this.tabs.push({
+            id: crypto.randomUUID(),
+            label: this.getTabLabel(path),
+            breadcrumb: this.calcBreadcrumb(path),
+            path,
+            selection: []
+        })
+    }
+
+    closeTab(tab: FileViewTab) {
+        this.tabs.splice(this.tabs.findIndex(t => t.id == tab.id), 1);
     }
 
     calcBreadcrumb(path: string) {
@@ -142,6 +161,14 @@ export class FilemanagerComponent implements OnInit {
                 label: p || ""
             };
         });
+    }
+
+    tabPathChange(tab: FileViewTab) {
+        tab.label = this.getTabLabel(tab.path);
+    }
+
+    getTabLabel(path: string) {
+        return path.split('/').filter(p => p).pop();
     }
 
     onFileOpen(file: FSDescriptor | FSDescriptor[]) {
