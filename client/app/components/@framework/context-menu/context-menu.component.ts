@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Inject, Input, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, Inject, Input } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ContextMenuItem } from 'client/app/directives/context-menu.directive';
@@ -55,7 +55,7 @@ export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
 
 @Component({
     selector: 'template-wrapper',
-    template: `<ng-template *ngTemplateOutlet="template; context: {data: data}" />`,
+    template: `<ng-template *ngTemplateOutlet="template; context: {data: {data, dialog: dialogRef }}" />`,
     imports: [ CommonModule ],
     standalone: true
 })
@@ -65,7 +65,6 @@ class TemplateWrapper {
     template;
 
     constructor(
-        public dialog: MatDialog,
         public dialogRef: MatDialogRef<any>,
         @Inject(MAT_DIALOG_DATA) private _data: any
     ) {
@@ -95,7 +94,7 @@ export class ContextMenuComponent {
         public dialogRef: MatDialogRef<any>,
         @Inject(MAT_DIALOG_DATA) private _data: any
     ) {
-        this.data = this._data.data;
+        this.data  = this._data.data;
         this.items = this._data.items;
     }
 
@@ -108,8 +107,8 @@ export class ContextMenuComponent {
     onMenuItemClick(item: ContextMenuItem, row: HTMLTableRowElement, evt) {
         if (typeof item == 'string') return;
 
-        if (typeof item['action'] == "function") {
-            item['action'](evt, this.data);
+        if (!item.childTemplate && !item.children) {
+            item.action(this.data);
             this.dialogRef.close(true);
         }
         else if (item.childTemplate) {
@@ -148,12 +147,15 @@ export class ContextMenuComponent {
             })
                 .afterClosed()
                 .subscribe((result) => {
-                    if (result)
+                    if (result) {
+                        if (item.action)
+                            item.action(result);
                         this.dialogRef.close(true);
+                    }
                     _s.unsubscribe();
                 });
         }
-        else {
+        else if (item.children) {
             const {width, height} = calcMenuItemBounds(item.children);
 
             // Need X pos, Y pos, width and height
@@ -187,8 +189,10 @@ export class ContextMenuComponent {
             })
             .afterClosed()
             .subscribe((result) => {
-                if (result)
+                if (result) {
                     this.dialogRef.close(true);
+                }
+
                 _s.unsubscribe();
             });
         }

@@ -1,7 +1,8 @@
 import { Directive, Input, HostListener, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { calcMenuItemBounds } from 'client/app/components/@framework/context-menu/context-menu.component';
+import { ContextMenuComponent } from 'client/app/components/@framework/context-menu/context-menu.component';
 import { KeyCommand } from '../services/keyboard.service';
-import { calcMenuItemBounds, ContextMenuComponent } from 'client/app/components/@framework/context-menu/context-menu.component';
 
 type BaseCtx<T = any> = {
     /**
@@ -14,7 +15,7 @@ type BaseCtx<T = any> = {
      * a context-menu item.
      * Use the `contextMenuData` decorator for passing data.
      */
-    action?: (evt: MouseEvent, data: T) => any,
+    action?: (data: T) => any,
 
     /**
      * Callback method that is called upon a context menu activation
@@ -45,12 +46,12 @@ type BaseCtx<T = any> = {
     /**
      * Optional child menu
      */
-    children?: ContextMenuItem[],
+    children?: ContextMenuItem<T>[],
 
     /**
      * Instead of an array of children, render a template
      */
-    childTemplate?: TemplateRef<any>;
+    childTemplate?: TemplateRef<T>;
     /**
      * Width of child component
      */
@@ -91,6 +92,7 @@ export class ContextMenuDirective {
     @HostListener('contextmenu', ['$event'])
     public onContextMenu(evt: MouseEvent) {
         evt.preventDefault();
+        evt.stopPropagation();
 
         const { width, height } = calcMenuItemBounds(this.menuItems);
 
@@ -121,7 +123,8 @@ export class ContextMenuDirective {
         this.dialog.open(ContextMenuComponent, {
             data: {
                 data: this.data,
-                items: items
+                items: items,
+                // dialog: this.dialog
             },
             panelClass: "context-menu",
             position: cords,
