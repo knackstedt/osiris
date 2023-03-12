@@ -33,20 +33,19 @@ const generateThumbnail = (path: string) => {
 // }));
 
 // https://www.npmjs.com/package/adm-zip
-router.use('/zip', route(async (req, res, next) => {
-    const { dir, file } = req.body;
+// router.use('/zip', route(async (req, res, next) => {
+//     const { dir, file } = req.body;
 
-    let zip = new AdmZip(dir + file);
-    let zipEntries = zip.getEntries();
 
-    // zipEntries.forEach(function (zipEntry) {
-    //     console.log(zipEntry.toString());
-    //     if (zipEntry.entryName == "my_file.txt") {
-    //         console.log(zipEntry.getData().toString("utf8"));
-    //     }
-    // });
-    res.send(zipEntries);
-}));
+
+//     // zipEntries.forEach(function (zipEntry) {
+//     //     console.log(zipEntry.toString());
+//     //     if (zipEntry.entryName == "my_file.txt") {
+//     //         console.log(zipEntry.getData().toString("utf8"));
+//     //     }
+//     // });
+//     res.send(zipEntries);
+// }));
 
 router.use('/rar', route(async (req, res, next) => {
     const { dir, file } = req.body;
@@ -94,6 +93,8 @@ router.use('/tar', route(async (req, res, next) => {
     // .on("error", next);
 
 }));
+
+
 
 router.use('/download', route(async (req, res, next) => {
     const { dir, file } = req.query as any;
@@ -216,6 +217,80 @@ router.use('/checksum/:type', route(async (req, res, next) => {
     });
 }));
 
+// TODO: support reading subfolders!
+const readZip = (absPath) => {
+    let zip = new AdmZip(absPath);
+    let zipEntries = zip.getEntries();
+
+    let out = {
+        dirs: [],
+        files: [],
+    };
+
+    zipEntries.forEach(e => {
+        let comment = zip.getZipEntryComment(e);
+
+        if (e.isDirectory) {
+            out.dirs.push({
+                contents: {
+                    dirs: [],
+                    files: []
+                },
+                path: absPath + "#/" + e.entryName.split('/').slice(0, -2).join('/'),
+                name: e.entryName.split('/').slice(-2, -1)[0],
+                kind: "directory",
+                comment
+            })
+        }
+        else {
+            const parts = e.entryName.split('/');
+            const entry = {
+                kind: "file",
+                path: absPath + "#/",
+                name: e.name,
+                ext: e.name.split('.').pop(),
+                stats: {
+                    size: e.header.size,
+                    compressedSize: e.header.compressedSize,
+                    mtimeMs: e.header.time.getTime(),
+                    atimeMs: e.header.time.getTime(),
+                    ctimeMs: e.header.time.getTime()
+                },
+                comment
+            };
+            if (parts.length > 1) {
+                let _ptr = out;
+
+                for (let i = 0; i < parts.length; i++) {
+                    let currentPath = absPath + "#/" + parts.slice(0, i).join('/');
+
+                    let next = _ptr.dirs.find(d => d.path == currentPath);
+                    if (!next) {
+                        _ptr.dirs.push(next = {
+                            contents: {
+                                dirs: [],
+                                files: []
+                            },
+                            kind: "directory",
+                            path: currentPath,
+                            name: parts.slice(i-1, 1)[0]
+                        });
+                    }
+                    _ptr = next.contents;
+                }
+
+                entry.path = absPath + "#/" + parts.slice(0, -1).join('/') + "/",
+                _ptr.files.push(entry);
+            }
+            else {
+                out.files.push(entry);
+            }
+        }
+    })
+
+    return out;
+};
+
 router.use('/', route(async (req, res, next) => {
     const { path, showHidden } = req.body;
 
@@ -237,6 +312,18 @@ router.use('/', route(async (req, res, next) => {
 
         res.send({dirs, files});
         return;
+    }
+    else if (stats.isFile()) {
+        const ext = (path.split('.').pop());
+        if (ext == "zip") {
+            res.send(readZip(path));
+        }
+        else {
+            next({
+                status: 400,
+                message: `Unsupported file type [${ext}]`,
+            })
+        }
     }
     else {
         const type = stats.isBlockDevice() && "block device" ||

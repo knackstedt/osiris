@@ -30,7 +30,7 @@ export const route = (fn: RequestHandler) => (req, res, next) => {
 }
 
 
-export const getFilesInFolder: 
+export const getFilesInFolder:
     (folder: string, showHidden: boolean, recurse?: number) => Promise<{
         dirs: {
             contents: any,
@@ -39,13 +39,13 @@ export const getFilesInFolder:
             kind: "directory"
         }[],
         files: {
-            stats: fs.Stats,
+            stats: Partial<fs.Stats>,
             path: string,
             name: string,
             ext: string,
             kind: "file"
         }[]
-    }> 
+    }>
     = async (folder: string, showHidden, recurse = 2) => {
     if (!folder.endsWith('/')) folder += '/';
 
@@ -54,9 +54,9 @@ export const getFilesInFolder:
     const dirs = await Promise.all(
         contents.filter(f => f.isDirectory())
             .filter(f => !f.name.startsWith('.'))
-            .map(async p => ({ 
-                contents: recurse -1 > 0 ? await getFilesInFolder( folder + p.name + '/', showHidden) : null, 
-                path: folder, 
+            .map(async p => ({
+                contents: recurse -1 > 0 ? await getFilesInFolder( folder + p.name + '/', showHidden) : null,
+                path: folder,
                 name: p.name,
                 kind: "directory" as "directory"
             }))
@@ -65,13 +65,22 @@ export const getFilesInFolder:
     const files = await Promise.all(
         contents.filter(f => f.isFile())
             .filter(f => !f.name.startsWith('.'))
-            .map(async p => ({ 
-                stats: await fs.stat(folder + p.name), 
-                path: folder,
-                name: p.name,
-                ext: p.name.split('.').pop(),
-                kind: "file" as "file"
-            }))
+            .map(async p => {
+                let stats = await fs.stat(folder + p.name);
+                return {
+                    stats: {
+                        size: stats.size,
+                        atimeMs: stats.atimeMs,
+                        mtimeMs: stats.mtimeMs,
+                        ctimeMs: stats.ctimeMs,
+                        birthtimeMs: stats.birthtimeMs
+                    },
+                    path: folder,
+                    name: p.name,
+                    ext: p.name.split('.').pop(),
+                    kind: "file" as "file"
+                }
+            })
     );
 
     return { dirs, files };
