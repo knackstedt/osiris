@@ -15,3 +15,8 @@
 
 .workspace-horizontal {
 }
+
+// There may be a better way to inject styles for this.
+.as-split-gutter {
+    background-color: var(--splitter-background-color) !important;
+}

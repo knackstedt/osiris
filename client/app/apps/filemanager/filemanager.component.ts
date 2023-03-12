@@ -10,6 +10,8 @@ import { CommonAppModule } from '../../common.module';
 import { ButtonPopoutComponent } from 'client/app/components/button-popout/button-popout.component';
 import { WindowToolbarComponent } from 'client/app/components/window-template/window-toolbar/window-toolbar.component';
 import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
+import { NgScrollbarModule } from 'ngx-scrollbar';
+import { AngularSplitModule } from 'angular-split';
 // TODO:
 /**
  * Multiple music / video / image files selected turns into a playlist
@@ -66,7 +68,9 @@ export type FSDescriptor = DirectoryDescriptor | FileDescriptor;
         CommonAppModule,
         ButtonPopoutComponent,
         WindowToolbarComponent,
-        WindowTemplateComponent
+        WindowTemplateComponent,
+        NgScrollbarModule,
+        AngularSplitModule
     ],
     standalone: true
 })

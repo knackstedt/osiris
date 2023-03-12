@@ -8,6 +8,13 @@
     --text-bright-color: #fff;
     --text-subdued-color: #aaa;
 
+    --splitter-background-color: #242424;
+
+    --scrollbar-thumb-color: #444;
+    --scrollbar-thumb-hover-color: #555;
+    --scrollbar-size: 4px;
+    --scrollbar-hover-size: 8px;
+
     --menu-background: linear-gradient(180deg, #818181, #e1e2eb 32px);
     --menu-background-color: #212121;
     --menu-hover-background-color: #272727;
@@ -46,26 +53,5 @@
     --json-null-text-color: #569cd6;
     --json-number-text-color: #b5cea8;
     --json-key-text-color: #9cdcfe;
-
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-        background-color: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        padding-right: 6px;
-        border-radius: 10px;
-        background-color: #696766;
-    }
-
-    ::-webkit-scrollbar-track {
-        border-radius: 10px;
-        background-color: transparent;
-    }
-
-    ::-webkit-scrollbar-corner {
-        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    }
 }
 

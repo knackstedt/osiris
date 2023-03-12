@@ -5,6 +5,14 @@
 
     .content {
         display: flex;
+        height: 100%;
+        overflow: hidden;
+    }
+}
+
+:host ::ng-deep {
+    .as-split-gutter {
+        background-color: #121212 !important;
     }
 }
 
@@ -55,6 +63,7 @@
     padding: 10px;
     overflow-y: auto;
     overflow-x: hidden;
+    margin-right: 10px;
 
     transition: background-color 200ms ease;
 

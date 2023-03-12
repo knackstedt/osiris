@@ -110,53 +110,65 @@
         </div>
     </ng-template>
     <ng-template #content>
-        <div class="content" [class.active]="windowRef._isActive">
-            <div class="sidebar" *ngIf="showSidebar" (click)="selected = []">
-                <ul>
-                    <li>Recent</li>
-                    <li>Starred</li>
-                    <li>Home</li>
-                    <li #li (hover)="li['hover']=true" (mouseout)="li['hover']=false">
-                        Desktop
-                        <!-- <div class="tooltip" [class.visible]="li['hover']">/home/knackstedt/Downloads</div> -->
-                    </li>
-                    <li>Documents</li>
-                    <li>Downloads</li>
-                    <li>Music</li>
-                    <li>Pcitures</li>
-                    <li>Videos</li>
-                    <li>Trash</li>
-                </ul>
-                <ul>
-                    <li>mounted f:/</li>
-                    <li>mounted disk</li>
-                </ul>
-                <ul>
-                    <li>data on ftp</li>
-                    <li>data on smb</li>
-                </ul>
-                <ul>
-                    <li>+ other locations</li>
-                </ul>
-            </div>
-            <div class="files" [class.active]="windowRef._isActive" (click)="selected = []">
-                <div class="file"
-                    *ngFor="let item of _sortFilter()"
-                    [class.selected]="selected.includes(item.name)"
-                    (click)="onClick(item, $event)"
-                    (dblclick)="openFile(item, $event)"
-
-                    contextMenu
-                    [contextMenuData]="item"
-                    [contextMenuItems]="folderContextMenu"
-                    [class.generic]="item['_icon'].needsBackdrop"
-                >
-                    <img [src]="item['_icon'].path"/>
-                    <p>{{item.name}}</p>
+        <as-split direction="horizontal" [gutterSize]="1">
+            <as-split-area [size]="20">
+                <div class="sidebar" *ngIf="showSidebar" (click)="selected = []">
+                    <ul>
+                        <li>Recent</li>
+                        <li>Starred</li>
+                        <li>Home</li>
+                        <li #li (hover)="li['hover']=true" (mouseout)="li['hover']=false">
+                            Desktop
+                            <!-- <div class="tooltip" [class.visible]="li['hover']">/home/knackstedt/Downloads</div> -->
+                        </li>
+                        <li>Documents</li>
+                        <li>Downloads</li>
+                        <li>Music</li>
+                        <li>Pcitures</li>
+                        <li>Videos</li>
+                        <li>Trash</li>
+                    </ul>
+                    <ul>
+                        <li>mounted f:/</li>
+                        <li>mounted disk</li>
+                    </ul>
+                    <ul>
+                        <li>data on ftp</li>
+                        <li>data on smb</li>
+                    </ul>
+                    <ul>
+                        <li>+ other locations</li>
+                    </ul>
                 </div>
+            </as-split-area>
+            <as-split-area [size]="80">
+                <div class="content" [class.active]="windowRef._isActive">
+                    <ng-scrollbar
+                        style="height: 100%; width: 100%"
+                        track="vertical"
+                        pointerEventsMethod="scrollbar"
+                    >
+                        <div class="files" [class.active]="windowRef._isActive" (click)="selected = []">
+                            <div class="file"
+                                *ngFor="let item of _sortFilter()"
+                                [class.selected]="selected.includes(item.name)"
+                                (click)="onClick(item, $event)"
+                                (dblclick)="openFile(item, $event)"
 
-                <div class="select-hint" *ngIf="getSelectionText()">{{getSelectionText()}}</div>
-            </div>
-        </div>
+                                contextMenu
+                                [contextMenuData]="item"
+                                [contextMenuItems]="folderContextMenu"
+                                [class.generic]="item['_icon'].needsBackdrop"
+                            >
+                                <img [src]="item['_icon'].path"/>
+                                <p>{{item.name}}</p>
+                            </div>
+                        </div>
+                    </ng-scrollbar>
+
+                </div>
+            </as-split-area>
+        </as-split>
+        <div class="select-hint" *ngIf="getSelectionText()">{{getSelectionText()}}</div>
     </ng-template>
 </app-window-template>
