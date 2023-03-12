@@ -246,9 +246,7 @@ export class ManagedWindow {
     _isBorderless = false;
     _isSnapTarget = true;
 
-    _portal?: Portal<any>;
-    _module?: any;      // The module that gets loaded
-    _component?: ComponentRef<any> // the loaded component
+    _instance: Object // the loaded component
 
     _preview: string;
     _minimizedPreview: string;
@@ -260,7 +258,8 @@ export class ManagedWindow {
         Object.keys(config).forEach(k => this[k] = config[k]);
     }
 
-    onInit() {
+    onInit(instance) {
+        this._instance = instance;
         // const app = null;//Apps.find(a => a.appId == this.appId);
         // if (!app)
         //     throw new Error("Unknown application. Cannot create window");
@@ -308,7 +307,7 @@ export class ManagedWindow {
     emit(name: string, event?: any) {
         // console.log(name, event);
 
-        let res = this._component?.instance[name] && this._component.instance[name](event);
+        let res = this._instance[name] && this._instance[name](event);
 
         // before and after events should be ignored.
         if (name.startsWith('on'))

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChildren } from '@angular/core';
 import { ManagedWindow, WindowManagerService } from '../../services/window-manager.service';
 import { Fetch } from '../../services/fetch.service';
 import { resolveIcon } from './icon-resolver';
@@ -13,6 +13,7 @@ import { AngularSplitModule } from 'angular-split';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { FileGridComponent } from './file-grid/file-grid.component';
+import { OnResize } from 'client/types/window';
 // TODO:
 /**
  * Multiple music / video / image files selected turns into a playlist
@@ -71,7 +72,7 @@ type FileViewTab = {
         label: string
     }[],
     path: string,
-    selection: string[];
+    selection: FSDescriptor[];
 }
 
 @Component({
@@ -92,6 +93,7 @@ type FileViewTab = {
     standalone: true
 })
 export class FilemanagerComponent implements OnInit {
+    @ViewChildren(FileGridComponent) fileGrids: FileGridComponent[];
 
     resolveIcon = resolveIcon;
 
@@ -183,5 +185,16 @@ export class FilemanagerComponent implements OnInit {
     }
 
     downloadFile(file: FSDescriptor) {
+    }
+
+    async onResize() {
+        // Trigger re-calculation of the view
+        this.fileGrids.forEach(g => g.resize());
+    }
+
+    async onResizeEnd() {
+        setTimeout(() => {
+            this.onResize()
+        }, 250);
     }
 }

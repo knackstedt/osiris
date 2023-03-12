@@ -5,25 +5,29 @@
     contextMenu
     [contextMenuItems]="folderContextMenu"
 >
-    <div class="files"
-        [class.active]="windowRef._isActive"
+    <div class="resize-observer" #fileViewport>{{itemsPerRow}}</div>
+    <cdk-virtual-scroll-viewport
+        itemSize="134"
+        scrollViewport
         (click)="selectedItems = []"
     >
-        <div class="file"
-            *ngFor="let item of _sortFilter()"
-            [class.selected]="selectedItems.includes(item.name)"
-            (click)="onSelect(item, $event)"
-            (dblclick)="onItemClick(item)"
+        <div class="row" *cdkVirtualFor="let row of sortedFolders">
+            <div class="file"
+                *ngFor="let item of row"
+                [class.selected]="selectedItems.includes(item)"
+                (click)="onSelect(item, $event)"
+                (dblclick)="onItemClick(item)"
 
-            contextMenu
-            [contextMenuData]="item"
-            [contextMenuItems]="fileContextMenu"
-            [class.generic]="item['_icon'].needsBackdrop"
-        >
-            <img [src]="item['_icon'].path"/>
-            <p>{{item.name}}</p>
+                contextMenu
+                [contextMenuData]="item"
+                [contextMenuItems]="fileContextMenu"
+                [class.generic]="item['_icon'].needsBackdrop"
+            >
+                <img [src]="item['_icon'].path"/>
+                <p>{{item.name}}</p>
+            </div>
         </div>
-    </div>
+    </cdk-virtual-scroll-viewport>
 </ng-scrollbar>
 
 <div class="select-hint" *ngIf="selectionText">

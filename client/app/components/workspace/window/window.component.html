@@ -5,7 +5,7 @@
             [component]="window.appId"
             [group]="'app'"
             [inputs]="inputs"
-            (componentLoaded)="window.instance; window.onInit();"
+            (componentLoaded)="window.onInit($event);"
         />
     </div>
 </div>

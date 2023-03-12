@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input, ViewChild, ElementRef } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CommonModule } from '@angular/common';
 import { NgScrollbarModule } from 'ngx-scrollbar';
@@ -9,6 +9,10 @@ import { DirectoryDescriptor, FileDescriptor, FSDescriptor } from 'client/app/ap
 import { ContextMenuDirective, ContextMenuItem } from '../../../directives/context-menu.directive';
 import { resolveIcon } from 'client/app/apps/filemanager/icon-resolver';
 import { DialogService } from 'client/app/services/dialog.service';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+
+const itemWidth = (80 + 20);
+const margin = 10;
 
 @Component({
     selector: 'app-file-grid',
@@ -18,11 +22,14 @@ import { DialogService } from 'client/app/services/dialog.service';
         MatTabsModule,
         CommonModule,
         NgScrollbarModule,
-        ContextMenuDirective
+        ContextMenuDirective,
+        ScrollingModule
     ],
     standalone: true
 })
 export class FileGridComponent implements OnInit {
+    @ViewChild("fileViewport") filesRef: ElementRef;
+
     @Input("window") windowRef: ManagedWindow;
 
     @Input() path: string;
@@ -32,14 +39,15 @@ export class FileGridComponent implements OnInit {
 
     @Output() fileSelect = new EventEmitter<FSDescriptor | FSDescriptor[]>();
     @Output() fileOpen = new EventEmitter<FSDescriptor | FSDescriptor[]>();
-    @Output() newTab = new EventEmitter<{ path: string }>();
+    @Output() newTab = new EventEmitter<{ path: string; }>();
 
     directoryContents: FSDescriptor[] = [];
-    @Input("selection") selectedItems: string[] = [];
-    @Output("selectionChange") selectedItemsChange = new EventEmitter<string[]>();
+    @Input("selection") selectedItems: FSDescriptor[] = [];
+    @Output("selectionChange") selectedItemsChange = new EventEmitter<FSDescriptor[]>();
 
     selectionText: string;
 
+    sortedFolders: any[][] = [];
 
     private readonly sorters = {
         "a-z": (a: FileDescriptor, b: FileDescriptor) => a.name > b.name ? 1 : -1,
@@ -48,9 +56,10 @@ export class FileGridComponent implements OnInit {
         "firstmod": (a: FileDescriptor, b: FileDescriptor) => a.stats.mtimeMs - b.stats.mtimeMs,
         "size": (a: FileDescriptor, b: FileDescriptor) => b.stats.size - a.stats.size,
         "type": (a: FileDescriptor, b: FileDescriptor) => a.path.split('.').splice(-1, 1)[0] > b.path.split('.').splice(-1, 1)[0] ? 1 : -1
-    }
+    };
     sortOrder: "a-z" | "z-a" | "lastmod" | "firstmod" | "size" | "type" = "a-z";
 
+    itemsPerRow = 6;
 
     folderContextMenu: ContextMenuItem<FSDescriptor>[] = [
         {
@@ -102,7 +111,7 @@ export class FileGridComponent implements OnInit {
 
             },
         }
-    ]
+    ];
 
 
     fileContextMenu: ContextMenuItem<FSDescriptor>[] = [
@@ -217,7 +226,7 @@ export class FileGridComponent implements OnInit {
 
             },
         }
-    ]
+    ];
 
     performChecksum(path, digest) {
         this.windowManager.openWindow({
@@ -226,7 +235,7 @@ export class FileGridComponent implements OnInit {
             workspace: this.windowRef.workspace,
             width: 300,
             height: 200
-        })
+        });
     }
 
     constructor(
@@ -241,7 +250,7 @@ export class FileGridComponent implements OnInit {
             ctrl: true,
             window: this.windowRef
         }).subscribe(evt => {
-            this.selectedItems = this._sortFilter().map(f => f.name);
+            this.selectedItems = this._sortFilter();
             this.selectionText = this.getSelectionText();
             this.selectedItemsChange.next(this.selectedItems);
         });
@@ -278,7 +287,7 @@ export class FileGridComponent implements OnInit {
             key: "Enter",
             window: this.windowRef
         }).subscribe(evt => {
-            const files = this.directoryContents.filter(dc => this.selectedItems.includes(dc.name));
+            const files = this.directoryContents.filter(dc => this.selectedItems.find(i => i.name == dc.name));
             this.windowManager.openFiles(files as any);
         });
 
@@ -287,14 +296,14 @@ export class FileGridComponent implements OnInit {
             key: "delete",
             window: this.windowRef
         }).subscribe(evt => {
-            const files = this.directoryContents.filter(dc => this.selectedItems.includes(dc.name));
-        })
+            const files = this.directoryContents.filter(dc => this.selectedItems.find(i => i.name == dc.name));
+        });
     }
 
     async ngOnInit() {
         // while (!this.path)
-            // await sleep(10)
-        this.loadFolder(this.path);
+        // await sleep(10)
+        await this.loadFolder(this.path);
     }
 
     loadFolder(path: string) {
@@ -309,6 +318,8 @@ export class FileGridComponent implements OnInit {
 
                 this.directoryContents = descriptors;
 
+                this.resize();
+
                 // TODO Refactor.
                 // this.location =
                 this.pathChange.next(this.path = path);
@@ -316,11 +327,28 @@ export class FileGridComponent implements OnInit {
             .catch(err => console.error(err));
     }
 
+    flowRows() {
+        let filtered = this._sortFilter();
+
+        this.sortedFolders = [];
+        const num = Math.ceil(filtered.length / this.itemsPerRow);
+        const iterations = Math.min(num, 100);
+
+        for (let row = 0; row < iterations; row++) {
+            if (!this.sortedFolders[row])
+                this.sortedFolders[row] = [];
+
+            for (let i = row * this.itemsPerRow; i < (row + 1) * this.itemsPerRow && i < filtered.length; i++) {
+                this.sortedFolders[row].push(filtered[i]);
+            }
+        }
+    }
+
     onSelect(item: FileDescriptor, evt) {
         evt.stopPropagation();
 
         if (this.keyboard.shiftPressed) {
-            let start = this.directoryContents.findIndex(i => i.name == this.selectedItems.slice(-1, 1)[0]);
+            let start = this.directoryContents.findIndex(i => i.name == this.selectedItems.slice(-1, 1)[0].name);
             let end = this.directoryContents.indexOf(item);
 
             if (start == -1)
@@ -330,16 +358,16 @@ export class FileGridComponent implements OnInit {
                 ? this.directoryContents.slice(end, start + 1)
                 : this.directoryContents.slice(start, end + 1);
 
-            this.selectedItems = items.map(i => i.name);
+            this.selectedItems = items;
         }
         else if (this.keyboard.ctrlPressed) {
-            if (!this.selectedItems.includes(item.name))
-                this.selectedItems.push(item.name);
+            if (!this.selectedItems.includes(item))
+                this.selectedItems.push(item);
             else // Case that we selected the same item twice
-                this.selectedItems.splice(this.selectedItems.indexOf(item.name), 1);
+                this.selectedItems.splice(this.selectedItems.indexOf(item), 1);
         }
         else
-            this.selectedItems = [item.name];
+            this.selectedItems = [item];
 
         this.selectedItemsChange.next(this.selectedItems);
         this.selectionText = this.getSelectionText();
@@ -358,19 +386,19 @@ export class FileGridComponent implements OnInit {
             .concat(this.directoryContents?.filter(d => d.kind == 'file')
                 .sort(this.sorters[this.sortOrder])
             ) as FileDescriptor[];
-        // .filter(f => );
     }
 
     private getSelectionText() {
-        const dirCount = this.selectedItems.filter(s => s.endsWith('/')).length;
-        const fileCount = this.selectedItems.filter(s => !s.endsWith('/')).length;
+        const dirCount = this.selectedItems.filter(s => s.kind == "directory").length;
+        const fileCount = this.selectedItems.filter(s => s.kind == "file").length;
 
         if (dirCount + fileCount == 0) return "";
 
-        const totalSize = (this.directoryContents
-            .filter(d => d.kind == "file") as FileDescriptor[])
-            .filter(d => this.selectedItems?.includes(d.name))
-            .map(d => d.stats.size).reduce((a, b) => a + b, 0);
+        const totalSize =
+            this.directoryContents
+                .filter(d => d.kind == "file")
+                .filter(d => this.selectedItems?.find(i => i.name == d.name))
+                .map(d => d['stats'].size).reduce((a, b) => a + b, 0);
 
         if (dirCount + fileCount == 1)
             return `"${this.selectedItems[0]}" selected (${this.bytesToString(totalSize)})`;
@@ -393,5 +421,14 @@ export class FileGridComponent implements OnInit {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
 
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    }
+
+    public resize() {
+        const bounds = (this.filesRef.nativeElement as HTMLElement).getBoundingClientRect();
+        this.itemsPerRow = Math.floor(bounds.width / itemWidth);
+        if (this.itemsPerRow > 100)
+            this.itemsPerRow = 1;
+
+        this.flowRows();
     }
 }

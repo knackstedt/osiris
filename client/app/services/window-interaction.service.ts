@@ -192,6 +192,7 @@ export class WindowInteractionService {
 
         resizable.resizable({
             // cursorChecker: false,
+            allowFrom: ".resize-handle",
             margin: 8,
             edges: { top: true, left: true, bottom: true, right: true },
             modifiers: [
@@ -214,6 +215,7 @@ export class WindowInteractionService {
                 window = this.windowManager.managedWindows.find(w => w.id == id);
 
                 window.emit("onResizeStart", evt);
+                window.emit("onResize", evt);
 
                 resizeBounds.top = 0;
                 resizeBounds.left = 0;
@@ -226,6 +228,7 @@ export class WindowInteractionService {
                 evt.target.classList.remove("resizing");
                 snapPoints.splice(0);
 
+                window.emit("onResize", evt);
                 window.emit("onResizeEnd", evt);
                 window = null;
             },
