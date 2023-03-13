@@ -11,7 +11,7 @@
         <span></span>
         <div class="breadcrumb" *ngIf="currentTab" style="flex: 1">
             <ng-container *ngFor="let crumb of currentTab.breadcrumb">
-                <button *ngIf="crumb.label.trim()" (click)="crumb.path ? currentTab.path = crumb.path : 1">{{crumb.label}}</button>
+                <button *ngIf="crumb.label.trim()" (click)="onBreadcrumbClick(crumb)">{{crumb.label}}</button>
             </ng-container>
         </div>
         <app-button-popout img="assets/icons/actions/view-more-symbolic.svg">

@@ -106,7 +106,7 @@ const resolveDirIcon = (file: FSDescriptor) => {
 
     // TODO: default to a clear icon that doesn't have decoration
     return {
-        path: dirnameMatch ? `lib/mit/${dirnameMatch}.svg` : "lib/mit/folder-app.svg",
+        path: dirnameMatch ? `lib/mit/${dirnameMatch}.svg` : "assets/icons/folder.svg",
         needsBackdrop: false
     };
 }

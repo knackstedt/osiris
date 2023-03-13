@@ -3,4 +3,10 @@
     flex-direction: column;
     overflow: hidden;
     flex: 1;
+    height: 100%;
+    width: 100%;
+}
+
+app-window-toolbar {
+    flex: 0 0 48px;
 }

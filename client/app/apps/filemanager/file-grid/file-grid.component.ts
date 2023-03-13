@@ -32,7 +32,18 @@ export class FileGridComponent implements OnInit {
 
     @Input("window") windowRef: ManagedWindow;
 
-    @Input() path: string;
+    private _path: string;
+    @Input() set path(value: string) {
+        if (!value) return;
+
+        let prev = this._path;
+
+        this._path = value;
+
+        if (prev != value)
+            this.loadFolder(this.path)
+    }
+    get path() {return this._path}
     @Output() pathChange = new EventEmitter<string>();
 
     @Input() showHiddenFiles = false;

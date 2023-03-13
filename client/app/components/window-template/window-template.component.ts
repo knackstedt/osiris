@@ -1,4 +1,4 @@
-import { Component, ContentChild, HostListener, Input, TemplateRef, ViewEncapsulation } from '@angular/core';
+import { Component, ContentChild, HostListener, Input, TemplateRef, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { ManagedWindow } from '../../services/window-manager.service';
 import { WindowToolbarComponent } from './window-toolbar/window-toolbar.component';
 import { CommonModule } from '@angular/common';
@@ -23,4 +23,6 @@ export class WindowTemplateComponent {
     onPointerDown() {
         this.window.activate();
     }
+
+    constructor(public viewContainer: ViewContainerRef) {}
 }

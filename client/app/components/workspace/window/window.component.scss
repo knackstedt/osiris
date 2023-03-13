@@ -117,22 +117,19 @@ ngx-lazy-loader {
     }
 }
 
-.resizeHandles {
+.resize-handle {
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
     pointer-events: none;
+    z-index: 999;
 
     .left,
     .right,
     .top,
-    .bottom,
-    .top-left,
-    .top-right,
-    .bottom-left,
-    .bottom-right {
+    .bottom {
         pointer-events: all;
         position: absolute;
     }
@@ -161,32 +158,24 @@ ngx-lazy-loader {
         z-index: 2;
     }
 
-    .top-left,
-    .bottom-right {
-        cursor: nw-resize;
-    }
-
-    .top,
-    .top-left,
-    .top-right {
+    .top {
         top: -2.5px;
     }
 
-    .bottom,
-    .bottom-left,
-    .bottom-right {
+    .bottom {
         bottom: -2.5px;
     }
 
-    .top-left,
-    .bottom-left,
     .left {
         left: -2.5px;
     }
 
-    .top-right,
-    .bottom-right,
     .right {
         right: -2.5px;
+    }
+
+    .top-left,
+    .bottom-right {
+        cursor: nw-resize;
     }
 }

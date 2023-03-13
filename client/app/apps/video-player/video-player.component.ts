@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
-import { FileDescriptor } from '../filemanager/filemanager.component';
+import { FileDescriptor, FSDescriptor } from '../filemanager/filemanager.component';
 import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
 import { ButtonPopoutComponent } from 'client/app/components/button-popout/button-popout.component';
 import { CommonModule } from '@angular/common';
@@ -17,16 +17,21 @@ import { CommonModule } from '@angular/common';
     standalone: true
 })
 export class VideoPlayerComponent implements OnInit {
+    @ViewChild(WindowTemplateComponent) windowTemplate: WindowTemplateComponent;
 
-    @Input() windowRef: ManagedWindow;
+    @Input("window") windowRef: ManagedWindow;
+    @Input() files: FSDescriptor[];
 
     @Output() onDownload = new EventEmitter();
 
-    file: FileDescriptor;
+    // files: FileDescriptor;
+
+    mediaSrc: string;
 
     currentIndex = 0;
-
     isPaused = true;
+
+    currentMedia: FSDescriptor;
 
     constructor() { }
 
@@ -46,17 +51,32 @@ export class VideoPlayerComponent implements OnInit {
     }
 
     ngOnInit() {
+        console.log(this.files);
+        this.currentMedia = this.files[0];
 
+        this.mediaSrc = "api/filesystem/download?file=" + encodeURIComponent(this.currentMedia.name) + "&dir=" + encodeURIComponent(this.currentMedia.path);
     }
 
-    getLink(file: FileDescriptor) {
-        // const f = Array.isArray(this.data.file) ? this.data.file[0] : this.data.file;
-        return "api/filesystem/download?file=" + encodeURIComponent(file.name) + "&dir=" + encodeURIComponent(file.path);
+    ngAfterViewInit() {
+        this.resize();
+    }
+
+    afterMediaLoaded() {
+        this.resize()
     }
 
     isAudioOnly() {
         // let ext = this.data.file.split(".").splice(-1, 1)[0];
         // return /mp3|ogg|flac/.test(ext);
         return false;
+    }
+
+    // Update the size to match the aspect ratio provided by the media being played
+    resize() {
+        const winEl = this.windowTemplate.viewContainer.element.nativeElement as HTMLElement;
+        const bounds = winEl.getBoundingClientRect();
+
+        this.windowRef.width = bounds.width;
+        this.windowRef.height = bounds.height + 48;
     }
 }

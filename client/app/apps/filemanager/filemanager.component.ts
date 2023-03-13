@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChildren } from '@angular/core';
 import { ManagedWindow, WindowManagerService } from '../../services/window-manager.service';
 import { Fetch } from '../../services/fetch.service';
 import { resolveIcon } from './icon-resolver';
@@ -112,7 +112,8 @@ export class FilemanagerComponent implements OnInit {
         private fetch: Fetch,
         private windowManager: WindowManagerService,
         private keyboard: KeyboardService,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private changeDetector: ChangeDetectorRef
         ) {
         keyboard.onKeyCommand({
             ctrl: true,
@@ -165,8 +166,17 @@ export class FilemanagerComponent implements OnInit {
         });
     }
 
+    onBreadcrumbClick(crumb) {
+        if (crumb.path) {
+            this.currentTab.path = crumb.path;
+            this.currentTab.breadcrumb = this.calcBreadcrumb(crumb.path);
+            // this.tabs.find(t => t.id == this.currentTab.id).path = crumb.path;
+        }
+    }
+
     tabPathChange(tab: FileViewTab) {
         tab.label = this.getTabLabel(tab.path);
+        tab.breadcrumb = this.calcBreadcrumb(tab.path);
     }
 
     getTabLabel(path: string) {
@@ -182,6 +192,8 @@ export class FilemanagerComponent implements OnInit {
         //     // this.fileData = res;
         // });
 
+        console.log("on file open", files)
+
         let mimetype = files
             .map(f => getMimeType(f.name))
             .reduce((a, b) => {
@@ -190,33 +202,44 @@ export class FilemanagerComponent implements OnInit {
                 return a;
             }, getMimeType(files[0].name));
 
-        // switch(mimetype) {
-        //     case "music": {
+        switch(mimetype) {
 
-        //     }
-        //     case "compressed": {
+            case "compressed": {
 
-        //     }
-        //     case "presentation": {
-
-        //     }
-        //     case "richtext": {
-
-        //     }
-        //     case "spreadsheet": {
-
-        //     }
-        //     case "model": {
-
-        //     }
-        //     case "video": {
-
-        //     }
-        // }
+                break;
+            }
+            case "presentation": {
+                break;
+            }
+            case "richtext": {
+                break;
+            }
+            case "spreadsheet": {
+                break;
+            }
+            case "3d-model": {
+                break;
+            }
+            case "music": {
+                // this.openWindow();
+                break;
+            }
+            case "video": {
+                console.log("open window")
+                this.openWindow("media-player", { files })
+                break;
+            }
+            default: {
+                throw new Error("Not Implemented")
+            }
+        }
     }
 
     private openWindow(id, args) {
-
+        this.windowManager.openWindow({
+            appId: id,
+            data: args
+        })
     }
 
     onPathChange() {

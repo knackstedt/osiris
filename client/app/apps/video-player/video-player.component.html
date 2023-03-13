@@ -10,7 +10,7 @@
         </div>
         <span></span>
         <div class="title">
-            {{file?.name}}
+            <!-- {{file?.name}} -->
         </div>
         <span></span>
         <div class="buttongroup">
@@ -61,18 +61,28 @@
     <ng-template #content>
         <div class="content" [class.active]="windowRef._isActive">
             <ng-container>
-                <video controls [style.filter]="getFilter()">
-                    <source [src]="getLink(file)">
+                <video
+                    controls
+                    autoplay
+                    [style.filter]="getFilter()"
+                    (error)="1"
+                    (stalled)="1"
+                    (waiting)="1"
+                    (emptied)="1"
+                    (loadeddata)="afterMediaLoaded()"
+                    (progress)="1"
+                >
+                    <source [src]="mediaSrc">
                 </video>
             </ng-container>
-            <div class="controls">
+            <!-- <div class="controls">
                 <button (click)="currentIndex = currentIndex - 1">Prev</button>
                 <button (click)="isPaused = !isPaused">pause/play</button>
                 <span>02:35</span>
                 <div class="slider"></div>
                 <span>47:39</span>
                 <button (click)="currentIndex = currentIndex + 1">next</button>
-            </div>
+            </div> -->
         </div>
     </ng-template>
 </app-window-template>

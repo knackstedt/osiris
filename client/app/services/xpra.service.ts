@@ -30,6 +30,7 @@ export class XpraService {
 
     // Startup web workers and connection to server.
     async init() {
+        return; // Skip for now...
 
         this.worker = new Worker(new URL("../workers/xpra-worker.worker", import.meta.url));
         this.decoder = new Worker(new URL("../workers/xpra-decoder.worker", import.meta.url));

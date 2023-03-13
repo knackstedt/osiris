@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { TaskBarData } from '../components/taskbar/taskbar.component';
 // import { FileDescriptor } from '../apps/filemanager/filemanager.component';
 import { XpraWindowManagerWindow, XpraWindowMetadataType } from 'xpra-html5-client';
+import { ConfigurationService } from 'client/app/services/configuration.service';
 
 const managedWindows: ManagedWindow[] = [];
 
@@ -26,7 +27,9 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
     public managedWindows = managedWindows;
     public taskbarItems: TaskBarData[] = [];
 
-    constructor() {
+    constructor(
+        private config: ConfigurationService
+    ) {
         super([]);
 
         WindowManagerService.registeredInstances.push(this);
@@ -37,6 +40,9 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
 
     public async openWindow(options: WindowConfig, data?) {
         let opts: Partial<WindowConfig> = {};
+        if (typeof options.workspace != 'number')
+            options.workspace = this.config.currentWorkspace;
+
         if (typeof options == "string")
             opts.appId = options;
         else

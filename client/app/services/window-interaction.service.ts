@@ -193,11 +193,14 @@ export class WindowInteractionService {
         resizable.resizable({
             // cursorChecker: false,
             allowFrom: ".resize-handle",
-            margin: 8,
+            margin: 5,
             edges: { top: true, left: true, bottom: true, right: true },
             modifiers: [
-                interact.modifiers.restrictRect({
-                    restriction: resizeBounds
+                // interact.modifiers.restrictRect({
+                //     restriction: resizeBounds
+                // }),
+                interact.modifiers.restrictSize({
+                    max: resizeBounds
                 }),
                 interact.modifiers.snap({
                     targets: snapPoints,
@@ -250,7 +253,7 @@ export class WindowInteractionService {
         draggable.styleCursor(false);
 
         draggable.draggable({
-            allowFrom: '.draghandle',
+            allowFrom: '.drag-handle',
             modifiers: [
                 // interact.modifiers.restrictRect({
                 //     restriction: 'parent'
