@@ -195,6 +195,7 @@ export class FilemanagerComponent implements OnInit {
         console.log("on file open", files)
 
         let mimetype = files
+            .filter(f => f.kind == "file")
             .map(f => getMimeType(f.name))
             .reduce((a, b) => {
                 if (a != b)
@@ -230,6 +231,12 @@ export class FilemanagerComponent implements OnInit {
                 break;
             }
             default: {
+                switch (files[0]['ext']) {
+                    case "log": {
+                        this.openWindow("log-viewer", { files });
+                        break;
+                    }
+                }
                 throw new Error("Not Implemented")
             }
         }

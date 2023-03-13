@@ -80,7 +80,8 @@ export class RootComponent {
 
             // This is an arbitrary data object that gets loaded into the app
             data: {
-                path: "/home/knackstedt/Videos",
+                path: "/home/knackstedt/Applications/starcheat",
+                // path: "/home/knackstedt/Videos",
                 // path: "/home/knackstedt/Downloads/AssetRipper_linux_x64.zip",
                 // path: "/home/knackstedt/cache/",
                 showHidden: false,

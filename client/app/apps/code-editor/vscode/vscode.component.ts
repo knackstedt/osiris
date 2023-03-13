@@ -1,5 +1,10 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { debounceTime } from 'rxjs';
+import { editor } from 'monaco-editor';
+
+declare const monaco: {
+    editor: typeof editor
+};
 
 // Monaco has a UMD loader that requires this
 // @ts-ignore
@@ -23,8 +28,6 @@ function installMonaco() {
     isInstalled = true;
 }
 
-let Monaco: any;
-
 const settings = {
     automaticLayout: true,
     theme: 'vs-dark',
@@ -39,6 +42,7 @@ const settings = {
     }
 };
 
+
 @Component({
     selector: 'app-vscode',
     templateUrl: './vscode.component.html',
@@ -49,7 +53,10 @@ export class VscodeComponent implements AfterViewInit, OnDestroy {
     @ViewChild("editor", { read: ElementRef, static: false }) editorElement: ElementRef;
 
     isDirty = false;
-    editor;
+    public editor: editor.IStandaloneCodeEditor;
+
+    @Input() languages: { init: Function }[];
+    @Input() options: editor.IStandaloneEditorConstructionOptions;
 
     @Input() code: string;
     @Output() codeChange = new EventEmitter<string>();
@@ -57,14 +64,14 @@ export class VscodeComponent implements AfterViewInit, OnDestroy {
     private onCodeType = new EventEmitter<string>();
     private typeDebounce = this.onCodeType.pipe(debounceTime(300));
 
-    settings = {
+    defaults: editor.IStandaloneEditorConstructionOptions = {
         automaticLayout: true,
         theme: 'vs-dark',
         scrollBeyondLastLine: false,
         language: "auto",
         colorDecorators: true,
         folding: true,
-        scrollBeyondLastColumn: false,
+        scrollBeyondLastColumn: 0,
         tabSize: 2,
         minimap: {
             enabled: true
@@ -77,8 +84,9 @@ export class VscodeComponent implements AfterViewInit, OnDestroy {
         this._sub = this.typeDebounce.subscribe(t => this.codeChange.next(t));
     }
 
+
     ngAfterViewInit() {
-        this.settings.language = "json";
+        this.defaults.language = "json";
         this.initEditor();
     }
     ngOnDestroy(): void {
@@ -93,10 +101,9 @@ export class VscodeComponent implements AfterViewInit, OnDestroy {
             let i = window.setInterval(() => {
                 count++;
 
-                if (window['monaco'] != undefined) {
+                if (typeof monaco != "undefined") {
                     window.clearInterval(i);
 
-                    Monaco = window['monaco'];
                     res(true);
                 }
                 if (count >= 100) {
@@ -106,13 +113,19 @@ export class VscodeComponent implements AfterViewInit, OnDestroy {
             }, 100);
         });
 
-        let editor = this.editor = Monaco.editor.create(this.editorElement.nativeElement, this.settings);
+        this.languages.forEach(l => l.init(monaco));
+
+        const opts = { ...this.defaults, ...this.options };
+
+        console.log(opts);
+
+        let editor = this.editor = monaco.editor.create(this.editorElement.nativeElement, opts);
 
         if (this.code) {
             editor.setValue(this.code);
         }
         else {
-            this.code = JSON.stringify(Monaco.editor, null, 4);
+            this.code = JSON.stringify(monaco.editor, null, 4);
             editor.setValue(this.code);
         }
 

@@ -1,0 +1,33 @@
+<app-window-template [window]="windowRef">
+    <ng-template #toolbar>
+        <p>{{windowRef.data.filename}}</p>
+        <button>save</button>
+        <button>rename</button>
+        <button>delete</button>
+    </ng-template>
+    <ng-template #content>
+        <mat-tab-group>
+            <mat-tab *ngFor="let tab of tabs">
+                <ng-template mat-tab-label>
+                    {{tab.label}}
+                    <mat-icon></mat-icon>
+                    <mat-icon>close</mat-icon>
+                </ng-template>
+                <ngx-lazy-loader
+                    component="vscode"
+                    [inputs]="{
+                        code: tab.contents,
+                        languages: [ language ],
+                        options: {
+                            language: 'log',
+                            readOnly: true,
+                            theme: 'logview'
+                        }
+                    }"
+                    [outputs]=""
+                    (componentLoaded)="loaded($event)"
+                />
+            </mat-tab>
+        </mat-tab-group>
+    </ng-template>
+</app-window-template>

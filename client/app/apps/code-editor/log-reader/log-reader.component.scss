@@ -1,0 +1,16 @@
+
+:host{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.panel{
+    transition: all 400ms ease-in-out;
+}
+.panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.mat-tab-body-content{
+    overflow: hidden!important;
+}

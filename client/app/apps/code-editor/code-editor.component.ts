@@ -21,8 +21,8 @@ import { NgxLazyLoaderComponent } from '@dotglitch/ngx-lazy-loader';
 })
 export class CodeEditorComponent implements OnInit {
 
-    @Input() windowRef: ManagedWindow;
-    @Input() data: FileDescriptor | FileDescriptor[];
+    @Input('window') windowRef: ManagedWindow;
+    @Input() data: FileDescriptor[];
 
     files: (FileDescriptor & {content: string})[] = [];
 
