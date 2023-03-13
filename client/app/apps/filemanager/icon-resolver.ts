@@ -4,11 +4,38 @@ import { FSDescriptor } from './filemanager.component';
 import textExtensions from 'textextensions';
 import { getMimeType } from 'client/app/apps/filemanager/mimetype';
 
-console.log("bootstrapping icons", fileIcons, folderIcons)
 
-function isText(file: string) {
-    const ext = file.split('.').pop();
-    textExtensions.includes(ext)
+function isText(path: string) {
+    const ext = path.split('.').pop();
+
+    // let isBinary = [
+    //     "so",
+    //     "pak"
+    // ].includes(ext);
+
+    return textExtensions.includes(ext)
+}
+
+function getFallbackIcon(path: string) {
+    const ext = path.split('.').pop();
+    // "textExtensions" has some entries that we're going to override:
+
+    let v = {
+        so: "/assets/file-icons/exts/exe.svg",
+        pak: "/assets/file-icons/compressed.svg",
+        dat: {
+            path: "/lib/mit/hex.svg",
+            needsBackdrop: true
+        }
+    }[ext];
+
+    if (!v) return null;
+
+    return typeof v == "string" ?
+        {
+            path: v,
+            needsBackdrop: false
+        } : v;
 }
 
 // Build maps of extension/filename => icon id.
@@ -113,6 +140,9 @@ const resolveDirIcon = (file: FSDescriptor) => {
 
 const resolveFileIcon = (file: FSDescriptor) => {
     // Folders always use the material-icon-theme
+
+    const ext = file.name.split('.').pop();
+
     const baseExt = builtinIcons.find(ext => file.name.endsWith('.' + ext));
     if (baseExt) {
         return {
@@ -132,7 +162,6 @@ const resolveFileIcon = (file: FSDescriptor) => {
         };
     }
 
-
     // Lookup a filename from material-icon-theme
     const filename = fileIconNameList
         .filter(d => file.name.toLowerCase() == d.val.toLowerCase())
@@ -150,14 +179,21 @@ const resolveFileIcon = (file: FSDescriptor) => {
     const fileext = fileIconExtensionList
         .filter(d => file.name.toLowerCase().endsWith('.' + d.val.toLowerCase()))
         .sort((a, b) => b.val.length - a.val.length)
-    [0]?.iconName;
+        [0]?.iconName;
+
     if (fileext) return {
         path: `lib/mit/${fileext}.svg`,
         needsBackdrop: true
     };
 
+
+    let fallback = getFallbackIcon(file.name);
+    if (fallback)
+        return fallback;
+
     // If the file doesn't have a text extension, we're going to assume it's binary data.
-    const isFileBinary = !textExtensions.includes(file.path.split('.').pop());
+    const isFileBinary = !isText(file.path);
+
 
     return {
         path: isFileBinary ? 'assets/file-icons/text.svg' : 'assets/file-icons/binary.svg',

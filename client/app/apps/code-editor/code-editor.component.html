@@ -6,17 +6,23 @@
         <button>delete</button>
     </ng-template>
     <ng-template #content>
-        <div class="content" [class.active]="windowRef._isActive">
-            <mat-tab-group>
-                <mat-tab *ngFor="let file of files" [label]="file.name">
-                    <ngx-lazy-loader
-                        component="vscode"
-                        [inputs]="{
-                            code: file.content
-                        }"
-                    />
-                </mat-tab>
-            </mat-tab-group>
-        </div>
+        <mat-tab-group>
+            <mat-tab *ngFor="let tab of tabs">
+                <ng-template mat-tab-label>
+                    {{tab.label}}
+                    <mat-icon></mat-icon>
+                    <mat-icon>close</mat-icon>
+                </ng-template>
+                <ngx-lazy-loader
+                    component="vscode"
+                    [inputs]="{
+                        code: tab.contents,
+                        options: {
+                        }
+                    }"
+                    [outputs]=""
+                />
+            </mat-tab>
+        </mat-tab-group>
     </ng-template>
 </app-window-template>

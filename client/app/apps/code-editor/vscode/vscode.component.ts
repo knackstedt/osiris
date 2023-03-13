@@ -55,8 +55,8 @@ export class VscodeComponent implements AfterViewInit, OnDestroy {
     isDirty = false;
     public editor: editor.IStandaloneCodeEditor;
 
-    @Input() languages: { init: Function }[];
-    @Input() options: editor.IStandaloneEditorConstructionOptions;
+    @Input() languages: { init: Function }[] = [];
+    @Input() options: editor.IStandaloneEditorConstructionOptions = {};
 
     @Input() code: string;
     @Output() codeChange = new EventEmitter<string>();

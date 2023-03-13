@@ -183,7 +183,7 @@ export class FilemanagerComponent implements OnInit {
         return path.split('/').filter(p => p).pop();
     }
 
-    onFileOpen(files: FSDescriptor[]) {
+    async onFileOpen(files: FSDescriptor[]) {
         // this.fetch.post<any>(`/api/filesystem/file?only=stat`, [file.path + file.name ]).then(res => {
         //     if (res[0].type == "text")
         //         this.windowManager.openWindow("code-editor", file);
@@ -202,6 +202,12 @@ export class FilemanagerComponent implements OnInit {
                     return "mixed";
                 return a;
             }, getMimeType(files[0].name));
+
+        // TODO: handle only mass file operations
+        // mixed content can't be handled generically
+        if (mimetype == "mixed") {
+            return;
+        }
 
         switch(mimetype) {
 
@@ -236,8 +242,19 @@ export class FilemanagerComponent implements OnInit {
                         this.openWindow("log-viewer", { files });
                         break;
                     }
+                    default: {
+                        const payload = {
+                            files: files.map(f => f.path + f.name)
+                        };
+                        let stats: any[] = await this.fetch.post(`/api/filesystem/file?only=stat`, payload);
+
+                        const textFiles = stats.filter(r => r.type == "text").map(r => r.name);
+
+                        this.openWindow("text-editor", {
+                            files: files.filter(f => textFiles.includes(f.path + f.name))
+                        });
+                    }
                 }
-                throw new Error("Not Implemented")
             }
         }
     }

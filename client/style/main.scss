@@ -16,6 +16,8 @@ html, body {
     height: 100%;
     width: 100%;
     overflow: hidden;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .light {

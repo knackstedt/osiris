@@ -6,39 +6,48 @@ import { FileDescriptor } from '../filemanager/filemanager.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { VscodeComponent } from 'client/app/apps/code-editor/vscode/vscode.component';
 import { NgxLazyLoaderComponent } from '@dotglitch/ngx-lazy-loader';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-code-editor',
     templateUrl: './code-editor.component.html',
     styleUrls: ['./code-editor.component.scss'],
     imports: [
+        CommonModule,
         WindowTemplateComponent,
-        MatTabsModule,
         VscodeComponent,
-        NgxLazyLoaderComponent
+        NgxLazyLoaderComponent,
+        MatTabsModule,
+        MatIconModule
     ],
     standalone: true
 })
 export class CodeEditorComponent implements OnInit {
 
     @Input('window') windowRef: ManagedWindow;
-    @Input() data: FileDescriptor[];
+    @Input() files: FileDescriptor[];
 
-    files: (FileDescriptor & {content: string})[] = [];
+    tabs: {
+        label: string,
+        contents: string;
+    }[] = [];
+
+    currentTab;
 
     constructor(private fetch: Fetch) { }
 
     async ngOnInit() {
-        const data = Array.isArray(this.data) ? this.data : [this.data];
 
-        const payload = data.map(d => d.path + d.name);
+        const payload = {
+            files: this.files.map(f => f.path + f.name)
+        };
 
         await this.fetch.post(`/api/filesystem/file`, payload).then((res: any) => {
             res.forEach(result => {
-                this.files.push({
-                    ...result,
-                    content: res[0].content,
-                    name: result.name.split('/').pop()
+                this.tabs.push({
+                    label: result.name.split('/').pop(),
+                    contents: res[0].content
                 });
             });
         });
