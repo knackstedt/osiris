@@ -3,7 +3,7 @@
         "target": "https://localhost:3000",
         "secure": false
     },
-    "/socket.io": {
+    "/ws": {
         "target": "https://localhost:3000",
         "secure": false
     }
