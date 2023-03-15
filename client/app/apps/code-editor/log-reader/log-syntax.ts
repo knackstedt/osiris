@@ -45,6 +45,9 @@ export function init(monaco: typeof Monaco){
                 // Error
                 [/[\[\b\s](error|fatal|alert|critical|crash|emergency|PROTERR|ERROR)[\b:\s\]]/, "severity-error"],
 
+
+
+
                 // Match the GMT log format from (apache)?
                 // e.g. Fri, 03 Dec 2021 15:31:37 GMT
                 // Monarch is ignoring the case-insensitive flag.
@@ -76,9 +79,11 @@ export function init(monaco: typeof Monaco){
                 // Nov 9 12:11:23
                 [/[A-Z][a-z]{2} \d \d\d:\d\d:\d\d/, "date"],
 
+                // TODO: Sat Feb 19 07:28:05 UTC 2022
+
                 // API scope matching
                 // e.g. [Library]
-                [/\[[^\]]+\]/, "scope"],
+                [/\[[^\]]+\]+/, "scope"],
                 [/\|[a-zA-Z0-9_]+\|/, "scope"],
                 [/\*{3,}/, "scope"],
 
@@ -104,19 +109,30 @@ export function init(monaco: typeof Monaco){
                 [/[\b ](\d+)[\b \n,]/g, "number"],
                 [/[\b ](\(\d+\))[\b \n,]/g, "number"],
                 [/[\b ]([0-9A-F]{28})[\b \n,]/g, "number"],
+                // 0x08701021
+                // TODO: ip:55dccd85bc63 sp:7ffc3c6eaf40
 
                 // Strings
                 [/"[^"]*"/, "string"],
                 [/(?<![\w])'[^']*'/, "string"],
 
                 // Match remote Urls
-                [/\b(http|https|ftp|file):\/\/\S+\b\/?/, "file-uri"],
+                // Fully qualified with protocol
+                [/(https?|ftps?|sftp|ftpes|tls|ssh|git|file|pop3?):\/\/\S+/, "file-uri1"],
+                [/(https?|ftps?|hfds):\/\/[^ \n]+/, "file-uri2"],
 
-                [/([A-Z]:\\|\/[a-z]\/)(([^\\\/\n])+?[\\\/])+([^\\\/\n])+?\.[a-z0-9]{2,12}/, "file-uri"],
+                // C:\
+                //
+                [/([A-Z]:\\|\/[a-z]\/)(([^\\\/\n])+?[\\\/])+([^\\\/\n])+?[^\s\[\]\(\)\,\#]+/, "file-uri3"],
+                // [/([A-Z]:\\|\/[a-z]\/)(([^\\\/\n])+?[\\\/])+([^\\\/\n])+?\.[a-z0-9]{2,12}/, "file-uri"],
 
-                [/(https?|ftps?|hfds):\/\/[^ \n]+/, "file-uri"],
+                // TODO: /usr/share/fonts/truetype/freefont
 
 
+                // linux-headers-6.2.0-76060200-generic:amd64
+                // (6.2.0-76060200.202302191831~1677858327~22.04~3cea1be)
+
+                [/(>= |= )[\d\.~\-a-z]+/, "version-map"],
 
                 // Intercept BEFORE ip address.
                 // CurrentState:112
@@ -130,8 +146,9 @@ export function init(monaco: typeof Monaco){
                 [/\b(([12]\d\d|\d\d?)\.([12]\d\d|\d\d?)\.([12]\d\d|\d\d?)\.([12]\d\d|\d\d?))(:\d{2,5})?\b/g, "ip-address"],
 
                 // /apps/x86_64/system/ganglia-3.0.1/sbin/gmetad
-                [/[\b :](\/[^\/\[\]:\n]+)+\/?/, "file-uri"],
+                // [/[\b :](\/[^\/\\\[\]:\n]+)+\/?/, "file-uri4"],
 
+                [/\b\.\.\.\b/, "muted"],
 
                 // @ref http_logging section.
                 [/\(/, "control", "@http_logging"],
@@ -139,7 +156,7 @@ export function init(monaco: typeof Monaco){
 
             exception: [
                 [/(\s{2,4}|\t)at/, 'exception-stack'],
-                [/([A-Z]:\\|\/[a-z]\/)?[a-zA-Z0-9\/\\_~.\-\u0040 ]+?\.(js|ts|go)/, 'file-uri'],
+                [/([A-Z]:\\|\/[a-z]\/)?[a-zA-Z0-9\/\\_~.\-\u0040 ]+?\.(js|ts|go)/, 'file-uri5'],
                 [/:\d+:\d+/, 'file-position'],
                 [/[\b ]([0-9a-f]{16}|true|false|null|new)[\b \n,]/, "constant"],
 
@@ -181,11 +198,19 @@ export function init(monaco: typeof Monaco){
 
             { token: 'exception-stack.log',  foreground: '#ff9800', fontStyle: 'bold' },
             { token: 'file-uri.log',         foreground: '#90caf9', fontStyle: 'italic' },
+            { token: 'file-uri1.log',         foreground: '#90caf8', fontStyle: 'italic' },
+            { token: 'file-uri2.log',         foreground: '#90caf7', fontStyle: 'italic' },
+            { token: 'file-uri3.log',         foreground: '#90caf6', fontStyle: 'italic' },
+            { token: 'file-uri4.log',         foreground: '#90caf5', fontStyle: 'italic' },
+            { token: 'file-uri5.log',         foreground: '#90caf4', fontStyle: 'italic' },
+            { token: 'file-uri6.log',         foreground: '#90caf3', fontStyle: 'italic' },
+            { token: 'file-uri7.log',         foreground: '#90caf2', fontStyle: 'italic' },
             { token: 'ip-address.log',       foreground: '#90f998', fontStyle: 'italic' },
             { token: 'file-position.log',    foreground: '#b6e7ff' },
             { token: 'type.log',             foreground: '#2196f3' },
             { token: 'http-method.log',      foreground: '#bdbdbd' },
             { token: 'system-error.log',     foreground: '#ffc107' },
+            { token: 'muted.log',            foreground: '#777777' },
         ],
     });
 }

@@ -13,6 +13,8 @@ import { CommonModule } from '@angular/common';
 import { WindowTemplateComponent } from '../../../components/window-template/window-template.component';
 
 
+// https://github.com/mrodalgaard/language-log
+
 @Component({
     selector: 'app-log-reader',
     templateUrl: './log-reader.component.html',

@@ -28,21 +28,6 @@ function installMonaco() {
     isInstalled = true;
 }
 
-const settings = {
-    automaticLayout: true,
-    theme: 'vs-dark',
-    scrollBeyondLastLine: false,
-    language: "auto",
-    colorDecorators: true,
-    folding: true,
-    scrollBeyondLastColumn: false,
-    tabSize: 2,
-    minimap: {
-        enabled: true
-    }
-};
-
-
 @Component({
     selector: 'app-vscode',
     templateUrl: './vscode.component.html',
@@ -117,17 +102,15 @@ export class VscodeComponent implements AfterViewInit, OnDestroy {
 
         const opts = { ...this.defaults, ...this.options };
 
-        console.log(opts);
-
         let editor = this.editor = monaco.editor.create(this.editorElement.nativeElement, opts);
 
-        if (this.code) {
+        // if (this.code) {
             editor.setValue(this.code);
-        }
-        else {
-            this.code = JSON.stringify(monaco.editor, null, 4);
-            editor.setValue(this.code);
-        }
+        // }
+        // else {
+        //     this.code = JSON.stringify(monaco.editor, null, 4);
+        //     editor.setValue(this.code);
+        // }
 
         editor.onDidChangeModelContent(() => {
             this.isDirty = this.editor.getValue() != this.code;
