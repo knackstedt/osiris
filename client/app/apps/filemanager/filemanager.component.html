@@ -148,7 +148,7 @@
                     [class.active]="windowRef._isActive"
                     [style.--tab-height]="tabs.length > 1 ? '36px' : '0'"
                 >
-                    <mat-tab-group>
+                    <mat-tab-group (selectedTabChange)="currentTab = tabs[$event.index]">
                         <mat-tab *ngFor="let tab of tabs">
                             <ng-template mat-tab-label>
                                 {{tab.label}}
