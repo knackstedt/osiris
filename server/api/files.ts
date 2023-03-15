@@ -134,12 +134,10 @@ router.use('/download', route(async (req, res, next) => {
 
 router.use('/file', route(async (req, res, next) => {
     // TODO: save file
-    const file = req.body;
+    const { files } = req.body;
     const { only } = req.query;
 
-    if (!file) return next(400);
-
-    const files = Array.isArray(file) ? file : [file];
+    if (!files || !Array.isArray(files)) return next(400);
 
     Promise.all(files.map(file => new Promise(async (resolve, reject) => {
 

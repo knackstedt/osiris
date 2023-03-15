@@ -8,37 +8,11 @@ import { environment } from './environment';
 
 import { ErrorHandler } from './errors';
 import { FilesystemApi } from "./api/files";
-import { SocketService } from "./pty";
+import { TerminalSocketService } from "./api/terminal";
 import { XOrgApi } from './api/xorg';
+import { RestApi } from './api/rest';
 
 (async () => {
-
-    // let RedisStore = connectRedis(session);
-    // const rStore = new RedisStore({
-    //     logErrors: true,
-    //     prefix: "session-",
-    //     pass: process.env["REDIS_PASSWORD"],
-    //     client: new Redis({
-    //         host: "localhost",
-    //         port: 6379,
-    //         password: process.env["REDIS_PASSWORD"],
-    //         timeout: 400
-    //     }),
-    //     ttl: 3600// 1 hour
-    // });
-
-    // const sessionHandler = session({
-    //     secret: process.env["SESSION_SECRET"] || 'keyboard cat',
-    //     resave: false,
-    //     saveUninitialized: false,
-    //     cookie: {
-    //         path: "/",
-    //         sameSite: "lax",
-    //         secure: false
-    //     },
-    //     store: rStore,
-    //     unset: "destroy"
-    // });
 
     const server = new SecureServer({
         // Disable SSL termination in kubernetes.
@@ -48,7 +22,7 @@ import { XOrgApi } from './api/xorg';
         errorHandler: false,
         domain: environment.domain,
         title: "Osiris System",
-        timeout: Number.MAX_SAFE_INTEGER,
+        timeout: 2147483647,
         description: "Main client interface for Osiris NAS",
         accessLog: morgan((tokens, req, res) => {
             const status = tokens.status(req, res);
@@ -131,15 +105,13 @@ import { XOrgApi } from './api/xorg';
 
     app.use("/api/filesystem", FilesystemApi);
     app.use("/api/xorg", XOrgApi);
-
-    app.use((req, res, next) => next(404));
-    app.use(ErrorHandler);
+    app.use("/api/rest", RestApi);
 
     // Listen on the specified port.
     await server.start();
     const httpserver = server.getServer();
-    const socketService = new SocketService();
+    new TerminalSocketService(httpserver);
 
-    // We are going to pass server to socket.io in SocketService.js
-    socketService.attachServer(httpserver);
+    app.use((req, res, next) => next(404));
+    app.use(ErrorHandler);
 })();

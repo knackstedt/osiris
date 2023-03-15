@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Fetch } from 'client/app/services/fetch.service';
 
 
 @Injectable({
@@ -36,8 +37,23 @@ export class ConfigurationService {
     // background = "./assets/img/wallpaper/alberto-bobbera-KNhVlMjkNjs-unsplash.jpg";
     // background = "./assets/img/wallpaper/Canyon2.png";
 
-    constructor() {
+    homedir: string;
+    username: string;
+    shell: string;
+    host: string;
+
+    ready = false;
+
+    constructor(private fetch: Fetch) {
         this.apply();
+
+        this.fetch.get(`/api/rest`).then((config: any) => {
+            this.homedir = config.user.homedir;
+            this.username = config.user.username;
+            this.shell = config.user.shell;
+            this.host = config.host;
+            this.ready = true;
+        })
     }
 
     // This method invokes to apply any configurations that are stateful across

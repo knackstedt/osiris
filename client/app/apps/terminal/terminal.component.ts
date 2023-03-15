@@ -10,6 +10,7 @@ import { Unicode11Addon } from 'xterm-addon-unicode11';
 import io, { Socket } from "socket.io-client";
 import { OnResize } from 'client/types/window';
 import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
+import { ConfigurationService } from 'client/app/services/configuration.service';
 
 @Component({
     selector: "window-terminal",
@@ -26,7 +27,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
 
 
     @Input("window") windowRef: ManagedWindow;
-    @Input() data: any;
+    @Input() cwd: string;
 
 
     terminal: Terminal;
@@ -34,10 +35,10 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
     fitAddon: FitAddon;
     webglAddon: WebglAddon;
 
-    constructor() { }
+    constructor(private config: ConfigurationService) { }
 
     ngOnInit(): void {
-        console.log(this.windowRef, this.data);
+        console.log(this.windowRef, this.cwd);
     }
 
     ngAfterViewInit(): void {
@@ -50,10 +51,15 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
         //     rejectUnauthorized: false
         // });
 
-        // const socket = this.socket = io("https://localhost:3000/");
-        const socket = this.socket = io();
+        const socket = this.socket = io({path: "/ws/terminal.io"});
+
+        socket.on("init-error", ex => {
+            console.log(ex)
+        });
 
         socket.on("connect", () => {
+            socket.emit("start", { shell: this.config.shell, cwd: this.cwd || this.config.homedir});
+
             if (!this.terminal) {
                 // this.loadFont("ubuntumono");
 

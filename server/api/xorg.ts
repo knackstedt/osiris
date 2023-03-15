@@ -1,7 +1,5 @@
 import * as express from "express";
 import { route, getFilesInFolder } from '../util';
-import * as pty from "node-pty";
-import { promises } from "dns";
 import { readFile, ensureFile } from 'fs-extra';
 
 const router = express.Router();
