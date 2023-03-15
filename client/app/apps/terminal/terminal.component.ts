@@ -4,7 +4,7 @@ import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { Terminal } from "xterm";
 import { FitAddon } from 'xterm-addon-fit';
 import { WebglAddon } from 'xterm-addon-webgl';
-// import { WebLinksAddon } from 'xterm-addon-web-links';
+import { WebLinksAddon } from 'xterm-addon-web-links';
 import { Unicode11Addon } from 'xterm-addon-unicode11';
 
 import io, { Socket } from "socket.io-client";
@@ -70,9 +70,9 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
             // terminal.loadAddon(fitAddon);
 
             // terminal.loadAddon(new WebLinksAddon());
-            const unicode11Addon = new Unicode11Addon();
-            terminal.loadAddon(unicode11Addon);
-            terminal.unicode.activeVersion = '11';
+            // const unicode11Addon = new Unicode11Addon();
+            // terminal.loadAddon(unicode11Addon);
+            // terminal.unicode.activeVersion = '11';
 
 
             // this.webglAddon.onContextLoss(e => {
@@ -120,8 +120,11 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
 
 
     onResize(): void {
-        const rows = Math.round((this.windowRef.height - this.config.windowToolbarHeight) / this.rowHeight);
-        const cols = Math.round(this.windowRef.width / this.charWidth);
+        const rows = Math.floor((this.windowRef.height - this.config.windowToolbarHeight) / this.rowHeight);
+        const cols = Math.floor(this.windowRef.width / this.charWidth);
+
+        this.windowRef.width = cols * this.charWidth;
+        this.windowRef.height = (rows * this.rowHeight) + this.config.windowToolbarHeight + 2;
 
         this.terminal.resize(cols, rows);
 
