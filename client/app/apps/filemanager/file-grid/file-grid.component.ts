@@ -72,6 +72,9 @@ export class FileGridComponent implements OnInit {
 
     itemsPerRow = 6;
 
+    // If the current directory is inside of an archive
+    isArchive = true;
+
     folderContextMenu: ContextMenuItem<FSDescriptor>[] = [
         {
             label: "New _F_older",
@@ -90,7 +93,7 @@ export class FileGridComponent implements OnInit {
         },
         "seperator",
         {
-            disabled: true,
+            isDisabled: (data) => true,
             label: "_P_aste",
             action: (evt) => {
             }
@@ -143,13 +146,13 @@ export class FileGridComponent implements OnInit {
         },
         "seperator",
         {
-            disabled: true,
+            isDisabled: data => true,
             label: "Cut",
             action: (evt) => {
             },
         },
         {
-            disabled: true,
+            isDisabled: data => true,
             label: "Copy",
             action: (evt) => {
             },
@@ -212,8 +215,8 @@ export class FileGridComponent implements OnInit {
                     action: (evt) => this.performChecksum(evt.path + evt.name, "sha512"),
                 },
             ],
-            canActivate(data) {
-                return data.kind == "file";
+            isVisible: (data) => {
+                return !this.isArchive || data.kind == "file";
             },
         },
         {
@@ -385,8 +388,12 @@ export class FileGridComponent implements OnInit {
     }
 
     onItemClick(file: FSDescriptor) {
-        if (file.kind == "directory")
+        if (file.kind == "directory"){
             this.loadFolder(file.path + file.name);
+        }
+        else if (file.ext == "zip") {
+            this.loadFolder(file.path + file.name);
+        }
         else {
             this.fileOpen.next([file]);
         }

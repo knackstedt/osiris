@@ -155,7 +155,7 @@ export class FilemanagerComponent implements OnInit {
     }
 
     calcBreadcrumb(path: string) {
-        const parts = path.split('/');
+        const parts = path.replace("#/", '/').split('/');
         return parts.map((p, i) => {
             const path = parts.slice(0, i + 1).join('/');
 
