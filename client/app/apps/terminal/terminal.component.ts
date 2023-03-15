@@ -35,6 +35,9 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
     fitAddon: FitAddon;
     webglAddon: WebglAddon;
 
+    rowHeight = 17;
+    charWidth = 8;
+
     constructor(private config: ConfigurationService) { }
 
     ngOnInit(): void {
@@ -42,108 +45,95 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
     }
 
     ngAfterViewInit(): void {
-        // const socket = this.socket = io({
-        //     secure: true,
-        //     path: "/terminal.io",
-        //     host: "localhost:3000",
-        //     hostname: "localhost:3000",
-        //     port: 3000,
-        //     rejectUnauthorized: false
-        // });
-
         const socket = this.socket = io({path: "/ws/terminal.io"});
 
         socket.on("init-error", ex => {
-            console.log(ex)
+            console.log("Pty failed to init", ex);
+        });
+
+        // The pty on the remote died
+        socket.on("terminate", code => {
+            console.log("Pty was killed", code);
         });
 
         socket.on("connect", () => {
+            if (this.terminal) return;
+
             socket.emit("start", { shell: this.config.shell, cwd: this.cwd || this.config.homedir});
 
-            if (!this.terminal) {
-                // this.loadFont("ubuntumono");
+            // this.loadFont("ubuntumono");
 
-                // Create an xterm.js instance.
-                const terminal = this.terminal = new Terminal();
-                const fitAddon = this.fitAddon = new FitAddon();
+            // Create an xterm.js instance.
+            const terminal = this.terminal = new Terminal();
+            // const fitAddon = this.fitAddon = new FitAddon();
 
-                terminal.loadAddon(fitAddon);
+            // terminal.loadAddon(fitAddon);
 
-
-
-                // terminal.loadAddon(new WebLinksAddon());
-                const unicode11Addon = new Unicode11Addon();
-                terminal.loadAddon(unicode11Addon);
-                // terminal.unicode.activeVersion = '11';
+            // terminal.loadAddon(new WebLinksAddon());
+            const unicode11Addon = new Unicode11Addon();
+            terminal.loadAddon(unicode11Addon);
+            terminal.unicode.activeVersion = '11';
 
 
-                // this.webglAddon.onContextLoss(e => {
-                    //     // e.preventDefault();
-                    //     this.webglAddon.dispose();
-                    //     this.webglAddon = null;
-                    // });
+            // this.webglAddon.onContextLoss(e => {
+                //     // e.preventDefault();
+                //     this.webglAddon.dispose();
+                //     this.webglAddon = null;
+                // });
 
-                terminal.options.theme = {
-                    background: "#333333",
-                    foreground: "#F5F8FA",
-                };
+            terminal.options.theme = {
+                background: "#333333",
+                foreground: "#ffffff",
+                black: "#333333",
+                brightBlack: "#88807c",
+                red: "#cc0000",
+                brightRed: "#f15d22",
+                green: "#4e9a06",
+                brightGreen: "#73c48f",
+                yellow: "#c4a000",
+                brightYellow: "#ffce51",
+                blue: "#3465a4",
+                brightBlue: "#48b9c7",
+                magenta: "#75507b",
+                brightMagenta: "#ad7fa8",
+                cyan: "#06989a",
+                brightCyan: "#34e2e2",
+                white: "#d3d7cf",
+                brightWhite: "#eeeeec"
+            };
+            terminal.options.fontFamily = "Ubuntu Mono";
+            terminal.options.fontSize = this.rowHeight; // height in px
+            terminal.options.fontWeight = "100";
+            terminal.options.fontWeightBold = "900";
+            terminal.options.lineHeight;
+            terminal.options.letterSpacing;
 
-                // Attach created terminal to a DOM element.
-                terminal.open(this.terminalRef.nativeElement);
-                terminal.loadAddon(this.webglAddon = new WebglAddon());
-                this.fitAddon.fit();
 
-                // terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
+            // Attach created terminal to a DOM element.
+            terminal.open(this.terminalRef.nativeElement);
+            terminal.loadAddon(this.webglAddon = new WebglAddon());
+            this.onResize();
 
-                this.startListening();
-            }
+            this.startListening();
         })
-        // When terminal attached to DOM, start listening for input, output events.
-        // Check TerminalUI startListening() function for details.
-        // terminal.;
     }
 
-    onResize(evt: any): void {
-        console.log("resizing")
-        this.fitAddon?.fit();
+
+    onResize(): void {
+        const rows = Math.round((this.windowRef.height - this.config.windowToolbarHeight) / this.rowHeight);
+        const cols = Math.round(this.windowRef.width / this.charWidth);
+
+        this.terminal.resize(cols, rows);
+
+        // Resize the remote xterm
+        this.socket.emit("resize", {rows, cols});
     }
 
     /**
-     * Attach event listeners for terminal UI and socket.io client
+     * Attach bidirectional socket binding
      */
     startListening() {
-        this.terminal.onData(data => this.sendInput(data));
-        this.socket.on("output", data => {
-            // When there is data from PTY on server, print that on Terminal.
-            this.terminal.write(data);
-        });
-    }
-
-    /**
-     * Utility function to print new line on terminal.
-     */
-    prompt() {
-        this.terminal.write(`\\r\\n$ `);
-    }
-
-    /**
-     * Send whatever you type in Terminal UI to PTY process in server.
-     * @param {*} input Input to send to server
-     */
-    sendInput(input) {
-        this.socket.emit("input", input);
-    }
-
-    /**
-     *
-     * container is a HTMLElement where xterm can attach terminal ui instance.
-     * div#terminal-container in this example.
-     */
-    attachTo(container) {
-        this.terminal.open(container);
-        // Default text to display on terminal.
-        this.terminal.write("Terminal Connected");
-        this.terminal.write("");
-        this.prompt();
+        this.terminal.onData(data => this.socket.emit("input", data));
+        this.socket.on("output", data => this.terminal.write(data));
     }
 }

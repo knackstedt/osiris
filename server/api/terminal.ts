@@ -21,7 +21,10 @@ class PTY {
             this.ptyProcess = pty.spawn(shell, [], {
                 name: "xterm-color",
                 cwd: options.cwd,
-                env: process.env
+                env: {
+                    ...process.env,
+                    "COLORTERM": "truecolor"
+                },
             });
         }
         catch (ex) {
@@ -31,6 +34,10 @@ class PTY {
         this.ptyProcess.onData(data => {
             this.socket.emit("output", data);
         });
+
+        this.ptyProcess.onExit(e => {
+            this.socket.emit("terminate", e);
+        })
     }
 
     write(data) {
@@ -41,6 +48,10 @@ class PTY {
         this.socket.disconnect();
         this.socket._cleanup();
         this.ptyProcess.kill();
+    }
+
+    resize({rows, cols}) {
+        this.ptyProcess.resize(cols, rows);
     }
 }
 
@@ -62,8 +73,8 @@ export class TerminalSocketService {
             let pty: PTY;
 
             // Create a new pty service when client connects.
-            socket.on("start", ({shell, cwd}) => {
-                pty = new PTY(socket, {shell, cwd});
+            socket.on("start", (data) => {
+                pty = new PTY(socket, data);
             });
 
             socket.on("disconnect", () => {
@@ -72,6 +83,10 @@ export class TerminalSocketService {
 
             socket.on("input", input => {
                 pty.write(input);
+            });
+
+            socket.on("resize", data => {
+                pty.resize(data);
             });
         });
     }
