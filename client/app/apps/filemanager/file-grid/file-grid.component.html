@@ -2,8 +2,7 @@
     style="height: 100%; width: 100%"
     track="vertical"
     pointerEventsMethod="scrollbar"
-    contextMenu
-    [contextMenuItems]="folderContextMenu"
+    [ngx-ctx-menu]="folderContextMenu"
 >
     <div class="resize-observer" #fileViewport></div>
     <cdk-virtual-scroll-viewport
@@ -18,9 +17,8 @@
                 (click)="onSelect(item, $event)"
                 (dblclick)="onItemClick(item)"
 
-                contextMenu
-                [contextMenuData]="item"
-                [contextMenuItems]="fileContextMenu"
+                [ngx-ctx-menu]="fileContextMenu"
+                [ngx-ctx-menu-context]="item"
                 [class.generic]="item['_icon'].needsBackdrop"
             >
                 <img [src]="item['_icon'].path"/>

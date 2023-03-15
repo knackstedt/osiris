@@ -5,8 +5,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 
-import { ContextMenuDirective } from './directives/context-menu.directive';
 import { UrlSanitizer, HTMLSanitizer } from './pipes/urlsanitizer.pipe';
+import { NgxContextMenuDirective } from '@dotglitch/ngx-ctx-menu';
 
 
 @NgModule({
@@ -18,12 +18,12 @@ import { UrlSanitizer, HTMLSanitizer } from './pipes/urlsanitizer.pipe';
         CommonModule,
         MatDialogModule,
         NgScrollbarModule,
-        ContextMenuDirective
+        NgxContextMenuDirective
     ],
     exports: [
         UrlSanitizer,
         HTMLSanitizer,
-        ContextMenuDirective,
+        NgxContextMenuDirective,
         CommonModule,
         FormsModule,
         NgScrollbarModule,

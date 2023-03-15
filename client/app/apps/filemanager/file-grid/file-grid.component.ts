@@ -6,10 +6,10 @@ import { KeyboardService } from 'client/app/services/keyboard.service';
 import { ManagedWindow, WindowManagerService } from 'client/app/services/window-manager.service';
 import { Fetch } from 'client/app/services/fetch.service';
 import { DirectoryDescriptor, FileDescriptor, FSDescriptor } from 'client/app/apps/filemanager/filemanager.component';
-import { ContextMenuDirective, ContextMenuItem } from '../../../directives/context-menu.directive';
 import { resolveIcon } from 'client/app/apps/filemanager/icon-resolver';
 import { DialogService } from 'client/app/services/dialog.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ContextMenuItem, NgxContextMenuDirective } from '@dotglitch/ngx-ctx-menu';
 
 const itemWidth = (80 + 20);
 const margin = 10;
@@ -22,7 +22,7 @@ const margin = 10;
         MatTabsModule,
         CommonModule,
         NgScrollbarModule,
-        ContextMenuDirective,
+        NgxContextMenuDirective,
         ScrollingModule
     ],
     standalone: true
@@ -86,41 +86,41 @@ export class FileGridComponent implements OnInit {
             shortcutLabel: "Ctrl+D",
             action: (evt) => {
 
-            },
+            }
         },
         "seperator",
         {
             disabled: true,
             label: "_P_aste",
             action: (evt) => {
-            },
+            }
         },
         {
             label: "Select _A_ll",
             shortcutLabel: "Ctrl+A",
             action: (evt) => {
 
-            },
+            }
         },
         "seperator",
         {
             label: "Open in _T_erminal",
             action: (evt) => {
-
-            },
+                this.windowManager.openWindow({ appId: "terminal", data: { cwd: this.path }})
+            }
         },
         {
             label: "Open VS Code here",
             action: (evt) => {
 
-            },
+            }
         },
         "seperator",
         {
             label: "P_r_operties",
             action: (evt) => {
 
-            },
+            }
         }
     ];
 
