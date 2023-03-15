@@ -38,13 +38,11 @@ export class Fetch {
             const o = this.http.request(method, url, options)
                 .pipe(retry({
                     delay(error, retryCount) {
-                        if (error.status == 429 || error.status == 500)
+                        if (error.status == 429 || error.status == 502 || error.status == 504)
                             return of({});
                         throw error;
                     },
                     count: 2
-                }), catchError(err => {
-                    return of(null);
                 }))
                 .subscribe(data => {
                     resolve(data as unknown as T);
