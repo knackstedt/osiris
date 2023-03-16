@@ -16,16 +16,16 @@
 </div>
 
 <!-- Root contains each workspace -->
-<div class="root taskbar-{{taskbarPosition}} dir-{{config.workspaceDirection}}">
+<div class="root">
     <!-- Dots -->
     <div
         *ngIf="showWorkspaceDots"
-        class="dots"
+        class="workspace-dots"
         [@switchingWorkspace]="switchingWorkspace ? 'on' : 'off'"
     >
         <div
             *ngFor="let workspace of config.workspaces; let i = index"
-            class="dot"
+            class="workspace-dot"
             [class.active]="config.currentWorkspace == i"
         ></div>
     </div>

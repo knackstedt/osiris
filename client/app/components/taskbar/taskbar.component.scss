@@ -4,6 +4,7 @@
     z-index: 9999;
     position: absolute;
     height: 100%;
+    display: flex;
 }
 
 .dots {
@@ -133,32 +134,35 @@
         right: 0;
     }
 
-    .contents {
-        width: 100%;
-        overflow-x: hidden;
-        height: 100%;
-        overflow-y: auto;
+}
 
-        &::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-            background-color: transparent;
-        }
+.picker_contents {
+    width: 100%;
+    overflow-x: hidden;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 
-        &::-webkit-scrollbar-thumb {
-            padding-right: 6px;
-            border-radius: 10px;
-            background-color: #696766;
-        }
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+        background-color: transparent;
+    }
 
-        &::-webkit-scrollbar-track {
-            border-radius: 10px;
-            background-color: transparent;
-        }
+    &::-webkit-scrollbar-thumb {
+        padding-right: 6px;
+        border-radius: 10px;
+        background-color: #696766;
+    }
 
-        &::-webkit-scrollbar-corner {
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-        }
+    &::-webkit-scrollbar-track {
+        border-radius: 10px;
+        background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-corner {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     }
 }
 
@@ -281,5 +285,66 @@
         transform: translate3d(0, 0, 0);
         opacity: 1;
 
+    }
+}
+
+::ng-deep {
+    .dir-vertical app-taskbar .dots {
+        flex-direction: column;
+    }
+
+    .taskbar-top app-taskbar, .taskbar-bottom app-taskbar {
+        height: unset;
+        width: 100%;
+        flex-direction: row;
+
+        .dots {
+            flex-direction: row;
+            height: unset;
+            width: 100%;
+            left: unset;
+        }
+        .picker {
+            left: unset;
+            width: unset;
+            max-width: calc(100vw - 12px);
+
+            .picker_contents {
+                overflow-x: auto;
+                overflow-y: hidden;
+                flex-direction: row;
+            }
+        }
+    }
+
+    .taskbar-top app-taskbar {
+
+        .dots {
+            top: 4px;
+        }
+        .picker {
+            top: 64px;
+            padding: 0px 6px 6px 6px;
+        }
+    }
+
+    .taskbar-bottom app-taskbar {
+        bottom: 0;
+        .dots {
+            bottom: 2px;
+        }
+        .picker {
+            bottom: 64px;
+            padding: 6px 6px 0 6px;
+        }
+    }
+
+    .taskbar-right app-taskbar {
+        right: 0;
+        .picker {
+            right: 64px;
+            left: unset;
+            padding: 6px 0 6px 6px;
+        }
     }
 }

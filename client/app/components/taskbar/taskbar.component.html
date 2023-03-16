@@ -62,7 +62,7 @@
         >
             <div class="exit" (click)="hideMenu(favorite.taskbar)"></div>
             <div class="picker_backdrop"></div>
-            <div class="contents">
+            <div class="picker_contents">
                 <div class="windowPreview" *ngFor="let window of favorite.taskbar.windows" (click)="activateWindow(window)">
                     <button class="close" (click)="window.close(); $event.preventDefault()">
                         <img src="assets/icons/window-close-symbolic.svg" />
@@ -114,14 +114,18 @@
         <div class="picker count_{{item.windows.length}}" *ngIf="item._isActive">
             <div class="exit" (click)="hideMenu(item)"></div>
             <div class="picker_backdrop"></div>
-            <div class="contents">
+            <div class="picker_contents">
                 <div class="windowPreview" *ngFor="let window of item.windows" (click)="activateWindow(window)">
                     <button class="close" (click)="window.close(); $event.preventDefault()">
                         <img src="assets/icons/window-close-symbolic.svg" />
                     </button>
                     <div class="body">
-                        <div class="window" [style.width]="window.width + 'px'" [style.height]="window.height + 'px'"
-                            [style.transform]="calcScale(window)" [innerHTML]="window._preview | htmlSanitizer">
+                        <div class="window"
+                            [style.width]="window.width + 'px'"
+                            [style.height]="window.height + 'px'"
+                            [style.transform]="calcScale(window)"
+                            [innerHTML]="window._preview | htmlSanitizer"
+                        >
                         </div>
                     </div>
                     <div class="label">

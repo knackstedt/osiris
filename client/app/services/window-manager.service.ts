@@ -401,7 +401,7 @@ export class ManagedWindow {
     }
 
     getIHTML() {
-        const srcEl = document.getElementById("window_" + this.id + " .window");
+        const srcEl = this.getWindowElement().querySelector(".window");
 
         // Native apps are just a canvas, so we can use a screenshot.
         if (this.appId == "native")
@@ -411,7 +411,7 @@ export class ManagedWindow {
     }
 
     getWindowElement() {
-        return document.querySelector("#window_" + this.id) as HTMLDivElement;
+        return document.getElementById("window_" + this.id) as HTMLDivElement;
     }
 
     private hibernationValue: string;

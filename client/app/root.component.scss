@@ -2,7 +2,7 @@
     height: 100%;
     width: 100%;
     display: flex;
-    position: relative;
+    position: absolute;
     z-index: 0;
 }
 
@@ -31,7 +31,8 @@
     }
 }
 
-.dots {
+// Workspace switcher dots
+.workspace-dots {
     position: absolute;
     left: 72px;
     top: 50%;
@@ -47,7 +48,7 @@
     transform: translateY(-50%);
     z-index: 99999;
 
-    .dot {
+    .workspace-dot {
         background-color: #fff;
         width: 6px;
         height: 6px;
@@ -69,8 +70,8 @@ app-workspace {
 }
 
 
-.dir-horizontal {
-    .dots {
+:ng-deep .dir-horizontal app-root {
+    .workspace-dots {
         top: unset;
         bottom: 32px;
         left: 50%;

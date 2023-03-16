@@ -78,7 +78,8 @@ export class TaskbarComponent {
             if (w._isCollapsed)
                 w._preview = w._minimizedPreview;
             else
-                w._preview = this.getIHTML(w);
+                w._preview = w.getIHTML();
+            console.log("Preview", w.appId, w._isCollapsed, w._preview)
         });
         console.log("show Menu")
     }
@@ -88,10 +89,6 @@ export class TaskbarComponent {
         this.windowManager.managedWindows.forEach(w => {
             delete w._preview;
         });
-    }
-
-    getIHTML(window: ManagedWindow) {
-        return window.getIHTML();
     }
 
     isFavorite(item: TaskBarData) {

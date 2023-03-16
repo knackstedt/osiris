@@ -11,7 +11,10 @@ export class ConfigurationService {
     windowToolbarHeight = 46;
 
     taskbarWidth = 64;
-    taskbarPosition = "left"; // top left bottom right
+    taskbarPosition = "top"; // top left bottom right
+    // taskbarPosition = "right"; // top left bottom right
+    // taskbarPosition = "bottom"; // top left bottom right
+    // taskbarPosition = "left"; // top left bottom right
     topOffset    = this.taskbarPosition == "top"    ?  this.taskbarWidth : 0;
     rightOffset  = this.taskbarPosition == "right"  ? -this.taskbarWidth : 0;
     bottomOffset = this.taskbarPosition == "bottom" ? -this.taskbarWidth : 0;
@@ -66,5 +69,6 @@ export class ConfigurationService {
 
 
         document.body.classList.add(`taskbar-${this.taskbarPosition}`);
+        document.body.classList.add(`dir-${this.workspaceDirection}`);
     }
 }
