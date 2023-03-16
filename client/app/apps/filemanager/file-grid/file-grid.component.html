@@ -1,4 +1,10 @@
+<!-- <div>
+    <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+</div> -->
+
+<!-- Grid mode -->
 <ng-scrollbar
+    *ngIf="viewMode == 'grid'"
     style="height: 100%; width: 100%"
     track="vertical"
     pointerEventsMethod="scrollbar"
@@ -20,6 +26,8 @@
                 [ngx-ctx-menu]="fileContextMenu"
                 [ngx-ctx-menu-context]="item"
                 [class.generic]="item['_icon'].needsBackdrop"
+
+                (dragstart)="onDragStart($event, item)"
             >
                 <img [src]="item['_icon'].path"/>
                 <p>{{item.name}}</p>
@@ -27,6 +35,40 @@
         </div>
     </cdk-virtual-scroll-viewport>
 </ng-scrollbar>
+
+<!-- List mode -->
+<ng-scrollbar
+    *ngIf="viewMode == 'list'"
+    style="height: 100%; width: 100%"
+    track="vertical"
+    pointerEventsMethod="scrollbar"
+    [ngx-ctx-menu]="folderContextMenu"
+>
+    <div class="resize-observer" #fileViewport></div>
+    <cdk-virtual-scroll-viewport
+        itemSize="134"
+        scrollViewport
+        (click)="selectedItems = []; selectionText = ''"
+    >
+        <div
+            *cdkVirtualFor="let item of directoryContents"
+            class="row"
+            [class.selected]="selectedItems.includes(item)"
+            [ngx-ctx-menu]="fileContextMenu"
+            [ngx-ctx-menu-context]="item"
+
+            (click)="onSelect(item, $event)"
+            (dblclick)="onItemClick(item)"
+            (dragstart)="onDragStart($event, item)"
+        >
+            <img [src]="item['_icon'].path"/>
+            <p>{{item.name}}</p>
+
+            <!-- optional columns... -->
+        </div>
+    </cdk-virtual-scroll-viewport>
+</ng-scrollbar>
+
 
 <div class="select-hint" *ngIf="selectionText">
     {{selectionText}}

@@ -64,7 +64,8 @@ type FileViewTab = {
         label: string
     }[],
     path: string,
-    selection: FSDescriptor[];
+    selection: FSDescriptor[],
+    viewMode: "grid" | "list"
 }
 
 @Component({
@@ -139,14 +140,16 @@ export class FilemanagerComponent implements OnInit {
             label: this.getTabLabel(path),
             breadcrumb: this.calcBreadcrumb(path),
             path,
-            selection: []
+            selection: [],
+            viewMode: "grid"
         })
         this.tabs.push({
             id: crypto.randomUUID(),
             label: this.getTabLabel(path),
             breadcrumb: this.calcBreadcrumb(path),
             path,
-            selection: []
+            selection: [],
+            viewMode: "grid"
         })
     }
 

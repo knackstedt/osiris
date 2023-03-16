@@ -48,6 +48,8 @@ export class FileGridComponent implements OnInit {
 
     @Input() showHiddenFiles = false;
 
+    @Input() viewMode: "list" | "grid" = "grid";
+
     @Output() fileSelect = new EventEmitter<FSDescriptor[]>();
     @Output() fileOpen = new EventEmitter<FSDescriptor[]>();
     @Output() newTab = new EventEmitter<{ path: string; }>();
@@ -75,10 +77,35 @@ export class FileGridComponent implements OnInit {
     // If the current directory is inside of an archive
     isArchive = true;
 
+    readonly columns = [
+        { id: "name", label: "Name" },
+        { id: "size", label: "Size"},
+        { id: "type", label: "Type"},
+        { id: "owner", label: "Owner"},
+        { id: "group", label: "Group"},
+        { id: "permissions", label: "Permissions"},
+        { id: "location", label: "Location"},
+        { id: "modified", label: "Modified"},
+        { id: "modified--time", label: "Modified - Time"},
+        { id: "accessed", label: "Accessed"},
+        { id: "created", label: "Created"},
+        { id: "recency", label: "Recency"},
+        { id: "star", label: "Star"},
+        { id: "detailed-type", label: "Detailed Type"},
+    ]
+
+    cols = [
+        { id: "name", label: "Name" },
+        { id: "size", label: "Size" },
+        { id: "modified", label: "Modified" },
+        { id: "star", label: "Star" }
+    ]
+
     folderContextMenu: ContextMenuItem<FSDescriptor>[] = [
         {
             label: "New _F_older",
             shortcutLabel: "Shift+Ctrl+N",
+            icon: "create_new_folder",
             action: (data) => {
                 console.log("New folder goodness");
                 console.log(data);
@@ -87,6 +114,7 @@ export class FileGridComponent implements OnInit {
         {
             label: "Add to _B_ookmarks",
             shortcutLabel: "Ctrl+D",
+            icon: "bookmark",
             action: (evt) => {
 
             }
@@ -95,12 +123,14 @@ export class FileGridComponent implements OnInit {
         {
             isDisabled: (data) => true,
             label: "_P_aste",
+            icon: "content_paste",
             action: (evt) => {
             }
         },
         {
             label: "Select _A_ll",
             shortcutLabel: "Ctrl+A",
+            icon: "select_all",
             action: (evt) => {
 
             }
@@ -108,6 +138,7 @@ export class FileGridComponent implements OnInit {
         "seperator",
         {
             label: "Open in _T_erminal",
+            icon: "terminal",
             action: (evt) => {
                 this.windowManager.openWindow({ appId: "terminal", data: { cwd: this.path }})
             }
@@ -121,6 +152,7 @@ export class FileGridComponent implements OnInit {
         "seperator",
         {
             label: "P_r_operties",
+            icon: "find_in_page",
             action: (evt) => {
 
             }
@@ -130,7 +162,22 @@ export class FileGridComponent implements OnInit {
 
     fileContextMenu: ContextMenuItem<FSDescriptor>[] = [
         {
+            label: "Download",
+            icon: "download",
+            action: (data) => {
+                const target = `${window.origin}/api/filesystem/download?dir=${data.path}&file=${data.name}`;
+                // window.open(target);
+                var link = document.createElement("a");
+                link.download = data.name;
+                link.href = target;
+                // document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
+        },
+        {
             label: "Open",
+            icon: "open_in_new",
             shortcutLabel: "Shift+Ctrl+N",
             action: (data) => {
                 console.log("New folder goodness");
@@ -146,19 +193,22 @@ export class FileGridComponent implements OnInit {
         },
         "seperator",
         {
-            isDisabled: data => true,
             label: "Cut",
+            icon: "content_cut",
+            isDisabled: data => true,
             action: (evt) => {
             },
         },
         {
-            isDisabled: data => true,
             label: "Copy",
+            icon: "file_copy",
+            isDisabled: data => true,
             action: (evt) => {
             },
         },
         {
             label: "Move To...",
+            icon: "drive_file_move",
             shortcutLabel: "Ctrl+A",
             action: (evt) => {
 
@@ -166,6 +216,7 @@ export class FileGridComponent implements OnInit {
         },
         {
             label: "Copy To...",
+            icon: "folder_copy",
             shortcutLabel: "Ctrl+A",
             action: (evt) => {
 
@@ -173,6 +224,7 @@ export class FileGridComponent implements OnInit {
         },
         {
             label: "Move to Trash",
+            icon: "delete",
             shortcutLabel: "Ctrl+A",
             action: (evt) => {
 
@@ -180,6 +232,7 @@ export class FileGridComponent implements OnInit {
         },
         {
             label: "Rename",
+            icon: "drive_file_rename_outline",
             shortcutLabel: "Ctrl+A",
             action: (evt) => {
 
@@ -188,15 +241,36 @@ export class FileGridComponent implements OnInit {
 
         // Extract Here
         // Extract To...
-
         {
-            label: "Compress...",
+            label: "Extract Here",
+            icon: "folder_zip",
             shortcutLabel: "Ctrl+A",
+            isDisabled: (data) => data.kind == "file" && data.ext != ".zip",
             action: (evt) => {
+                // TODO
             },
         },
         {
-            label: "CRC SHA",
+            label: "Extract to...",
+            icon: "folder_zip",
+            shortcutLabel: "Ctrl+A",
+            isDisabled: (data) => data.kind == "file" && data.ext != ".zip",
+            action: (evt) => {
+                // TODO
+            },
+        },
+        {
+            label: "Compress...",
+            icon: "folder_zip",
+            shortcutLabel: "Ctrl+A",
+            isDisabled: (data) => data.kind == "file" && data.ext != ".zip",
+            action: (evt) => {
+                // TODO
+            },
+        },
+        {
+            label: "Checksum",
+            icon: "manage_search",
             children: [
                 {
                     label: "MD5",
@@ -220,14 +294,8 @@ export class FileGridComponent implements OnInit {
             },
         },
         {
-            label: "Send To...",
-            shortcutLabel: "Ctrl+A",
-            action: (evt) => {
-
-            },
-        },
-        {
             label: "Star",
+            icon: "star",
             shortcutLabel: "Ctrl+A",
             action: (evt) => {
 
@@ -236,6 +304,7 @@ export class FileGridComponent implements OnInit {
         "seperator",
         {
             label: "P_r_operties",
+            icon: "find_in_page",
             action: (evt) => {
 
             },
@@ -317,6 +386,7 @@ export class FileGridComponent implements OnInit {
     async ngOnInit() {
         // while (!this.path)
         // await sleep(10)
+        console.log("ng on init")
         await this.loadFolder(this.path);
     }
 
@@ -358,7 +428,7 @@ export class FileGridComponent implements OnInit {
         }
     }
 
-    onSelect(item: FileDescriptor, evt) {
+    onSelect(item: FSDescriptor, evt) {
         evt.stopPropagation();
 
         if (this.keyboard.shiftPressed) {
@@ -448,5 +518,14 @@ export class FileGridComponent implements OnInit {
             this.itemsPerRow = 1;
 
         this.flowRows();
+    }
+
+    onDragStart(evt: DragEvent, item: FSDescriptor) {
+        const target = `${window.origin}/api/filesystem/download?dir=${item.path}&file=${item.name}`;
+
+        evt.dataTransfer.clearData();
+        // evt.dataTransfer.setData('text/uri-list', target);
+        // evt.dataTransfer.setData('DownloadURL', `text/uri-list:${target}`);
+        evt.dataTransfer.setData('text/plain', item.name);
     }
 }

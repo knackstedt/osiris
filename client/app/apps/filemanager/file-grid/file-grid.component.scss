@@ -28,6 +28,7 @@
     z-index: 1;
     position: relative;
     transition: opacity 50ms ease-in-out;
+    -webkit-user-drag: element;
 
     &.selected {
         p {
@@ -55,7 +56,7 @@
     }
 
     img {
-        user-select: none;
+        pointer-events: none;
     }
     p {
         height: 50px;

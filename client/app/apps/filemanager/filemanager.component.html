@@ -44,8 +44,8 @@
         </button>
         <span></span>
         <div class="buttongroup">
-            <button>
-                <img [src]="this.viewMode == 'list' ? 'view-list-symbolic.svg' : 'view-grid-symbolic.svg'">
+            <button (click)="currentTab.viewMode = (currentTab.viewMode == 'grid' ? 'list' : 'grid')">
+                <img [src]="currentTab.viewMode == 'list' ? 'assets/icons/actions/view-list-symbolic.svg' : 'assets/icons/actions/view-grid-symbolic.svg'">
             </button>
             <app-button-popout img="assets/icons/actions/pan-down-symbolic.svg">
                 <ng-template #dialogTemplate>
@@ -166,6 +166,7 @@
                                     (pathChange)="tabPathChange(tab)"
                                     [(selection)]="tab.selection"
                                     (fileOpen)="onFileOpen($event)"
+                                    [viewMode]="tab.viewMode"
                                 />
                             </ng-template>
                         </mat-tab>
