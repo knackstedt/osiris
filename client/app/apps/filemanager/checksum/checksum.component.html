@@ -1,7 +1,32 @@
 <div>
-    <div>{{digest}}: {{sum}}</div>
-
-    <div>Size: {{length}}</div>
 </div>
 
 
+<app-window-template [window]="window">
+    <ng-template #toolbar>
+        Checksum information
+    </ng-template>
+    <ng-template #content>
+        <div class="table">
+            <div class="row">
+                <div>Name</div>
+                <div>{{name}}</div>
+            </div>
+            <div class="row">
+                <div>Size</div>
+                <div>{{length}} ({{1}})</div>
+            </div>
+            <div class="row">
+                <div>{{digest}}</div>
+                <div style="display: flex; justify-content: center;">
+                    <div class="digest">{{sum}}</div>
+                    <!-- <button mat-icon-button (click)="1" title="Copy to clipboard"><mat-icon>content_paste</mat-icon></button> -->
+                </div>
+            </div>
+
+            <div class="controls">
+                <button mat-flat-button (click)="window">Close</button>
+            </div>
+        </div>
+    </ng-template>
+</app-window-template>

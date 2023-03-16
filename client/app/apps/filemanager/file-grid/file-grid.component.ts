@@ -316,8 +316,8 @@ export class FileGridComponent implements OnInit {
             appId: "checksum",
             data: { digest, path },
             workspace: this.windowRef.workspace,
-            width: 300,
-            height: 200
+            width: 600,
+            height: 250
         });
     }
 
