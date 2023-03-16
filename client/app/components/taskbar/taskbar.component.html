@@ -23,80 +23,25 @@
 </div>
 
 <!-- Favorite applications -->
-<ng-container *ngFor="let favorite of favorites">
-
-    <!--
-        ! This is a shorthand way to resolve the 'item' variable.
-        This is not actually a real loop -- the method will always return 1 item.
-    -->
-    <div
-        class="task-button"
-
-        (hover)="favorite.taskbar._isHovered = true"
-        (blur)="favorite.taskbar._isHovered = false"
-        [class.hover]="favorite.taskbar._isHovered">
-
-        <div
-            class="button"
-            (click)="favorite.taskbar?.windows.length > 0 ? showMenu(favorite.taskbar) : windowManager.openWindow(favorite.appId)"
-        >
-            <div class="dots">
-                <div class="dot" *ngIf="favorite.taskbar.windows.length > 0"></div>
-                <div class="dot" *ngIf="favorite.taskbar.windows.length > 1"></div>
-                <div class="dot" *ngIf="favorite.taskbar.windows.length > 2"></div>
-                <div class="dot" *ngIf="favorite.taskbar.windows.length > 3"></div>
-                <div class="dot" *ngIf="favorite.taskbar.windows.length > 4"></div>
-            </div>
-            <div class="icon">
-                <img [src]="favorite.icon" />
-            </div>
-            <div class="tooltip">
-                <div>
-                    {{favorite.title}}
-                </div>
-            </div>
-        </div>
-        <div
-            *ngIf="favorite.taskbar._isActive"
-            class="picker count_{{favorite.taskbar.windows.length}}"
-        >
-            <div class="exit" (click)="hideMenu(favorite.taskbar)"></div>
-            <div class="picker_backdrop"></div>
-            <div class="picker_contents">
-                <div class="windowPreview" *ngFor="let window of favorite.taskbar.windows" (click)="activateWindow(window)">
-                    <button class="close" (click)="window.close(); $event.preventDefault()">
-                        <img src="assets/icons/window-close-symbolic.svg" />
-                    </button>
-                    <div class="body">
-                        <div class="window" [style.width]="window.width + 'px'" [style.height]="window.height + 'px'"
-                            [style.transform]="calcScale(window)" [innerHTML]="window._preview | htmlSanitizer">
-                        </div>
-                    </div>
-                    <div class="label">
-                        {{window.title}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<ng-container *ngFor="let item of favorites">
+    <ng-container [ngTemplateOutlet]="itemTemplate" [ngTemplateOutletContext]="{data: item}"></ng-container>
 </ng-container>
 
 <div class="seperator"></div>
 
 <!-- Open applications -->
 <ng-container *ngFor="let item of windowManager.taskbarItems">
-    <div
-        *ngIf="!isFavorite(item)"
-        class="task-button"
-        (hover)="item._isHovered = true"
-        (blur)="item._isHovered = false"
-        [class.hover]="item._isHovered" >
+    <ng-container *ngIf="!isFavorite(item)" [ngTemplateOutlet]="itemTemplate" [ngTemplateOutletContext]="{data: item}"></ng-container>
+</ng-container>
+
+
+<ng-template #itemTemplate let-item="data">
+    <div class="task-button" (hover)="item._isHovered = true" (blur)="item._isHovered = false"
+        [class.hover]="item._isHovered">
         <!-- (click)="item.windows[item.windows.length-1]._isCollapsed = false" -->
-        <div class="button"
-            (click)="showMenu(item)"
-        >
+        <div class="button" (click)="showMenu(item)">
             <div class="dots">
-                <div class="dot"></div>
+                <div class="dot" *ngIf="item.windows.length > 0"></div>
                 <div class="dot" *ngIf="item.windows.length > 1"></div>
                 <div class="dot" *ngIf="item.windows.length > 2"></div>
                 <div class="dot" *ngIf="item.windows.length > 3"></div>
@@ -120,12 +65,8 @@
                         <img src="assets/icons/window-close-symbolic.svg" />
                     </button>
                     <div class="body">
-                        <div class="window"
-                            [style.width]="window.width + 'px'"
-                            [style.height]="window.height + 'px'"
-                            [style.transform]="calcScale(window)"
-                            [innerHTML]="window._preview | htmlSanitizer"
-                        >
+                        <div class="window" [style.width]="window.width + 'px'" [style.height]="window.height + 'px'"
+                            [style.transform]="calcScale(window)" [innerHTML]="window._preview | htmlSanitizer">
                         </div>
                     </div>
                     <div class="label">
@@ -135,4 +76,4 @@
             </div>
         </div>
     </div>
-</ng-container>
+</ng-template>

@@ -4,6 +4,7 @@ import { DialogService } from 'client/app/services/dialog.service';
 import { ManagedWindow } from 'client/app/services/window-manager.service';
 import { WindowManagerService } from '../../services/window-manager.service';
 import { ConfigurationService } from 'client/app/services/configuration.service';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 export type TaskBarData = {
   appId: string,
@@ -18,7 +19,29 @@ export type TaskBarData = {
 @Component({
     selector: 'app-taskbar',
     templateUrl: './taskbar.component.html',
-    styleUrls: ['./taskbar.component.scss']
+    styleUrls: ['./taskbar.component.scss'],
+    animations: [
+        trigger('activeWorkspace', [
+            state('target', style({
+                transform: "translate3d(0, 0, 0)"
+            })),
+            state('above', style({
+                transform: "translate3d(0, -40px, 0)"
+            })),
+            state('below', style({
+                transform: "translate3d(0, 40px, 0)"
+            })),
+            state('left', style({
+                transform: "translate3d(-40px, 0, 0)"
+            })),
+            state('right', style({
+                transform: "translate3d(40px, 0, 0)"
+            })),
+            transition('* <=> *', [
+                animate('250ms ease')
+            ]),
+        ]),
+    ]
 })
 export class TaskbarComponent {
 
@@ -79,9 +102,7 @@ export class TaskbarComponent {
                 w._preview = w._minimizedPreview;
             else
                 w._preview = w.getIHTML();
-            console.log("Preview", w.appId, w._isCollapsed, w._preview)
         });
-        console.log("show Menu")
     }
 
     hideMenu(menu: TaskBarData) {
