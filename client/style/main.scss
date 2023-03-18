@@ -6,7 +6,8 @@
 @import "@fontsource/material-icons";
 
 @import "material.scss";
-@import "gtk.scss";
+@import "../app/apps/gtk-factory/pop-dark.scss";
+// @import "gtk.scss";
 
 
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
