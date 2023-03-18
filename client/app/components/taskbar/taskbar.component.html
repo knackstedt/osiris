@@ -56,7 +56,11 @@
                 </div>
             </div>
         </div>
-        <div class="picker count_{{item.windows.length}}" *ngIf="item._isActive">
+        <div
+            *ngIf="item._isActive"
+            class="picker count_{{item.windows.length}}"
+            [@picker-preview]=""
+        >
             <div class="exit" (click)="hideMenu(item)"></div>
             <div class="picker_backdrop"></div>
             <div class="picker_contents">

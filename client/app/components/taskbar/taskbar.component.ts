@@ -21,7 +21,7 @@ export type TaskBarData = {
     templateUrl: './taskbar.component.html',
     styleUrls: ['./taskbar.component.scss'],
     animations: [
-        trigger('activeWorkspace', [
+        trigger('picker-preview', [
             state('target', style({
                 transform: "translate3d(0, 0, 0)"
             })),

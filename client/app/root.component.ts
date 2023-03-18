@@ -80,29 +80,26 @@ export class RootComponent {
 
             // This is an arbitrary data object that gets loaded into the app
             data: {
-                path: "/home/knackstedt/Applications/starcheat",
+                // path: "/home/knackstedt/Applications/starcheat",
                 // path: "/home/knackstedt/Videos",
                 // path: "/home/knackstedt/Downloads/AssetRipper_linux_x64.zip",
+                path: "/home/knackstedt/Downloads",
                 // path: "/home/knackstedt/cache/",
                 showHidden: false,
                 search: ""
             }
         });
 
-        // this.windowManager.openWindow({
-        //     appId: "terminal",
-        //     workspace: 0,
-        //     x: 500,
-        //     y: 100,
-        //     width: 400,
-        //     height: 400,
+        this.windowManager.openWindow({
+            appId: "material-factory",
+            workspace: 2,
+            x: 64,
+            y: 64,
+            width: 1600,
+            height: 900,
 
-        //     // This is an arbitrary data object that gets loaded into the app
-        //     data: {
-        //         cwd: "/home/knackstedt/Downloads/",
-        //         command: "bash"
-        //     }
-        // });
+            _isMaximized: true
+        });
 
 
         keyboard.onKeyCommand({

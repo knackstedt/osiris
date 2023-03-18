@@ -16,7 +16,15 @@
 </div>
 
 <!-- Root contains each workspace -->
-<div class="root">
+<div
+    class="root"
+    [style.--maximized-width]="'calc(100% - ' + (config.leftOffset + config.rightOffset) + 'px)'"
+    [style.--maximized-height]="'calc(100% - ' + (config.topOffset + config.bottomOffset) + 'px)'"
+    [style.--top-offset]="config.topOffset +'px'"
+    [style.--right-offset]="config.rightOffset +'px'"
+    [style.--bottom-offset]="config.bottomOffset +'px'"
+    [style.--left-offset]="config.leftOffset +'px'"
+    >
     <!-- Dots -->
     <div
         *ngIf="showWorkspaceDots"

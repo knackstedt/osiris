@@ -1,6 +1,7 @@
-import { Component, Input, ViewEncapsulation, OnInit } from '@angular/core';
+import { Component, Input, ViewEncapsulation, OnInit, ViewContainerRef } from '@angular/core';
 import { ManagedWindow } from '../../../services/window-manager.service';
 import { KeyboardService } from '../../../services/keyboard.service';
+import { ConfigurationService } from '../../../services/configuration.service';
 
 @Component({
     selector: 'app-window',
@@ -14,13 +15,18 @@ export class WindowComponent implements OnInit {
 
     inputs: Object;
 
-    constructor(private keyboard: KeyboardService) {
+    constructor(
+        private keyboard: KeyboardService,
+        public config: ConfigurationService,
+        private viewContainer: ViewContainerRef
+    ) {
         keyboard.onKeyCommand({
             key: "w",
             ctrl: true,
             window: this.window,
             interrupt: true
         }).subscribe(evt => this.window.close());
+
     }
 
     ngOnInit() {
@@ -28,5 +34,17 @@ export class WindowComponent implements OnInit {
             window: this.window,
             ...this.window.data
         };
+        this.configChange();
+
+    }
+
+    configChange() {
+        const el = this.viewContainer.element.nativeElement;
+
+        el.setAttribute('maxized-width', 'calc(100% - ' + (this.config.leftOffset + this.config.rightOffset) + 'px)');
+        el.setAttribute('maxized-height', 'calc(100% - ' + (this.config.topOffset + this.config.bottomOffset) + 'px)');
+
+        // el['--maxized-width'] = 'calc(100% - ' + this.config.leftOffset + this.config.rightOffset + ')';
+        // el['--maxized-height'] = 'calc(100% - ' + this.config.topOffset + this.config.bottomOffset + ')';
     }
 }

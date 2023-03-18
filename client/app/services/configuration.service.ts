@@ -13,12 +13,13 @@ export class ConfigurationService {
     taskbarWidth = 64;
     // taskbarPosition = "top"; // top left bottom right
     // taskbarPosition = "right"; // top left bottom right
-    taskbarPosition = "bottom"; // top left bottom right
-    // taskbarPosition = "left"; // top left bottom right
-    topOffset    = this.taskbarPosition == "top"    ?  this.taskbarWidth : 0;
-    rightOffset  = this.taskbarPosition == "right"  ? -this.taskbarWidth : 0;
-    bottomOffset = this.taskbarPosition == "bottom" ? -this.taskbarWidth : 0;
-    leftOffset   = this.taskbarPosition == "left"   ?  this.taskbarWidth : 0;
+    // taskbarPosition = "bottom"; // top left bottom right
+    taskbarPosition = "left"; // top left bottom right
+
+    get topOffset(){    return this.taskbarPosition == "top"    ?  this.taskbarWidth : 0}
+    get rightOffset(){  return this.taskbarPosition == "right"  ? -this.taskbarWidth : 0}
+    get bottomOffset(){ return this.taskbarPosition == "bottom" ? -this.taskbarWidth : 0}
+    get leftOffset(){   return this.taskbarPosition == "left"   ?  this.taskbarWidth : 0}
 
     workspaces = [
         { label: "default",  background: "" },
@@ -46,6 +47,14 @@ export class ConfigurationService {
     host: string;
 
     ready = false;
+
+    filemanager = {
+        maxHistoryLength: 10,
+        maxUndoLength: 50, // max number of actions that can be undone (excluding _destroy_)
+        showThumbnails: false, // WIP
+        thumbnailMaxFileSize: 0, // WIP
+        customCtxMenuItems: [] // WIP // support for custom context menu actions?
+    }
 
     constructor(private fetch: Fetch) {
         this.apply();

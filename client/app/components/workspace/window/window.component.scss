@@ -32,10 +32,18 @@
 
     &.maximized {
         transform: translate3d(0, 0, 0) !important;
-        width: 100% !important;
-        height: 100% !important;
+        // width: 100% !important;
+        // height: 100% !important;
+        width: var(--maximized-width, 100%) !important;
+        height: var(--maximized-height, 100%) !important;
+
         padding: 0;
         margin: 0;
+
+        top: var(--top-offset, 0);
+        right: var(--right-offset, 0);
+        bottom: var(--bottom-offset, 0);
+        left: var(--left-offset, 0);
 
         &>.window {
             height: 100%;
@@ -71,6 +79,7 @@
 :host ::ng-deep * {
     user-select: none;
 }
+
 
 ngx-lazy-loader {
     display: flex;
