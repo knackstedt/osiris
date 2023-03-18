@@ -4,6 +4,10 @@ import { FSDescriptor } from './filemanager.component';
 import textExtensions from 'textextensions';
 import { getMimeType } from 'client/app/apps/filemanager/mimetype';
 
+/**
+ * TODO: support `VirtualBox VMs` `Videos` `Templates` `Public` `Music` `Downloads` `Documents` `Desktop` `Applications`
+ */
+
 
 function isText(path: string) {
     const ext = path.split('.').pop();
@@ -171,6 +175,14 @@ const resolveFileIcon = (file: FSDescriptor) => {
     if (filename) {
         return {
             path: `lib/mit/${filename}.svg`,
+            needsBackdrop: true
+        };
+    }
+
+    // foo.log.1 foo.log.123 should be treated clearly as log files.
+    if (/\.log\.\d+$/.test(filename)) {
+        return {
+            path: `lib/mit/log.svg`,
             needsBackdrop: true
         };
     }

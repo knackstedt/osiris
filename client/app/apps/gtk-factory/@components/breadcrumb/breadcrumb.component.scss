@@ -1,0 +1,39 @@
+:host {
+    border: 1px solid #171717;
+    border-bottom-color: #000;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    gap: 6px; // approx width of a slash `/`
+    height: 100%;
+}
+
+button {
+    position: relative;
+    padding: 0px 6px;
+    background-color: #0000;
+    border: none;
+    transition: color 200ms ease;
+    height: 100%;
+
+    &:hover {
+        background-color: #4a4a4a;
+        color: #fff;
+    }
+
+    &::after {
+        content: "/";
+        position: absolute;
+        left: calc(100% + 1px);
+        z-index: 999;
+    }
+
+    &:last-of-type {
+        font-weight: bold;
+
+        &::after {
+            content: '';
+        }
+    }
+}

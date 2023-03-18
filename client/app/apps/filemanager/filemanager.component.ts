@@ -13,8 +13,12 @@ import { AngularSplitModule } from 'angular-split';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { FileGridComponent } from './file-grid/file-grid.component';
-import { OnResize } from 'client/types/window';
 import { getMimeType } from 'client/app/apps/filemanager/mimetype';
+import { GtkBreadcrumbComponent } from 'client/app/apps/gtk-factory/@components/breadcrumb/breadcrumb.component';
+import { ConfigurationService } from '../../services/configuration.service';
+import { GtkIconButtonComponent } from 'client/app/apps/gtk-factory/@components/icon-button/icon-button.component';
+import { ToolbarComponent } from './toolbar/toolbar.component';
+
 // TODO:
 /**
  * Multiple music / video / image files selected turns into a playlist
@@ -60,12 +64,13 @@ type FileViewTab = {
     id: string,
     label: string,
     breadcrumb: {
-        path: string,
+        id: string,
         label: string
     }[],
     path: string,
     selection: FSDescriptor[],
-    viewMode: "grid" | "list"
+    viewMode: "grid" | "list",
+    history: string[]
 }
 
 @Component({
@@ -81,7 +86,10 @@ type FileViewTab = {
         AngularSplitModule,
         FileGridComponent,
         MatTabsModule,
-        MatIconModule
+        MatIconModule,
+        GtkBreadcrumbComponent,
+        GtkIconButtonComponent,
+        ToolbarComponent
     ],
     standalone: true
 })
@@ -114,7 +122,7 @@ export class FilemanagerComponent implements OnInit {
         private windowManager: WindowManagerService,
         private keyboard: KeyboardService,
         private dialog: MatDialog,
-        private changeDetector: ChangeDetectorRef
+        private config: ConfigurationService
         ) {
         keyboard.onKeyCommand({
             ctrl: true,
@@ -141,7 +149,8 @@ export class FilemanagerComponent implements OnInit {
             breadcrumb: this.calcBreadcrumb(path),
             path,
             selection: [],
-            viewMode: "grid"
+            viewMode: "grid",
+            history: []
         })
         this.tabs.push({
             id: crypto.randomUUID(),
@@ -149,7 +158,8 @@ export class FilemanagerComponent implements OnInit {
             breadcrumb: this.calcBreadcrumb(path),
             path,
             selection: [],
-            viewMode: "grid"
+            viewMode: "grid",
+            history: []
         })
     }
 
@@ -163,16 +173,18 @@ export class FilemanagerComponent implements OnInit {
             const path = parts.slice(0, i + 1).join('/');
 
             return {
-                path,
+                id: path,
                 label: p || ""
             };
         });
     }
 
     onBreadcrumbClick(crumb) {
-        if (crumb.path) {
-            this.currentTab.path = crumb.path;
-            this.currentTab.breadcrumb = this.calcBreadcrumb(crumb.path);
+        if (crumb.id) {
+            this.currentTab.path = crumb.id;
+            this.currentTab.breadcrumb = this.calcBreadcrumb(crumb.id);
+            this.currentTab.history.push(crumb.id);
+            this.currentTab.history.splice(this.config.filemanager.maxHistoryLength);
             // this.tabs.find(t => t.id == this.currentTab.id).path = crumb.path;
         }
     }
@@ -180,6 +192,8 @@ export class FilemanagerComponent implements OnInit {
     tabPathChange(tab: FileViewTab) {
         tab.label = this.getTabLabel(tab.path);
         tab.breadcrumb = this.calcBreadcrumb(tab.path);
+        tab.history.push(tab.path);
+        tab.history.splice(this.config.filemanager.maxHistoryLength);
     }
 
     getTabLabel(path: string) {
@@ -187,15 +201,6 @@ export class FilemanagerComponent implements OnInit {
     }
 
     async onFileOpen(files: FSDescriptor[]) {
-        // this.fetch.post<any>(`/api/filesystem/file?only=stat`, [file.path + file.name ]).then(res => {
-        //     if (res[0].type == "text")
-        //         this.windowManager.openWindow("code-editor", file);
-        //     else
-        //         this.downloadFile(file);
-        //     // this.fileData = res;
-        // });
-
-        console.log("on file open", files)
 
         let mimetype = files
             .filter(f => f.kind == "file")
@@ -267,13 +272,6 @@ export class FilemanagerComponent implements OnInit {
             appId: id,
             data: args
         })
-    }
-
-    onPathChange() {
-
-    }
-
-    downloadFile(file: FSDescriptor) {
     }
 
     async onResize() {

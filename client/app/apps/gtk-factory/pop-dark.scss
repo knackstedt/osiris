@@ -1,0 +1,25 @@
+
+@mixin pop-dark() {
+    // input
+    --gtk-input-radius: 3px;
+
+    --gtk-active-border-color: #fff;
+    --gtk-inactive-border-color: #fff;
+
+    --gtk-text-color: #bcbcbc;
+    --gtk-text-emphasis-color: #fff;
+    --gtk-text-muted-color: #fff;
+    --gtk-inactive-text-color: #fff;
+
+    --gtk-text-highlight-color: #fff;
+
+
+    --gtk-window-toolbar-height: #fff;
+    --gtk-window-radius: 3px;
+    --gtk-window-background-color: #363636;
+    --gtk-window-inactive-background-color: #363636;
+
+    --gtk-list-item-active-text-color: #000;
+    --gtk-list-item-background-active-color: #94ebeb;
+    --gtk-list-item-background-hover-color: #343434;
+}
