@@ -1,7 +1,3 @@
-<!-- # GLAS -->
-
-# <a href="//lume.io"><img src="./assets/logo.svg" width="200" alt="LUME" title="LUME" /></a>
-
 # Osiris
 
 **OS**iris on your server with **N**ode**JS**.
@@ -58,7 +54,7 @@ on our [**development page**](.github/DEVELOPMENT.md) -->
  - [OS.js](https://github.com/os-js/OS.js)
  - [web-desktop-environment](https://github.com/shmuelhizmi/web-desktop-environment)
 
-import { XpraPacketWebWorker } from "xpra-html5-client";
+<!-- import { XpraPacketWebWorker } from "xpra-html5-client"; -->
 
 
 ## Roadmap
@@ -70,8 +66,6 @@ import { XpraPacketWebWorker } from "xpra-html5-client";
  - [ ] Integrate Plex and other media apps
  - [ ] Broadway support for GTK3 apps [ref.](http://www.webupd8.org/2013/06/how-to-install-gtk3-with-broadway-html5.html)
  - [ ] Rewrite xpra-html5 client with TS (seperate project or fork)
- - [ ] 
- - [ ] 
  - [ ] Destroy all humans
 
 
