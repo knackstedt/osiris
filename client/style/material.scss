@@ -17,8 +17,8 @@ $light-theme: mat.define-light-theme((
 ));
 
 // Dark palette
-$dark-primary: mat.define-palette(mat.$blue-palette, A100, A100, A100);
-$dark-accent: mat.define-palette(mat.$blue-palette, 500, 600, 700);
+$dark-primary: mat.define-palette(mat.$amber-palette, A100, A100, A100);
+$dark-accent: mat.define-palette(mat.$teal-palette, 500, 600, 700);
 $dark-warn: mat.define-palette(mat.$red-palette);
 
 $dark-theme: mat.define-dark-theme((
