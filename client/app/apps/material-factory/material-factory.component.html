@@ -1,0 +1,891 @@
+<app-window-template [window]="window">
+    <ng-template #toolbar>
+        Mat Factory
+    </ng-template>
+    <ng-template #content>
+    <div class="content">
+        <!-- AUTOCOMPLETE -->
+        <h1>Autocomplete</h1>
+        <div>
+            <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>State</mat-label>
+                <input matInput
+                        aria-label="State"
+                        [matAutocomplete]="auto"
+                        [formControl]="stateCtrl">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let state of filteredStates | async" [value]="state.name">
+                    <img alt="" class="example-option-img" [src]="state.flag" height="25">
+                    <span>{{state.name}}</span> |
+                    <small>Population: {{state.population}}</small>
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <br>
+
+            <mat-slide-toggle
+            [checked]="stateCtrl.disabled"
+            (change)="stateCtrl.disabled ? stateCtrl.enable() : stateCtrl.disable()">
+            Disable Input?
+            </mat-slide-toggle>
+        </div>
+
+        <!-- BADGES -->
+        <h1>Badges</h1>
+        <div>
+            <div matBadge="4" matBadgeOverlap="false" class="demo-section">Text with a badge</div>
+
+            <div matBadge="1" matBadgeSize="large" class="demo-section">Text with large badge</div>
+
+            <div class="demo-section">
+                Button with a badge on the left
+                <button mat-raised-button color="primary" matBadge="8" matBadgePosition="before" matBadgeColor="accent">
+                    Action
+                </button>
+            </div>
+
+            <div class="demo-section">
+                Button toggles badge visibility
+                <button mat-raised-button matBadge="7" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()">
+                    Hide
+                </button>
+            </div>
+
+            <div class="demo-section">
+                Icon with a badge
+                <mat-icon matBadge="15" matBadgeColor="warn">home</mat-icon>
+                <!-- Include text description of the icon's meaning for screen-readers -->
+                <span class="cdk-visually-hidden">
+                    Example with a home icon with overlaid badge showing the number 15
+                </span>
+            </div>
+        </div>
+
+
+        <!-- <h1>Bottom sheet</h1> -->
+        <!-- <button mat-raised-button (click)="openBottomSheet()">Open bottom sheet</button> -->
+
+
+        <h1>Buttons</h1>
+        <div>
+            <section>
+                <div class="example-label">Basic</div>
+                <div class="example-button-row">
+                    <button mat-button>Basic</button>
+                    <button mat-button color="primary">Primary</button>
+                    <button mat-button color="accent">Accent</button>
+                    <button mat-button color="warn">Warn</button>
+                    <button mat-button disabled>Disabled</button>
+                    <a mat-button href="https://www.google.com/" target="_blank">Link</a>
+                </div>
+            </section>
+            <mat-divider></mat-divider>
+            <section>
+                <div class="example-label">Raised</div>
+                <div class="example-button-row">
+                    <button mat-raised-button>Basic</button>
+                    <button mat-raised-button color="primary">Primary</button>
+                    <button mat-raised-button color="accent">Accent</button>
+                    <button mat-raised-button color="warn">Warn</button>
+                    <button mat-raised-button disabled>Disabled</button>
+                    <a mat-raised-button href="https://www.google.com/" target="_blank">Link</a>
+                </div>
+            </section>
+            <mat-divider></mat-divider>
+            <section>
+                <div class="example-label">Stroked</div>
+                <div class="example-button-row">
+                    <button mat-stroked-button>Basic</button>
+                    <button mat-stroked-button color="primary">Primary</button>
+                    <button mat-stroked-button color="accent">Accent</button>
+                    <button mat-stroked-button color="warn">Warn</button>
+                    <button mat-stroked-button disabled>Disabled</button>
+                    <a mat-stroked-button href="https://www.google.com/" target="_blank">Link</a>
+                </div>
+            </section>
+            <mat-divider></mat-divider>
+            <section>
+                <div class="example-label">Flat</div>
+                <div class="example-button-row">
+                    <button mat-flat-button>Basic</button>
+                    <button mat-flat-button color="primary">Primary</button>
+                    <button mat-flat-button color="accent">Accent</button>
+                    <button mat-flat-button color="warn">Warn</button>
+                    <button mat-flat-button disabled>Disabled</button>
+                    <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
+                </div>
+            </section>
+            <mat-divider></mat-divider>
+            <section>
+                <div class="example-label">Icon</div>
+                <div class="example-button-row">
+                    <div class="example-flex-container">
+                        <button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <button mat-icon-button color="primary" aria-label="Example icon button with a home icon">
+                            <mat-icon>home</mat-icon>
+                        </button>
+                        <button mat-icon-button color="accent" aria-label="Example icon button with a menu icon">
+                            <mat-icon>menu</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" aria-label="Example icon button with a heart icon">
+                            <mat-icon>favorite</mat-icon>
+                        </button>
+                        <button mat-icon-button disabled aria-label="Example icon button with a open in new tab icon">
+                            <mat-icon>open_in_new</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <mat-divider></mat-divider>
+            <section>
+                <div class="example-label">FAB</div>
+                <div class="example-button-row">
+                    <div class="example-flex-container">
+                        <div class="example-button-container">
+                            <button mat-fab color="primary" aria-label="Example icon button with a delete icon">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                        <div class="example-button-container">
+                            <button mat-fab color="accent" aria-label="Example icon button with a bookmark icon">
+                                <mat-icon>bookmark</mat-icon>
+                            </button>
+                        </div>
+                        <div class="example-button-container">
+                            <button mat-fab color="warn" aria-label="Example icon button with a home icon">
+                                <mat-icon>home</mat-icon>
+                            </button>
+                        </div>
+                        <div class="example-button-container">
+                            <button mat-fab disabled aria-label="Example icon button with a heart icon">
+                                <mat-icon>favorite</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <mat-divider></mat-divider>
+            <section>
+                <div class="example-label">Mini FAB</div>
+                <div class="example-button-row">
+                    <div class="example-flex-container">
+                        <div class="example-button-container">
+                            <button mat-mini-fab color="primary" aria-label="Example icon button with a menu icon">
+                                <mat-icon>menu</mat-icon>
+                            </button>
+                        </div>
+                        <div class="example-button-container">
+                            <button mat-mini-fab color="accent" aria-label="Example icon button with a plus one icon">
+                                <mat-icon>plus_one</mat-icon>
+                            </button>
+                        </div>
+                        <div class="example-button-container">
+                            <button mat-mini-fab color="warn" aria-label="Example icon button with a filter list icon">
+                                <mat-icon>filter_list</mat-icon>
+                            </button>
+                        </div>
+                        <div class="example-button-container">
+                            <button mat-mini-fab disabled aria-label="Example icon button with a home icon">
+                                <mat-icon>home</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- checkbox -->
+        <h1>checkbox</h1>
+        <div>
+            <section class="example-section">
+              <mat-checkbox class="example-margin">Check me!</mat-checkbox>
+              <mat-checkbox class="example-margin" [disabled]="true">Disabled</mat-checkbox>
+            </section>
+
+            <section class="example-section">
+              <span class="example-list-section">
+                <mat-checkbox class="example-margin"
+                              [checked]="allComplete"
+                              [color]="task.color"
+                              [indeterminate]="someComplete()"
+                              (change)="setAll($event.checked)">
+                  {{task.name}}
+                </mat-checkbox>
+              </span>
+              <span class="example-list-section">
+                <ul>
+                  <li *ngFor="let subtask of task.subtasks">
+                    <mat-checkbox [(ngModel)]="subtask.completed"
+                                  [color]="subtask.color"
+                                  (ngModelChange)="updateAllComplete()">
+                      {{subtask.name}}
+                    </mat-checkbox>
+                  </li>
+                </ul>
+              </span>
+            </section>
+
+        </div>
+
+        <!-- chips -->
+        <h1>Chips</h1>
+        <div>
+            <mat-chip-listbox aria-label="Fish selection">
+                <mat-chip-option>One fish</mat-chip-option>
+                <mat-chip-option>Two fish</mat-chip-option>
+                <mat-chip-option color="accent" selected>Accent fish</mat-chip-option>
+                <mat-chip-option color="warn">Warn fish</mat-chip-option>
+            </mat-chip-listbox>
+
+            <mat-form-field class="example-chip-list" appearance="fill">
+              <mat-label>Favorite Fruits</mat-label>
+              <mat-chip-grid #chipGrid aria-label="Enter fruits">
+                <mat-chip-row *ngFor="let fruit of fruits"
+                              (removed)="remove(fruit)"
+                              [editable]="true"
+                              (edited)="edit(fruit, $event)"
+                              [aria-description]="'press enter to edit ' + fruit.name">
+                  {{fruit.name}}
+                  <button matChipRemove [attr.aria-label]="'remove ' + fruit.name">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+                <input placeholder="New fruit..."
+                       [matChipInputFor]="chipGrid"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       [matChipInputAddOnBlur]="addOnBlur"
+                       (matChipInputTokenEnd)="add($event)"/>
+              </mat-chip-grid>
+            </mat-form-field>
+        </div>
+
+
+        <h1>Datepicker</h1>
+        <div>
+            <mat-form-field appearance="fill">
+                <mat-label>Enter a date range</mat-label>
+                <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate placeholder="Start date">
+                    <input matEndDate placeholder="End date">
+                </mat-date-range-input>
+                <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+
+
+        <!-- <h1>Dialog</h1>
+        <div>
+            <ol>
+                <li>
+                    <mat-form-field appearance="fill">
+                        <mat-label>What's your name?</mat-label>
+                        <input matInput [(ngModel)]="name">
+                    </mat-form-field>
+                </li>
+                <li>
+                    <button mat-raised-button (click)="openDialog()">Pick one</button>
+                </li>
+                <li *ngIf="animal">
+                    You chose: <i>{{animal}}</i>
+                </li>
+            </ol>
+        </div> -->
+
+
+        <h1>Divider</h1>
+        <div>
+            <mat-list>
+                <mat-list-item>Item 1</mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item>Item 2</mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item>Item 3</mat-list-item>
+            </mat-list>
+        </div>
+
+
+        <h1>Expansion Panel</h1>
+        <div>
+            <mat-accordion class="example-headers-align">
+                <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Personal data
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            Type your name and age
+                            <mat-icon>account_circle</mat-icon>
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>First name</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Age</mat-label>
+                        <input matInput type="number" min="1">
+                    </mat-form-field>
+                    <mat-action-row>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Destination
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            Type the country name
+                            <mat-icon>map</mat-icon>
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Country</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Day of the trip
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            Inform the date you wish to travel
+                            <mat-icon>date_range</mat-icon>
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Date</mat-label>
+                        <input matInput [matDatepicker]="picker" (focus)="picker.open()" readonly>
+                    </mat-form-field>
+                    <mat-datepicker #picker></mat-datepicker>
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">End</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+            </mat-accordion>
+        </div>
+
+
+        <h1>Form field</h1>
+        <div>
+            <div class="example-container">
+                <mat-form-field appearance="fill">
+                    <mat-label>Enter your password</mat-label>
+                    <input matInput [type]="hide ? 'password' : 'text'">
+                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                        [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" floatLabel="always">
+                    <mat-label>Amount</mat-label>
+                    <input matInput type="number" class="example-right-align" placeholder="0">
+                    <span matTextPrefix>$&nbsp;</span>
+                    <span matTextSuffix>.00</span>
+                </mat-form-field>
+            </div>
+            <form [formGroup]="options">
+                <mat-checkbox [formControl]="hideRequiredControl">Hide required marker</mat-checkbox>
+                <div>
+                    <label>Float label: </label>
+                    <mat-radio-group [formControl]="floatLabelControl">
+                        <mat-radio-button value="auto">Auto</mat-radio-button>
+                        <mat-radio-button value="always">Always</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+
+                <div class="example-form-fields">
+                    <mat-form-field appearance="fill" [hideRequiredMarker]="hideRequiredControl.value"
+                        [floatLabel]="getFloatLabelValue()">
+                        <input matInput placeholder="Simple placeholder" required>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill" [floatLabel]="getFloatLabelValue()">
+                        <mat-label>Both a label and a placeholder</mat-label>
+                        <input matInput placeholder="Simple placeholder">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill" [hideRequiredMarker]="hideRequiredControl.value"
+                        [floatLabel]="getFloatLabelValue()">
+                        <mat-select required>
+                            <mat-option>-- None --</mat-option>
+                            <mat-option value="option">Option</mat-option>
+                        </mat-select>
+                        <mat-label><mat-icon>favorite</mat-icon> <b> Fancy</b> <i> label</i></mat-label>
+                    </mat-form-field>
+                </div>
+            </form>
+        </div>
+
+
+        <h1>List</h1>
+        <div>
+            <mat-selection-list #shoes>
+                <mat-list-option *ngFor="let shoe of typesOfShoes">
+                    {{shoe}}
+                </mat-list-option>
+            </mat-selection-list>
+
+            <p>
+                Options selected: {{shoes.selectedOptions.selected.length}}
+            </p>
+        </div>
+
+
+        <h1>Menu</h1>
+        <div>
+            <button mat-button [matMenuTriggerFor]="animals">Animal index</button>
+            <mat-menu #animals="matMenu">
+                <button mat-menu-item [matMenuTriggerFor]="vertebrates">Vertebrates</button>
+                <button mat-menu-item [matMenuTriggerFor]="invertebrates">Invertebrates</button>
+            </mat-menu>
+
+            <mat-menu #vertebrates="matMenu">
+                <button mat-menu-item [matMenuTriggerFor]="fish">Fishes</button>
+                <button mat-menu-item [matMenuTriggerFor]="amphibians">Amphibians</button>
+                <button mat-menu-item [matMenuTriggerFor]="reptiles">Reptiles</button>
+                <button mat-menu-item>Birds</button>
+                <button mat-menu-item>Mammals</button>
+            </mat-menu>
+
+            <mat-menu #invertebrates="matMenu">
+                <button mat-menu-item>Insects</button>
+                <button mat-menu-item>Molluscs</button>
+                <button mat-menu-item>Crustaceans</button>
+                <button mat-menu-item>Corals</button>
+                <button mat-menu-item>Arachnids</button>
+                <button mat-menu-item>Velvet worms</button>
+                <button mat-menu-item>Horseshoe crabs</button>
+            </mat-menu>
+
+            <mat-menu #fish="matMenu">
+                <button mat-menu-item>Baikal oilfish</button>
+                <button mat-menu-item>Bala shark</button>
+                <button mat-menu-item>Ballan wrasse</button>
+                <button mat-menu-item>Bamboo shark</button>
+                <button mat-menu-item>Banded killifish</button>
+            </mat-menu>
+
+            <mat-menu #amphibians="matMenu">
+                <button mat-menu-item>Sonoran desert toad</button>
+                <button mat-menu-item>Western toad</button>
+                <button mat-menu-item>Arroyo toad</button>
+                <button mat-menu-item>Yosemite toad</button>
+            </mat-menu>
+
+            <mat-menu #reptiles="matMenu">
+                <button mat-menu-item>Banded Day Gecko</button>
+                <button mat-menu-item>Banded Gila Monster</button>
+                <button mat-menu-item>Black Tree Monitor</button>
+                <button mat-menu-item>Blue Spiny Lizard</button>
+                <button mat-menu-item disabled>Velociraptor</button>
+            </mat-menu>
+        </div>
+
+        <!-- ??? -->
+        <h1>Paginator</h1>
+        <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+        </mat-paginator>
+
+
+
+        <h1>Progress Bar</h1>
+        <div>
+            <h3>determinate</h3>
+            <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+            <h3>indeterminate</h3>
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <h3>query</h3>
+            <mat-progress-bar mode="query"></mat-progress-bar>
+        </div>
+
+        <h1>Progress Spinner</h1>
+        <div>
+            <mat-spinner></mat-spinner>
+            <mat-spinner mode="determinate" value="75" color="primary"></mat-spinner>
+            <mat-spinner mode="determinate" value="17" color="accent"></mat-spinner>
+            <mat-spinner mode="determinate" value="34" color="warn"></mat-spinner>
+        </div>
+
+
+        <h1>Radio Button</h1>
+        <div>
+            <label id="example-radio-group-label">Pick your favorite season</label>
+        <mat-radio-group
+          aria-labelledby="example-radio-group-label"
+          class="example-radio-group"
+          [(ngModel)]="favoriteSeason">
+          <mat-radio-button class="example-radio-button" *ngFor="let season of seasons" [value]="season">
+            {{season}}
+          </mat-radio-button>
+        </mat-radio-group>
+        <div>Your favorite season is: {{favoriteSeason}}</div>
+        </div>
+
+
+
+        <h1>Ripples</h1>
+        <div>
+            <mat-checkbox [(ngModel)]="centered" class="example-ripple-checkbox">Centered</mat-checkbox>
+            <mat-checkbox [(ngModel)]="disabled" class="example-ripple-checkbox">Disabled</mat-checkbox>
+            <mat-checkbox [(ngModel)]="unbounded" class="example-ripple-checkbox">Unbounded</mat-checkbox>
+
+            <mat-form-field class="example-ripple-form-field" appearance="fill">
+                <mat-label>Radius</mat-label>
+                <input matInput [(ngModel)]="radius" type="number">
+            </mat-form-field>
+            <mat-form-field class="example-ripple-form-field" appearance="fill">
+                <mat-label>Color</mat-label>
+                <input matInput [(ngModel)]="color" type="text">
+            </mat-form-field>
+
+
+            <div class="example-ripple-container mat-elevation-z4" matRipple [matRippleCentered]="centered"
+                [matRippleDisabled]="disabled" [matRippleUnbounded]="unbounded" [matRippleRadius]="radius" [matRippleColor]="color">
+                Click me
+            </div>
+        </div>
+
+
+        <h1>Sidenav</h1>
+        <div>
+            <mat-drawer-container class="example-container" autosize>
+                <mat-drawer #drawer class="example-sidenav" mode="side">
+                    <p>Auto-resizing sidenav</p>
+                    <p *ngIf="showFiller">Lorem, ipsum dolor sit amet consectetur.</p>
+                    <button (click)="showFiller = !showFiller" mat-raised-button>
+                        Toggle extra text
+                    </button>
+                </mat-drawer>
+
+                <div class="example-sidenav-content">
+                    <button type="button" mat-button (click)="drawer.toggle()">
+                        Toggle sidenav
+                    </button>
+                </div>
+
+            </mat-drawer-container>
+        </div>
+
+
+        <h1>Slide toggle (Slider)</h1>
+        <div>
+            <mat-card>
+                <mat-card-content>
+                    <h2 class="example-h2">Slider configuration</h2>
+
+                    <section class="example-section">
+                        <label class="example-margin">Color:</label>
+                        <mat-radio-group [(ngModel)]="color">
+                            <mat-radio-button class="example-margin" value="primary">
+                                Primary
+                            </mat-radio-button>
+                            <mat-radio-button class="example-margin" value="accent">
+                                Accent
+                            </mat-radio-button>
+                            <mat-radio-button class="example-margin" value="warn">
+                                Warn
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </section>
+
+                    <section class="example-section">
+                        <mat-checkbox class="example-margin" [(ngModel)]="checked">Checked</mat-checkbox>
+                    </section>
+
+                    <section class="example-section">
+                        <mat-checkbox class="example-margin" [(ngModel)]="disabled">Disabled</mat-checkbox>
+                    </section>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="result">
+                <mat-card-content>
+                    <h2 class="example-h2">Result</h2>
+
+                    <section class="example-section">
+                        <mat-slide-toggle class="example-margin" [color]="color" [checked]="checked" [disabled]="disabled">
+                            Slide me!
+                        </mat-slide-toggle>
+                    </section>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+
+        <h1>Slider</h1>
+        <div>
+            <mat-card>
+                <mat-card-content>
+                    <h2 class="example-h2">Slider configuration</h2>
+
+                    <section class="example-section">
+                        <mat-form-field class="example-margin example-width" appearance="fill">
+                            <mat-label>Value</mat-label>
+                            <input matInput type="number" [(ngModel)]="value">
+                        </mat-form-field>
+                        <mat-form-field class="example-margin example-width" appearance="fill">
+                            <mat-label>Min value</mat-label>
+                            <input matInput type="number" [(ngModel)]="min">
+                        </mat-form-field>
+                        <mat-form-field class="example-margin example-width" appearance="fill">
+                            <mat-label>Max value</mat-label>
+                            <input matInput type="number" [(ngModel)]="max">
+                        </mat-form-field>
+                        <mat-form-field class="example-margin example-width" appearance="fill">
+                            <mat-label>Step size</mat-label>
+                            <input matInput type="number" [(ngModel)]="step">
+                        </mat-form-field>
+                    </section>
+
+                    <section class="example-section">
+                        <mat-checkbox [(ngModel)]="showTicks">Show ticks</mat-checkbox>
+                    </section>
+
+                    <section class="example-section">
+                        <mat-checkbox [(ngModel)]="thumbLabel">Show thumb label</mat-checkbox>
+                    </section>
+
+                    <section class="example-section">
+                        <mat-checkbox [(ngModel)]="disabled">Disabled</mat-checkbox>
+                    </section>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="example-result-card">
+                <mat-card-content>
+                    <h2>Result</h2>
+
+                    <div class="example-label-container">
+                        <label id="example-name-label" class="example-name-label">Value</label>
+                        <label class="example-value-label">{{value}}</label>
+                    </div>
+                    <mat-slider class="example-margin" [disabled]="Sdisabled" [max]="max" [min]="min" [step]="Sstep"
+                        [discrete]="thumbLabel" [showTickMarks]="showTicks">
+                        <input matSliderThumb [(ngModel)]="value">
+                    </mat-slider>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <h1>Snackbar (Toast)</h1>
+        <div>
+            <mat-form-field appearance="fill">
+                <mat-label>Message</mat-label>
+                <input matInput value="Disco party!" #message>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Action</mat-label>
+                <input matInput value="Dance" #action>
+            </mat-form-field>
+
+            <button mat-stroked-button (click)="openSnackBar(message.value, action.value)">Show snack-bar</button>
+        </div>
+
+        <h1>Stepper</h1>
+        <div>
+            <button mat-raised-button (click)="isLinear = !isLinear" id="toggle-linear">
+                {{!isLinear ? 'Enable linear mode' : 'Disable linear mode'}}
+            </button>
+            <mat-stepper [linear]="isLinear" #stepper>
+                <mat-step [stepControl]="firstFormGroup">
+                    <form [formGroup]="firstFormGroup">
+                        <ng-template matStepLabel>Fill out your name</ng-template>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Name</mat-label>
+                            <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+                        </mat-form-field>
+                        <div>
+                            <button mat-button matStepperNext>Next</button>
+                        </div>
+                    </form>
+                </mat-step>
+                <mat-step [stepControl]="secondFormGroup" label="Fill out your address">
+                    <form [formGroup]="secondFormGroup">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Address</mat-label>
+                            <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY" required>
+                        </mat-form-field>
+                        <div>
+                            <button mat-button matStepperPrevious>Back</button>
+                            <button mat-button matStepperNext>Next</button>
+                        </div>
+                    </form>
+                </mat-step>
+                <mat-step>
+                    <ng-template matStepLabel>Done</ng-template>
+                    <p>You are now done.</p>
+                    <div>
+                        <button mat-button matStepperPrevious>Back</button>
+                        <button mat-button (click)="stepper.reset()">Reset</button>
+                    </div>
+                </mat-step>
+            </mat-stepper>
+        </div>
+
+
+        <h1>Table</h1>
+        <div>
+            <button mat-raised-button (click)="addColumn()"> Add column </button>
+            <button mat-raised-button (click)="removeColumn()"> Remove column </button>
+            <button mat-raised-button (click)="shuffle()"> Shuffle </button>
+
+            <table mat-table [dataSource]="data" class="mat-elevation-z8">
+                <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns">
+                    <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+                    <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+            </table>
+        </div>
+
+
+        <h1>Tabs</h1>
+        <div>
+            <mat-tab-group style="width: 600px">
+                <mat-tab [label]="tab" *ngFor="let tab of lotsOfTabs">
+                    Content <div style="width: 400px; height: 400px; background: blue"></div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+
+        <h1>Toolbar</h1>
+        <div>
+            <p>
+                <mat-toolbar>
+                    <span>My Application</span>
+                </mat-toolbar>
+            </p>
+
+            <p>
+                <mat-toolbar>
+                    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+                        <mat-icon>menu</mat-icon>
+                    </button>
+                    <span>My App</span>
+                    <span class="example-spacer"></span>
+                    <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                        <mat-icon>favorite</mat-icon>
+                    </button>
+                    <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+                        <mat-icon>share</mat-icon>
+                    </button>
+                </mat-toolbar>
+            </p>
+
+            <p>
+                <mat-toolbar color="primary">
+                    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+                        <mat-icon>menu</mat-icon>
+                    </button>
+                    <span>My App</span>
+                    <span class="example-spacer"></span>
+                    <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                        <mat-icon>favorite</mat-icon>
+                    </button>
+                    <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+                        <mat-icon>share</mat-icon>
+                    </button>
+                </mat-toolbar>
+            </p>
+
+            <p>
+                <mat-toolbar color="primary">
+                    <mat-toolbar-row>
+                        <span>My App</span>
+                        <span class="example-spacer"></span>
+                        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+                            <mat-icon>menu</mat-icon>
+                        </button>
+                    </mat-toolbar-row>
+
+                    <mat-toolbar-row>
+                        <span>Second Line</span>
+                        <span class="example-spacer"></span>
+                        <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                            <mat-icon>favorite</mat-icon>
+                        </button>
+                        <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+                            <mat-icon>share</mat-icon>
+                        </button>
+                    </mat-toolbar-row>
+                </mat-toolbar>
+            </p>
+        </div>
+
+
+        <div>
+            <mat-form-field class="example-user-input" appearance="fill">
+                <mat-label>Tooltip position</mat-label>
+                <mat-select [formControl]="position">
+                    <mat-option *ngFor="let positionOption of positionOptions" [value]="positionOption">
+                        {{positionOption}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button mat-raised-button matTooltip="Info about the action" [matTooltipPosition]="position.value!"
+                aria-label="Button that displays a tooltip in various positions">
+                Action
+            </button>
+        </div>
+
+
+        <h1>Tree</h1>
+        <div>
+            <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+                <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                    <button mat-icon-button disabled></button>
+                    <mat-checkbox class="checklist-leaf-node" [checked]="checklistSelection.isSelected(node)"
+                        (change)="todoLeafItemSelectionToggle(node)">{{node.item}}</mat-checkbox>
+                </mat-tree-node>
+
+                <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
+                    <button mat-icon-button disabled></button>
+                    <mat-form-field appearance="fill">
+                        <mat-label>New item...</mat-label>
+                        <input matInput #itemValue placeholder="Ex. Lettuce">
+                    </mat-form-field>
+                    <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
+                </mat-tree-node>
+
+                <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+                    <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.item">
+                        <mat-icon class="mat-icon-rtl-mirror">
+                            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                        </mat-icon>
+                    </button>
+                    <mat-checkbox [checked]="descendantsAllSelected(node)" [indeterminate]="descendantsPartiallySelected(node)"
+                        (change)="todoItemSelectionToggle(node)">{{node.item}}</mat-checkbox>
+                    <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>
+                </mat-tree-node>
+            </mat-tree>
+        </div>
+        </div>
+    </ng-template>
+</app-window-template>
+
