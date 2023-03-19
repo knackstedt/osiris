@@ -15,7 +15,7 @@
     --gtk-window-radius: 3px;
     --gtk-window-background-color: #363636;
 
-    --gtk-button-color: #fff;
+    --gtk-button-text-color: #fff;
     --gtk-button-border-color: #272727;
     --gtk-button-border-bottom-color: #0d0d0d;
     --gtk-button-background-color: #404040;
@@ -27,7 +27,7 @@
     // Restate colors for inactive windows
     .window.inactive {
         --gtk-window-background-color: #363636;
-        --gtk-button-color: #ccc;
+        --gtk-button-text-color: #a2a2a2;
         --gtk-button-background-color: #0000;
         --gtk-button-border-color: #434343;
         --gtk-button-border-bottom-color: var(--gtk-button-border-color);
