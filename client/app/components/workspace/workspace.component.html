@@ -1,4 +1,4 @@
-<app-background [background]="background"></app-background>
+<app-background [background]="background" (click)="onClick($event)"></app-background>
 
 <div class="windowManager"
     [style.top]="(configuration.topOffset ? configuration.topOffset : 0) + 'px'"
@@ -7,6 +7,7 @@
     [style.left]="(configuration.leftOffset ? configuration.leftOffset : 0) + 'px'"
     [style.margin-bottom]="(configuration.topOffset || configuration.bottomOffset) + 'px'"
     [style.margin-right]="(configuration.leftOffset || configuration.rightOffset) + 'px'"
+    (click)="onClick($event)"
 >
     <ng-container *ngFor="let window of windowManager.managedWindows">
         <app-window
@@ -15,11 +16,13 @@
             [style]="window.customCss"
             [window]="window"
             (pointerDown)="window.activate()"
+            [class.window]="true"
             [class.native]="window.appId == 'native'"
             [class.dialog]="window._nativeWindowType?.includes('DIALOG')"
             [class.resizable]="!window._isCollapsed && !window._isMaximized && window.isResizable"
             [class.draggable]="!window._isCollapsed && !window._isMaximized && window.isDraggable"
             [class.active]="window._isActive"
+            [class.inactive]="!window._isActive"
             [class.draggedOver]="window._isDraggedOver"
             [class.maximized]="window._isMaximized"
             [class.collapsed]="window._isCollapsed"
