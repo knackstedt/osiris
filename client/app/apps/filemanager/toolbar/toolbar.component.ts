@@ -103,11 +103,13 @@ export class ToolbarComponent {
     }
 
     historyBack(tab: FileViewTab) {
+        console.log("history ->", tab)
         tab.historyIndex--;
-        tab.path = tab.history[tab.historyIndex];
+        tab.path = tab.history[tab.historyIndex - 1];
     }
     historyForward(tab: FileViewTab) {
-        tab.historyIndex--;
-        tab.path = tab.history[tab.historyIndex];
+        console.log("history <-", tab)
+        tab.historyIndex++;
+        tab.path = tab.history[tab.historyIndex - 1];
     }
 }

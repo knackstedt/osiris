@@ -179,9 +179,6 @@ export class FilemanagerComponent implements OnInit {
         if (crumb.id) {
             this.currentTab.path = crumb.id;
             this.currentTab.breadcrumb = this.calcBreadcrumb(crumb.id);
-
-            // this.currentTab.history.push(crumb.id);
-            // this.currentTab.history.splice(this.config.filemanager.maxHistoryLength);
         }
     }
 
@@ -189,6 +186,7 @@ export class FilemanagerComponent implements OnInit {
         tab.label = this.getTabLabel(tab.path);
         tab.breadcrumb = this.calcBreadcrumb(tab.path);
 
+        tab.historyIndex++;
         tab.history.push(tab.path);
         tab.history.splice(this.config.filemanager.maxHistoryLength);
     }
