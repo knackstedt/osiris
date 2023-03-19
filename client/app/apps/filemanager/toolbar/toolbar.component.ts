@@ -4,7 +4,7 @@ import { NgxAppMenuDirective, NgxContextMenuDirective, ContextMenuItem } from '@
 
 import { GtkIconButtonComponent } from '../../gtk-factory/@components/icon-button/icon-button.component';
 import { GtkBreadcrumbComponent } from '../../gtk-factory/@components/breadcrumb/breadcrumb.component';
-import { FSDescriptor } from 'client/app/apps/filemanager/filemanager.component';
+import { FileViewTab, FSDescriptor } from 'client/app/apps/filemanager/filemanager.component';
 
 @Component({
     selector: 'app-toolbar',
@@ -29,7 +29,7 @@ export class ToolbarComponent {
 
     @Output() onBreadcrumbClick = new EventEmitter();
 
-    @Input() currentTab;
+    @Input() currentTab: FileViewTab;
 
     @Input() showHiddenFiles: boolean;
     @Output() showHiddenFilesChange = new EventEmitter<boolean>();
@@ -97,4 +97,17 @@ export class ToolbarComponent {
             }
         },
     ];
+
+    debug(...args) {
+        console.log(args)
+    }
+
+    historyBack(tab: FileViewTab) {
+        tab.historyIndex--;
+        tab.path = tab.history[tab.historyIndex];
+    }
+    historyForward(tab: FileViewTab) {
+        tab.historyIndex--;
+        tab.path = tab.history[tab.historyIndex];
+    }
 }

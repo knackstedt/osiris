@@ -1,6 +1,6 @@
 <div class="buttongroup">
-    <gtk-icon-button fontIcon="arrow_back_ios_new" />
-    <gtk-icon-button fontIcon="arrow_forward_ios" />
+    <gtk-icon-button fontIcon="arrow_back_ios_new" (click)="historyBack(currentTab)"/>
+    <gtk-icon-button fontIcon="arrow_forward_ios" (click)="historyForward(currentTab)"/>
 </div>
 
 <span></span>
@@ -9,7 +9,7 @@
     *ngIf="currentTab"
     style="flex: 1"
     [crumbs]="currentTab.breadcrumb"
-    (crumbClick)="onBreadcrumbClick.next($event)"
+    (crumbClick)="onBreadcrumbClick.next($event); debug($event)"
 />
 
 <gtk-icon-button

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import { ManagedWindow, WindowManagerService } from '../../services/window-manager.service';
 import { Fetch } from '../../services/fetch.service';
 import { resolveIcon } from './icon-resolver';
@@ -10,7 +10,7 @@ import { ButtonPopoutComponent } from 'client/app/components/button-popout/butto
 import { WindowToolbarComponent } from 'client/app/components/window-template/window-toolbar/window-toolbar.component';
 import { WindowTemplateComponent } from 'client/app/components/window-template/window-template.component';
 import { AngularSplitModule } from 'angular-split';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { FileGridComponent } from './file-grid/file-grid.component';
 import { getMimeType } from 'client/app/apps/filemanager/mimetype';
@@ -60,7 +60,7 @@ export type FSDescriptor = DirectoryDescriptor | FileDescriptor;
 // TODO: enable virtual scrolling
 
 
-type FileViewTab = {
+export type FileViewTab = {
     id: string,
     label: string,
     breadcrumb: {
@@ -70,6 +70,7 @@ type FileViewTab = {
     path: string,
     selection: FSDescriptor[],
     viewMode: "grid" | "list",
+    historyIndex: number,
     history: string[]
 }
 
@@ -95,6 +96,7 @@ type FileViewTab = {
 })
 export class FilemanagerComponent implements OnInit {
     @ViewChildren(FileGridComponent) fileGrids: FileGridComponent[];
+    @ViewChild('tabGroup') tabGroup: MatTabGroup;
 
     resolveIcon = resolveIcon;
 
@@ -115,6 +117,7 @@ export class FilemanagerComponent implements OnInit {
     }
 
     currentTab: FileViewTab = {} as any;
+    tabIndex = 0;
     tabs: FileViewTab[] = [];
 
     constructor(
@@ -142,25 +145,18 @@ export class FilemanagerComponent implements OnInit {
         this.currentTab = this.tabs[0];
     }
 
-    initTab(path) {
-        this.tabs.push({
+    initTab(path: string) {
+        this.tabs.push(this.currentTab = {
             id: crypto.randomUUID(),
             label: this.getTabLabel(path),
             breadcrumb: this.calcBreadcrumb(path),
             path,
             selection: [],
             viewMode: "grid",
+            historyIndex: 0,
             history: []
-        })
-        this.tabs.push({
-            id: crypto.randomUUID(),
-            label: this.getTabLabel(path),
-            breadcrumb: this.calcBreadcrumb(path),
-            path,
-            selection: [],
-            viewMode: "grid",
-            history: []
-        })
+        });
+        this.tabIndex = this.tabs.length;
     }
 
     closeTab(tab: FileViewTab) {
@@ -183,15 +179,16 @@ export class FilemanagerComponent implements OnInit {
         if (crumb.id) {
             this.currentTab.path = crumb.id;
             this.currentTab.breadcrumb = this.calcBreadcrumb(crumb.id);
-            this.currentTab.history.push(crumb.id);
-            this.currentTab.history.splice(this.config.filemanager.maxHistoryLength);
-            // this.tabs.find(t => t.id == this.currentTab.id).path = crumb.path;
+
+            // this.currentTab.history.push(crumb.id);
+            // this.currentTab.history.splice(this.config.filemanager.maxHistoryLength);
         }
     }
 
     tabPathChange(tab: FileViewTab) {
         tab.label = this.getTabLabel(tab.path);
         tab.breadcrumb = this.calcBreadcrumb(tab.path);
+
         tab.history.push(tab.path);
         tab.history.splice(this.config.filemanager.maxHistoryLength);
     }

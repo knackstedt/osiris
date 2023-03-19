@@ -5,7 +5,7 @@ import { NgScrollbarModule } from 'ngx-scrollbar';
 import { KeyboardService } from 'client/app/services/keyboard.service';
 import { ManagedWindow, WindowManagerService } from 'client/app/services/window-manager.service';
 import { Fetch } from 'client/app/services/fetch.service';
-import { DirectoryDescriptor, FileDescriptor, FSDescriptor } from 'client/app/apps/filemanager/filemanager.component';
+import { DirectoryDescriptor, FileDescriptor, FilemanagerComponent, FSDescriptor } from 'client/app/apps/filemanager/filemanager.component';
 import { resolveIcon } from 'client/app/apps/filemanager/icon-resolver';
 import { DialogService } from 'client/app/services/dialog.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -40,8 +40,10 @@ export class FileGridComponent implements OnInit {
 
         this._path = value;
 
-        if (prev != value)
-            this.loadFolder(this.path)
+        if (prev != value) {
+            this.pathChange.next(this.path);
+            this.loadFolder()
+        }
     }
     get path() {return this._path}
     @Output() pathChange = new EventEmitter<string>();
@@ -185,7 +187,19 @@ export class FileGridComponent implements OnInit {
             }
         },
         {
+            label: "Open in new Tab",
+            icon: "open_in_new",
+            isVisible: (data) => data.kind == "directory",
+            action: (data) => {
+                console.log("New folder goodness");
+                console.log(data);
+
+                this.fileManager.initTab(data.path + data.name)
+            }
+        },
+        {
             label: "Open with Application...",
+            isVisible: (data) => data.kind == "file",
             shortcutLabel: "Ctrl+D",
             action: (evt) => {
 
@@ -325,7 +339,8 @@ export class FileGridComponent implements OnInit {
         private fetch: Fetch,
         private windowManager: WindowManagerService,
         private keyboard: KeyboardService,
-        private dialog: DialogService
+        private dialog: DialogService,
+        private fileManager: FilemanagerComponent
     ) {
         // ctrl + a => select all
         keyboard.onKeyCommand({
@@ -384,14 +399,10 @@ export class FileGridComponent implements OnInit {
     }
 
     async ngOnInit() {
-        // while (!this.path)
-        // await sleep(10)
-        console.log("ng on init")
-        await this.loadFolder(this.path);
     }
 
-    loadFolder(path: string) {
-        this.fetch.post(`/api/filesystem/`, { path, showHidden: this.showHiddenFiles })
+    loadFolder() {
+        this.fetch.post(`/api/filesystem/`, { path: this.path, showHidden: this.showHiddenFiles })
             .then((data: any) => {
                 const files: FileDescriptor[] = data.files || [];
                 const dirs: DirectoryDescriptor[] = data.dirs;
@@ -403,10 +414,6 @@ export class FileGridComponent implements OnInit {
                 this.directoryContents = descriptors;
 
                 this.resize();
-
-                // TODO Refactor.
-                // this.location =
-                this.pathChange.next(this.path = path);
             })
             .catch(err => console.error(err));
     }
@@ -459,10 +466,10 @@ export class FileGridComponent implements OnInit {
 
     onItemClick(file: FSDescriptor) {
         if (file.kind == "directory"){
-            this.loadFolder(file.path + file.name);
+            this.path = file.path + file.name;
         }
         else if (file.ext == "zip") {
-            this.loadFolder(file.path + file.name);
+            this.path = file.path + file.name;
         }
         else {
             this.fileOpen.next([file]);

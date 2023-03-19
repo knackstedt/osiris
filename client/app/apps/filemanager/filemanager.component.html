@@ -5,6 +5,7 @@
             [(showHiddenFiles)]="showHiddenFiles"
             [(showSidebar)]="showSidebar"
             [(sortOrder)]="sortOrder"
+            (onBreadcrumbClick)="onBreadcrumbClick($event)"
         />
     </ng-template>
     <ng-template #content>
@@ -44,7 +45,7 @@
                     [class.active]="windowRef._isActive"
                     [style.--tab-height]="tabs.length > 1 ? '36px' : '0'"
                 >
-                    <mat-tab-group (selectedTabChange)="currentTab = tabs[$event.index]">
+                    <mat-tab-group #tabGroup (selectedTabChange)="currentTab = tabs[$event.index]" [(selectedIndex)]="tabIndex">
                         <mat-tab *ngFor="let tab of tabs">
                             <ng-template mat-tab-label>
                                 {{tab.label}}
