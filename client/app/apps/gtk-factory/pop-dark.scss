@@ -3,9 +3,6 @@
     // input
     --gtk-input-radius: 3px;
 
-    --gtk-active-border-color: #fff;
-    --gtk-inactive-border-color: #fff;
-
     --gtk-text-color: #bcbcbc;
     --gtk-text-emphasis-color: #fff;
     --gtk-text-muted-color: #fff;
@@ -17,12 +14,22 @@
     --gtk-window-toolbar-height: #fff;
     --gtk-window-radius: 3px;
     --gtk-window-background-color: #363636;
-    --gtk-window-inactive-background-color: #363636;
 
     --gtk-button-color: #fff;
+    --gtk-button-border-color: #272727;
+    --gtk-button-border-bottom-color: #0d0d0d;
     --gtk-button-background-color: #404040;
 
     --gtk-list-item-active-text-color: #000;
     --gtk-list-item-background-active-color: #94ebeb;
     --gtk-list-item-background-hover-color: #343434;
+
+    // Restate colors for inactive windows
+    .window.inactive {
+        --gtk-window-background-color: #363636;
+        --gtk-button-color: #ccc;
+        --gtk-button-background-color: #0000;
+        --gtk-button-border-color: #434343;
+        --gtk-button-border-bottom-color: var(--gtk-button-border-color);
+    }
 }

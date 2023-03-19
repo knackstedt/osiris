@@ -5,10 +5,16 @@
 button {
     padding: 0;
     min-width: 36px;
-    background-color: var(--gtk-button-background-color);
-    color: var(--gtk-button-color);
+    background-color: var(--gtk-button-background-color) !important;
+    color: var(--gtk-button-color) !important;
+
+    border: 1px solid var(--gtk-button-border-color);
+    border-bottom-color: var(--gtk-button-border-bottom-color);
+    transition: 250ms ease;
+    transition-property: border-color, background-color, color;
 }
 
 mat-icon {
     margin: 0 !important;
 }
+
