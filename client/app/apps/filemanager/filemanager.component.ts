@@ -101,7 +101,7 @@ export class FilemanagerComponent implements OnInit {
     resolveIcon = resolveIcon;
 
     @Input("window") windowRef: ManagedWindow;
-    @Input() path: string;
+    @Input() path: string = this.config.homedir;
 
     showHiddenFiles = false;
     showSidebar = true;
