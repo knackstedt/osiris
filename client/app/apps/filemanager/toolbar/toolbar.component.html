@@ -26,9 +26,13 @@
     [ngx-app-menu-config]="{position: 'bottom'}"
 />
 
+<div style="width: 8px"></div>
+
 <gtk-icon-button
     fontIcon="search"
 />
+
+<div style="width: 100px"></div>
 
 <gtk-icon-button
     [fontIcon]="currentTab.viewMode == 'list' ? 'view_list' : 'grid_view'"
@@ -41,7 +45,15 @@
     [ngx-app-menu-config]="{position: 'bottom'}"
 />
 
-<span></span>
+<div style="width: 8px"></div>
+
+<gtk-icon-button
+    fontIcon="menu"
+    [ngx-app-menu]="sortOptions"
+    [ngx-app-menu-config]="{position: 'bottom'}"
+/>
+
+<!-- <span></span>
 <div class="buttongroup">
 
     <gtk-icon-button img="assets/icons/actions/pan-down-symbolic.svg">
@@ -118,4 +130,4 @@
             <li>About Files</li>
         </ng-template>
     </gtk-icon-button>
-</div>
+</div> -->
