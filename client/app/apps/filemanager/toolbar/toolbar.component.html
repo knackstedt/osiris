@@ -1,16 +1,27 @@
 <div class="buttongroup">
-    <gtk-icon-button fontIcon="arrow_back_ios" [ngx-ctx-menu]="" [ngx-ctx-menu-context]="currentTab" />
-    <gtk-icon-button fontIcon="arrow_forward_ios" [ngx-ctx-menu]="" [ngx-ctx-menu-context]="currentTab" />
+    <gtk-icon-button fontIcon="arrow_back_ios_new" />
+    <gtk-icon-button fontIcon="arrow_forward_ios" />
 </div>
 
 <span></span>
 
-<gtk-breadcrumb *ngIf="currentTab" style="flex: 1" [crumbs]="currentTab.breadcrumb"
-    (crumbClick)="onBreadcrumbClick.next($event)" />
+<gtk-breadcrumb
+    *ngIf="currentTab"
+    style="flex: 1"
+    [crumbs]="currentTab.breadcrumb"
+    (crumbClick)="onBreadcrumbClick.next($event)"
+/>
 
-<gtk-icon-button fontIcon="arrow_back_ios" />
+<gtk-icon-button
+    fontIcon="more_vert"
+    [ngx-app-menu]="fileOptions"
+    [ngx-app-menu-config]="{position: 'bottom'}"
+/>
 
-<gtk-icon-button img="assets/icons/actions/view-more-symbolic.svg">
+<gtk-icon-button
+    fontIcon="search"
+
+>
     <ng-template #dialogTemplate>
         <div class="buttongroup border">
             <button>
@@ -35,15 +46,19 @@
     </ng-template>
 </gtk-icon-button>
 
-<button>
-    <img src="assets/icons/actions/edit-find-symbolic.svg" />
-</button>
+<gtk-icon-button
+    [fontIcon]="currentTab.viewMode == 'list' ? 'view_list' : 'grid_view'"
+/>
+
+<gtk-icon-button
+    fontIcon="expand_more"
+    [ngx-app-menu]="sortOptions"
+    [ngx-app-menu-config]="{position: 'bottom'}"
+/>
+
 <span></span>
 <div class="buttongroup">
-    <button (click)="currentTab.viewMode = (currentTab.viewMode == 'grid' ? 'list' : 'grid')">
-        <img
-            [src]="currentTab.viewMode == 'list' ? 'assets/icons/actions/view-list-symbolic.svg' : 'assets/icons/actions/view-grid-symbolic.svg'">
-    </button>
+
     <gtk-icon-button img="assets/icons/actions/pan-down-symbolic.svg">
         <ng-template #dialogTemplate>
             <div class="buttongroup">
@@ -56,7 +71,7 @@
                 </button>
             </div>
 
-            <span class="seperator">Sort</span>
+            <span class="separator">Sort</span>
 
             <li (click)="sortOrder = 'a-z'" [class.selected]="sortOrder == 'a-z'">A-Z <input type="radio" /></li>
             <li (click)="sortOrder = 'z-a'" [class.selected]="sortOrder == 'z-a'">Z-A <input type="radio" /></li>

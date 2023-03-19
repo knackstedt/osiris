@@ -119,7 +119,7 @@ export class FileGridComponent implements OnInit {
 
             }
         },
-        "seperator",
+        "separator",
         {
             isDisabled: (data) => true,
             label: "_P_aste",
@@ -135,7 +135,7 @@ export class FileGridComponent implements OnInit {
 
             }
         },
-        "seperator",
+        "separator",
         {
             label: "Open in _T_erminal",
             icon: "terminal",
@@ -149,7 +149,7 @@ export class FileGridComponent implements OnInit {
 
             }
         },
-        "seperator",
+        "separator",
         {
             label: "P_r_operties",
             icon: "find_in_page",
@@ -191,7 +191,7 @@ export class FileGridComponent implements OnInit {
 
             },
         },
-        "seperator",
+        "separator",
         {
             label: "Cut",
             icon: "content_cut",
@@ -301,7 +301,7 @@ export class FileGridComponent implements OnInit {
 
             },
         },
-        "seperator",
+        "separator",
         {
             label: "P_r_operties",
             icon: "find_in_page",

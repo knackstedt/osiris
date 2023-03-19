@@ -7,7 +7,7 @@
       "type": "chrome",
       "request": "launch",
       "preLaunchTask": "npm: start",
-      "url": "https://localhost:4200/"
+      "url": "https://localhost:4500/"
     },
     {
       "name": "Server",
@@ -15,7 +15,7 @@
       "request": "launch",
       "args": [
         "main.ts",
-        "--project"      
+        "--project"
       ],
       "runtimeArgs": [
         "--nolazy",

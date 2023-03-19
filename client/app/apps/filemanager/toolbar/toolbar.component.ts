@@ -1,8 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgxAppMenuDirective, NgxContextMenuDirective, ContextMenuItem } from '@dotglitch/ngx-ctx-menu';
+
 import { GtkIconButtonComponent } from '../../gtk-factory/@components/icon-button/icon-button.component';
 import { GtkBreadcrumbComponent } from '../../gtk-factory/@components/breadcrumb/breadcrumb.component';
-import { NgxContextMenuDirective } from '@dotglitch/ngx-ctx-menu';
+import { FSDescriptor } from 'client/app/apps/filemanager/filemanager.component';
 
 @Component({
     selector: 'app-toolbar',
@@ -12,11 +14,16 @@ import { NgxContextMenuDirective } from '@dotglitch/ngx-ctx-menu';
         CommonModule,
         GtkIconButtonComponent,
         GtkBreadcrumbComponent,
-        NgxContextMenuDirective
+        NgxContextMenuDirective,
+        NgxAppMenuDirective
     ],
     standalone: true
 })
 export class ToolbarComponent {
+    @ViewChild('zoomTemplate') zoomTemplate: TemplateRef<any>;
+    @ViewChild('actionTemplate') actionTemplate: TemplateRef<any>;
+
+
     @Input() sortOrder: "a-z" | "z-a" | "lastmod" | "firstmod" | "size" | "type";
     @Output() sortOrderChange = new EventEmitter<"a-z" | "z-a" | "lastmod" | "firstmod" | "size" | "type">();
 
@@ -29,6 +36,65 @@ export class ToolbarComponent {
     @Input() showSidebar: boolean;
     @Output() showSidebarChange = new EventEmitter<boolean>();
 
+    fileOptions: ContextMenuItem<FSDescriptor>[] = [
+        {
+            label: "New Folder",
+            action: (folder) => {
+                //
+            }
+        },
+        {
+            label: "Add to Bookmarks (WIP)",
+            action: (folder) => {
+                //
+            }
+        },
+        "separator",
+        {
+            label: "Paste",
+            action: (folder) => {
+                //
+            }
+        },
+        {
+            label: "Select All",
+            action: (folder) => {
+                //
+            }
+        },
+        "separator",
+        {
+            label: "Open Terminal here",
+            action: (folder) => {
+                //
+            }
+        },
+        {
+            label: "Open VS Code here",
+            action: (folder) => {
+                //
+            }
+        },
+        "separator",
+        {
+            label: "Properties",
+            action: (folder) => {
+                //
+            }
+        },
 
+    ]
 
+    sortOptions: ContextMenuItem<FSDescriptor>[] = [
+        {
+            label: "Sort",
+            separator: true
+        },
+        {
+            label: "Open VS Code here",
+            action: (folder) => {
+                //
+            }
+        },
+    ];
 }

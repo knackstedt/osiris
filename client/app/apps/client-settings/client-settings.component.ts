@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfigurationService } from '../../services/configuration.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-client-settings',
@@ -9,7 +11,9 @@ import { ConfigurationService } from '../../services/configuration.service';
     styleUrls: ['./client-settings.component.scss'],
     imports: [
         CommonModule,
-        FormsModule
+        FormsModule,
+        MatButtonModule,
+        MatIconModule
     ],
     standalone: true
 })
