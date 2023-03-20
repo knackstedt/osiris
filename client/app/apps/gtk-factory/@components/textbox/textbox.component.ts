@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,6 +11,9 @@ import { CommonModule } from '@angular/common';
     standalone: true
 })
 export class GtkTextboxComponent implements OnInit {
+
+    @Input() value: string;
+    @Output() valueChange = new EventEmitter<string>();
 
     constructor() { }
 

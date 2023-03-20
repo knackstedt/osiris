@@ -1,3 +1,5 @@
+@import "@fontsource/fira-mono";
+@import "@fontsource/fira-sans";
 
 @mixin pop-dark() {
     // input
@@ -6,6 +8,9 @@
     --gtk-text-color: #bcbcbc;
     --gtk-text-emphasis-color: #fff;
     --gtk-text-muted-color: #fff;
+    --gtk-font-family: 'Fira Sans';
+    --gtk-font-size: 14px;
+
     --gtk-inactive-text-color: #fff;
 
     --gtk-text-highlight-color: #fff;
@@ -23,6 +28,10 @@
     --gtk-list-item-active-text-color: #000;
     --gtk-list-item-background-active-color: #94ebeb;
     --gtk-list-item-background-hover-color: #343434;
+
+    --gtk-input-background-color: #222;
+    --gtk-input-active-border-color: #af8556;
+    --gtk-input-radius: 3px;
 
     // Restate colors for inactive windows
     .window.inactive {
