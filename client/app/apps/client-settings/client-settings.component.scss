@@ -1,8 +1,12 @@
+:host {
+    height: 100%;
+}
 
 .workspaces {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    overflow: auto;
 
     .workspace {
         display: flex;
@@ -16,5 +20,6 @@
         width: 32px;
         height: 32px;
         border: 1px solid #222;
+        background-size: cover !important;
     }
 }

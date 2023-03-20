@@ -3,14 +3,36 @@
 
         <div class="workspaces">
             Workspaces
-            <div *ngFor="let workspace of config.workspaces" class="workspace">
+            <div *ngFor="let workspace of config.workspaces; let i = index" class="workspace">
                 <span>Name: </span>
                 <gtk-textbox [(value)]="workspace.label"></gtk-textbox>
+
 
                 <span>Background (CSS): </span>
                 <gtk-textbox [(value)]="workspace.background"></gtk-textbox>
                 <div class="background-preview" [style.background]="workspace.background"></div>
+
+                <button mat-icon-button (click)="config.workspaces.splice(i, 1)"><mat-icon>close</mat-icon></button>
             </div>
+            <div class="workspace">
+                <span>Name: </span>
+                <gtk-textbox #name value=""></gtk-textbox>
+
+
+                <span>Background (CSS): </span>
+                <gtk-textbox #background value=""></gtk-textbox>
+                <div class="background-preview" [style.background]="background.value"></div>
+
+                <button
+                    mat-icon-button
+                    (click)="config.workspaces.push({label: name.value, background: background.value})"
+                >
+                    <mat-icon>add</mat-icon>
+                </button>
+            </div>
+
+            <hr />
+
 
             <div class="workspace">
                 <span>Parallax Background (CSS): </span>
