@@ -29,8 +29,6 @@ export class WorkspaceComponent implements OnDestroy {
 
 
     onClick(evt) {
-        console.log(evt);
-
         const win = this.getParentNode("app-window", evt.target);
         const id = win ? win.id.split('_')[1] : '';
 

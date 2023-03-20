@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Fetch } from 'client/app/services/fetch.service';
 
+type Location = {
+    path: string,
+    icon: string;
+}
 
 @Injectable({
     providedIn: 'root'
@@ -46,14 +50,29 @@ export class ConfigurationService {
     shell: string;
     host: string;
 
+
     ready = false;
 
-    filemanager = {
+    filemanager: {
+        maxHistoryLength: number,
+        maxUndoLength: number, // max number of actions that can be undone (excluding _destroy_)
+        showThumbnails: boolean, // WIP
+        thumbnailMaxFileSize: number, // WIP
+        customCtxMenuItems: [], // WIP // support for custom context menu actions?
+
+        defaultLocations: Location[],
+        deviceLocations: Location[],
+        remoteLocations: Location[],
+    } = {
         maxHistoryLength: 10,
         maxUndoLength: 50, // max number of actions that can be undone (excluding _destroy_)
         showThumbnails: false, // WIP
         thumbnailMaxFileSize: 0, // WIP
-        customCtxMenuItems: [] // WIP // support for custom context menu actions?
+        customCtxMenuItems: [], // WIP // support for custom context menu actions?
+
+        defaultLocations: [],
+        deviceLocations: [],
+        remoteLocations: [],
     }
 
     constructor(private fetch: Fetch) {
@@ -64,6 +83,7 @@ export class ConfigurationService {
             this.username = config.user.username;
             this.shell = config.user.shell;
             this.host = config.host;
+            // this.favoriteLocations = config.favoriteLocations;
             this.ready = true;
         })
     }

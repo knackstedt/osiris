@@ -6,7 +6,19 @@ import { TaskBarData } from '../components/taskbar/taskbar.component';
 // import { FileDescriptor } from '../apps/filemanager/filemanager.component';
 import { XpraWindowManagerWindow, XpraWindowMetadataType } from 'xpra-html5-client';
 import { ConfigurationService } from 'client/app/services/configuration.service';
+import Dexie, { Table } from 'dexie';
 
+
+class WindowDatabase extends Dexie {
+    public windows!: Table<ManagedWindow, number>; // id is number in this case
+
+    public constructor() {
+        super("WindowDatabase");
+        this.version(1).stores({
+            windows: "++id,appId,workspace"
+        });
+    }
+}
 
 @Injectable({
     providedIn: 'root'
@@ -16,18 +28,17 @@ export class WindowManagerService extends BehaviorSubject<WindowInstance[]> {
     public managedWindows: WindowInstance[] = [];
     public taskbarItems: TaskBarData[] = [];
 
+    db = new WindowDatabase();
+
     constructor(
         private config: ConfigurationService
     ) {
         super([]);
 
-        window.addEventListener("unload", e => {
-
+        window.addEventListener("unload", async e => {
+            await this.db.windows.bulkAdd(this.managedWindows);
         });
     }
-
-    // public managedWindows$ = new BehaviorSubject<ManagedWindow[]>([]);
-    // public taskbarData$ = new BehaviorSubject<ManagedWindow[]>([]);
 
     public async openWindow(options: WindowConfig, data?) {
         let opts: Partial<WindowConfig> = {};
@@ -40,8 +51,6 @@ export class WindowManagerService extends BehaviorSubject<WindowInstance[]> {
             opts = options;
 
         opts.data = opts.data || data;
-
-        // this.next(cfg as WindowOptions);
 
         const window = new WindowInstance(this, opts);
 
@@ -91,8 +100,6 @@ export class WindowManagerService extends BehaviorSubject<WindowInstance[]> {
     }
 
     public closeWindow(id: string) {
-        // Get the instance of the window manager.
-        const instance = this.managedWindows.find(mw => mw.id == id);
 
         // Remove the window from the managed windows list.
         this.managedWindows.splice(this.managedWindows.findIndex(mw => mw.id == id), 1);
@@ -110,7 +117,6 @@ export class WindowManagerService extends BehaviorSubject<WindowInstance[]> {
         // Last, purge the actual window if it's native.
         // globalThis.XpraService.closeWindow(instance);
         this.next(this.managedWindows);
-
     }
 
     public blurAllWindows() {
@@ -216,6 +222,7 @@ class WindowInstance {
     toJSON() {
         return {
             id: this.id,
+            appId: this.appId,
             x: this.x,
             y: this.y,
             width: this.width,
