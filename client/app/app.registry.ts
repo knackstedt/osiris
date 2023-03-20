@@ -15,6 +15,7 @@ export const RegisteredApplications: ComponentRegistration[] = [
     { id: 'media-player',    group: "app", load: () => import('client/app/apps/video-player/video-player.component'),         iconType: "mat-icon", iconSrc: "smart_display", label: "Videos", order: 0 },
     { id: 'text-editor',     group: "app", load: () => import('client/app/apps/code-editor/code-editor.component'),           iconType: "mat-icon", iconSrc: "code", label: "Text Editor", order: 0 },
     { id: 'log-viewer',      group: "app", load: () => import('client/app/apps/code-editor/log-reader/log-reader.component'), iconType: "mat-icon", iconSrc: "article", label: "Log Viewer", order: 0 },
+    { id: 'welcome',         group: "app", load: () => import('client/app/apps/introduction/introduction.component'),         iconType: "mat-icon", iconSrc: "help", label: "Welcome", order: 0 },
     { id: 'checksum',        group: "app", load: () => import('client/app/apps/filemanager/checksum/checksum.component') },
 
 

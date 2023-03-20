@@ -91,15 +91,23 @@ export class RootComponent {
         });
 
         this.windowManager.openWindow({
-            appId: "material-factory",
-            workspace: 2,
-            x: 64,
-            y: 64,
-            width: 1600,
-            height: 900,
-
-            _isMaximized: true
+            appId: "welcome",
+            workspace: 0,
+            center: true,
+            width: 600,
+            height: 400
         });
+
+        // this.windowManager.openWindow({
+        //     appId: "material-factory",
+        //     workspace: 2,
+        //     x: 64,
+        //     y: 64,
+        //     width: 1600,
+        //     height: 900,
+
+        //     _isMaximized: true
+        // });
 
 
         keyboard.onKeyCommand({
