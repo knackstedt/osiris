@@ -7,24 +7,13 @@ import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { XpraWindowManagerWindow, XpraWindowMetadataType } from 'xpra-html5-client';
 import { ConfigurationService } from 'client/app/services/configuration.service';
 
-const managedWindows: ManagedWindow[] = [];
-
-const isImage = /\.(png|jpe?g|gif|tiff|jfif|webp|svg|ico)$/;
-const isAudio = /\.(wav|mp3|ogg|adts|webm|flac)$/;
-const isVideo = /\.(mp4|webm|ogv)$/;
-const isArchive = /\.(7z|zip|rar|tar\.?(gz|xz)?)$/;
-type FileType = "image" | "text" | "video" | "archive" | "binary" | "mixed";
-type FileDescriptor = any;
-
 
 @Injectable({
     providedIn: 'root'
 })
-export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
+export class WindowManagerService extends BehaviorSubject<WindowInstance[]> {
 
-    private static registeredInstances: WindowManagerService[] = [];
-
-    public managedWindows = managedWindows;
+    public managedWindows: WindowInstance[] = [];
     public taskbarItems: TaskBarData[] = [];
 
     constructor(
@@ -32,7 +21,9 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
     ) {
         super([]);
 
-        WindowManagerService.registeredInstances.push(this);
+        window.addEventListener("unload", e => {
+
+        });
     }
 
     // public managedWindows$ = new BehaviorSubject<ManagedWindow[]>([]);
@@ -52,7 +43,7 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
 
         // this.next(cfg as WindowOptions);
 
-        const window = new ManagedWindow(opts);
+        const window = new WindowInstance(this, opts);
 
         // Store data in the windows array
         this.managedWindows.push(window);
@@ -100,103 +91,32 @@ export class WindowManagerService extends BehaviorSubject<ManagedWindow[]> {
     }
 
     public closeWindow(id: string) {
-        WindowManagerService.closeWindow(id);
-        this.next(this.managedWindows);
-    }
-
-    public static closeWindow(id: string) {
         // Get the instance of the window manager.
-        const instance = this.registeredInstances.find(ri => ri.managedWindows.find(mw => mw.id == id));
+        const instance = this.managedWindows.find(mw => mw.id == id);
 
         // Remove the window from the managed windows list.
-        instance.managedWindows.splice(instance.managedWindows.findIndex(mw => mw.id == id), 1);
+        this.managedWindows.splice(this.managedWindows.findIndex(mw => mw.id == id), 1);
 
         // Get the corresponding taskbar group.
-        let taskbarGroup = instance.taskbarItems.find(taskbar => taskbar.windows.find(w => w.id == id));
+        let taskbarGroup = this.taskbarItems.find(taskbar => taskbar.windows.find(w => w.id == id));
 
         // Remove the window from the taskbar group.
         taskbarGroup?.windows.splice(taskbarGroup.windows.findIndex(w => w.id == id), 1);
 
         // If the taskbar group is now empty, purge it.
         if (taskbarGroup?.windows.length == 0)
-            instance.taskbarItems.splice(instance.taskbarItems.findIndex(tb => tb.appId == taskbarGroup.appId), 1);
+            this.taskbarItems.splice(this.taskbarItems.findIndex(tb => tb.appId == taskbarGroup.appId), 1);
 
         // Last, purge the actual window if it's native.
-        globalThis.XpraService.closeWindow(instance);
+        // globalThis.XpraService.closeWindow(instance);
+        this.next(this.managedWindows);
+
     }
 
     public blurAllWindows() {
-        managedWindows.forEach(w => {
+        this.managedWindows.forEach(w => {
             w._isActive = false;
         });
-    }
-
-    public static writeState() {
-        // TODO
-        // const state = WindowManagerService.registeredInstances;
-        // const sState = JSON.stringify(state);
-        // console.log("approx. state length", sState.length);
-
-        // history.pushState(sState, null, null);
-    }
-
-    private getMimetype(file: FileDescriptor) {
-        return (isImage.test(file.name) && "image") ||
-            (isAudio.test(file.name) && "video") ||
-            (isVideo.test(file.name) && "video") ||
-            (isArchive.test(file.name) && "archive") ||
-            (file.stats.size > 2 * 1024 * 1024 && "binary") ||
-            ("text")
-    }
-
-    openFiles(files: FileDescriptor | FileDescriptor[]) {
-
-        const fileArr = Array.isArray(files) ? files : [files];
-
-        // Use a map to deduplicate and get a discrete count of
-        // total mimetypes provided.
-        let m = {};
-        fileArr.map(d => this.getMimetype(d)).forEach(k => {
-            m[k] = true;
-        });
-
-        const types = Object.keys(m);
-
-        const isMixed = types.length > 1;
-        let fileType: FileType;
-        if (isMixed) {
-            // Prompt saving as list
-            // downloading as (tar/zip/7z/rar)
-            // open with other application (...)
-            // move -> new location
-            fileType = "mixed";
-        }
-        else {
-            fileType = types[0] as any;
-            // Single file, can very safely open whatever dialog we need for this.
-        }
-
-        // Open dialog!
-
-        switch(fileType) {
-            // case "image": { return this.openWindow("image-viewer", files) }
-            // case "video": { return this.openWindow("video-player", files) }
-            // case "archive": { return this.openWindow("", files) }
-            // case "text": { return this.openWindow("code-editor", files) }
-            // case "mixed":
-            // case "binary": { this.openWindow("", files) }
-        }
-        return null;
-    }
-
-    downloadFile() {
-        // let a = document.createElement("a");
-
-        // a.setAttribute("href", this.getLink());
-        // a.setAttribute("download", this.data.file);
-
-        // a.click();
-        // a.remove();
     }
 }
 
@@ -207,9 +127,9 @@ type NonFunctionPropertyNames<T> = {
 // This excludes methods and private properties.
 type OmitFunctions<T> = Pick<T, NonFunctionPropertyNames<T>>;
 
-export type WindowConfig = Partial<OmitFunctions<ManagedWindow>>;
+export type WindowConfig = Omit<Partial<OmitFunctions<WindowInstance>>, 'id' | 'zindex' | '_instance'>;
 
-export class ManagedWindow {
+class WindowInstance {
     private static windowZindexCounter = 0;
 
     // This is simply a unique identifier used to pick this out
@@ -227,6 +147,7 @@ export class ManagedWindow {
 
     x = 100;
     y = 100;
+    center = false;
 
     isResizable = true;
     isDraggable = true;
@@ -247,7 +168,7 @@ export class ManagedWindow {
     _isMaximized = false;
     _isActive = false;
     _isLoading = false;
-    _index = ManagedWindow.windowZindexCounter++; // z-index
+    zindex = WindowInstance.windowZindexCounter++; // z-index
     _isDraggedOver = false; // is something being dragged in front of this window?
     _isBorderless = false;
     _isSnapTarget = true;
@@ -260,7 +181,10 @@ export class ManagedWindow {
     _nativeWindowType: XpraWindowMetadataType[];
     _nativeWindow: XpraWindowManagerWindow;
 
-    constructor(config: WindowConfig) {
+    constructor(
+        private windowManager: WindowManagerService,
+        config: WindowConfig
+    ) {
         Object.keys(config).forEach(k => this[k] = config[k]);
     }
 
@@ -306,7 +230,7 @@ export class ManagedWindow {
             _isMaximized: this._isMaximized,
             _isActive: this._isActive,
             _isLoading: this._isLoading,
-            _index: this._index, // z-index
+            _index: this.zindex, // z-index
         }
     }
 
@@ -315,9 +239,9 @@ export class ManagedWindow {
 
         let res = this._instance[name] && this._instance[name](event);
 
-        // before and after events should be ignored.
-        if (name.startsWith('on'))
-            WindowManagerService.writeState();
+        // // before and after events should be ignored.
+        // if (name.startsWith('on'))
+        //     this.windowManager.writeState();
 
         return res;
     }
@@ -331,7 +255,7 @@ export class ManagedWindow {
         let result = await this.emit("beforeClose");
 
         if (!result) {
-            WindowManagerService.closeWindow(this.id);
+            this.windowManager.closeWindow(this.id);
             this.emit("onClose");
         }
     }
@@ -385,13 +309,13 @@ export class ManagedWindow {
         this.blurAllWindows(this);
 
         this._isActive = true;
-        this._index = ManagedWindow.windowZindexCounter++;
+        this.zindex = WindowInstance.windowZindexCounter++;
 
         this.emit("onActivateChange", { isActivated: true });
     }
 
-    private blurAllWindows(skip?: ManagedWindow) {
-        managedWindows.forEach(w => {
+    private blurAllWindows(skip?: WindowInstance) {
+        this.windowManager.managedWindows.forEach(w => {
             // Skip if we provide one to ignore
             if ((skip && skip.id != w.id) && w._isActive) {
                 w.emit("onActivateChange", { isActivated: false });
@@ -428,6 +352,8 @@ export class ManagedWindow {
         this.hibernationValue = srcEl.innerHTML;
     }
 }
+
+export type ManagedWindow = Omit<WindowInstance, ''>;
 
 /**
  * Catch lifecycle hook errors on the window contents and send them to

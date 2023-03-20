@@ -386,7 +386,7 @@ export class FileGridComponent implements OnInit {
             window: this.windowRef
         }).subscribe(evt => {
             const files = this.directoryContents.filter(dc => this.selectedItems.find(i => i.name == dc.name));
-            this.windowManager.openFiles(files as any);
+            // this.windowManager.openFiles(files as any);
         });
 
         // Delete => delete selected files
