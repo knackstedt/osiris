@@ -65,6 +65,10 @@
     }
 }
 
+app-workspace {
+    will-change: transform;
+}
+
 
 :ng-deep .dir-horizontal app-root {
     .workspace-dots {
