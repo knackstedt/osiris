@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 })
 export class GtkTextboxComponent implements OnInit {
 
-    @Input() value: string;
+    @Input() value: string = '';
     @Output() valueChange = new EventEmitter<string>();
 
     constructor() { }
