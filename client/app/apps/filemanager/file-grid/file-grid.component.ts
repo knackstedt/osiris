@@ -243,6 +243,7 @@ export class FileGridComponent implements OnInit {
             isVisible: data => !data.path.includes("#/"), // omit files in compressed dirs
             action: (evt) => {
                 this.fetch.post(`/api/filesystem/delete`, { files: [evt.path + evt.name] })
+                    .then(() => this.loadFolder())
             },
         },
         {
@@ -251,6 +252,7 @@ export class FileGridComponent implements OnInit {
             isVisible: data => !data.path.includes("#/"), // omit files in compressed dirs
             action: (evt) => {
                 this.fetch.post(`/api/filesystem/delete?wipe=true`, { files: [evt.path + evt.name]})
+                    .then(() => this.loadFolder())
             },
         },
         {
