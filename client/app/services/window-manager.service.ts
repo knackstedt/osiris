@@ -7,6 +7,7 @@ import { TaskBarData } from '../components/taskbar/taskbar.component';
 import { XpraWindowManagerWindow, XpraWindowMetadataType } from 'xpra-html5-client';
 import { ConfigurationService } from 'client/app/services/configuration.service';
 import Dexie, { Table } from 'dexie';
+import { RegisteredApplications } from 'client/app/app.registry';
 
 
 class WindowDatabase extends Dexie {
@@ -191,7 +192,12 @@ class WindowInstance {
         private windowManager: WindowManagerService,
         config: WindowConfig
     ) {
+        if (!config.appId) throw new Error("Cannot create a window without specifying an appId");
+
         Object.keys(config).forEach(k => this[k] = config[k]);
+
+        const app = RegisteredApplications.find(a => a.id == config.appId);
+        this.title = app ? app['label'] : config.appId;
     }
 
     onInit(instance) {
