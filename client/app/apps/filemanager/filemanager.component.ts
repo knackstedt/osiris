@@ -125,7 +125,7 @@ export class FilemanagerComponent implements OnInit {
         private windowManager: WindowManagerService,
         private keyboard: KeyboardService,
         private dialog: MatDialog,
-        private config: ConfigurationService
+        public config: ConfigurationService
         ) {
         keyboard.onKeyCommand({
             ctrl: true,

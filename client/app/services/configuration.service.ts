@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { Fetch } from 'client/app/services/fetch.service';
 
 type Location = {
+    label: string,
     path: string,
-    icon: string;
+    icon: string
 }
 
 @Injectable({
@@ -28,14 +29,14 @@ export class ConfigurationService {
     get leftOffset(){   return this.taskbarPosition == "left"   ?  this.taskbarWidth : 0}
 
     workspaces = [
-        { label: "default",  background: "" },
-        { label: "avalon",   background: "#ff000022" },
-        { label: "gaia",     background: "" },
-        { label: "brunhild", background: "" },
-        { label: "kronos",   background: "" },
-        { label: "osiris",   background: "" },
-        { label: "anubis",   background: "" },
-        { label: "thor",     background: "" },
+        { label: "default",  background: "#0000" },
+        { label: "avalon",   background: "#0002" },
+        { label: "gaia",     background: "#0004" },
+        { label: "brunhild", background: "#0006" },
+        { label: "kronos",   background: "#0008" },
+        { label: "osiris",   background: "#000a" },
+        { label: "anubis",   background: "#000c" },
+        { label: "thor",     background: "url(./assets/img/wallpaper/alberto-bobbera-KNhVlMjkNjs-unsplash.jpg)" },
     ]
 
     // ! We expect a tall image for vertical, and a wide image for horizontal
@@ -86,6 +87,9 @@ export class ConfigurationService {
             this.shell = config.user.shell;
             this.host = config.host;
             // this.favoriteLocations = config.favoriteLocations;
+            this.filemanager.defaultLocations = config.filemanager.defaultLocations;
+            this.filemanager.deviceLocations = config.filemanager.deviceLocations;
+            this.filemanager.remoteLocations = config.filemanager.remoteLocations;
             this.ready = true;
         })
     }

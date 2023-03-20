@@ -10,33 +10,12 @@
     </ng-template>
     <ng-template #content>
         <as-split direction="horizontal" [gutterSize]="1">
-            <as-split-area [size]="20">
+            <as-split-area [size]="20" style="background-color: #2c2c2c;">
                 <div class="sidebar" *ngIf="showSidebar" (click)="currentTab.selection = []">
                     <ul>
-                        <li>Recent</li>
-                        <li>Starred</li>
-                        <li>Home</li>
-                        <li #li (hover)="li['hover']=true" (mouseout)="li['hover']=false">
-                            Desktop
-                            <!-- <div class="tooltip" [class.visible]="li['hover']">/home/knackstedt/Downloads</div> -->
+                        <li *ngFor="let link of config.filemanager.defaultLocations" (click)="onBreadcrumbClick({ id: link.path })">
+                            <mat-icon [fontIcon]="link.icon"></mat-icon>{{link.label}}
                         </li>
-                        <li>Documents</li>
-                        <li>Downloads</li>
-                        <li>Music</li>
-                        <li>Pcitures</li>
-                        <li>Videos</li>
-                        <li>Trash</li>
-                    </ul>
-                    <ul>
-                        <li>mounted f:/</li>
-                        <li>mounted disk</li>
-                    </ul>
-                    <ul>
-                        <li>data on ftp</li>
-                        <li>data on smb</li>
-                    </ul>
-                    <ul>
-                        <li>+ other locations</li>
                     </ul>
                 </div>
             </as-split-area>
