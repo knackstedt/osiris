@@ -6,6 +6,7 @@ import mime from "mime-types";
 import AdmZip from "adm-zip";
 import fs from "fs-extra";
 import crypto from 'crypto';
+import { secureWipe } from '../api/files/util';
 
 
 process.on('uncaughtException', function (exception) {
@@ -15,86 +16,6 @@ process.on('uncaughtException', function (exception) {
 });
 
 const router = express.Router();
-
-const generateThumbnail = (path: string) => {
-    // return sharp('input.jpg')
-    //     .rotate()
-    //     .resize(200)
-    //     .jpeg({ mozjpeg: true })
-    //     .toBuffer()
-}
-
-// router.use('/dir', route(async (req, res, next) => {
-//     res.send(pages);
-// }));
-// router.use('/file', route(async (req, res, next) => {
-
-//     res.send(pages);
-// }));
-
-// https://www.npmjs.com/package/adm-zip
-// router.use('/zip', route(async (req, res, next) => {
-//     const { dir, file } = req.body;
-
-
-
-//     // zipEntries.forEach(function (zipEntry) {
-//     //     console.log(zipEntry.toString());
-//     //     if (zipEntry.entryName == "my_file.txt") {
-//     //         console.log(zipEntry.getData().toString("utf8"));
-//     //     }
-//     // });
-//     res.send(zipEntries);
-// }));
-
-router.use('/rar', route(async (req, res, next) => {
-    const { dir, file } = req.body;
-
-    let zip = new AdmZip(dir + file);
-    let zipEntries = zip.getEntries();
-
-    // zipEntries.forEach(function (zipEntry) {
-    //     console.log(zipEntry.toString());
-    //     if (zipEntry.entryName == "my_file.txt") {
-    //         console.log(zipEntry.getData().toString("utf8"));
-    //     }
-    // });
-    res.send(zipEntries);
-}));
-
-router.use('/7z', route(async (req, res, next) => {
-    const { dir, file } = req.body;
-
-    let zip = new AdmZip(dir + file);
-    let zipEntries = zip.getEntries();
-
-    // zipEntries.forEach(function (zipEntry) {
-    //     console.log(zipEntry.toString());
-    //     if (zipEntry.entryName == "my_file.txt") {
-    //         console.log(zipEntry.getData().toString("utf8"));
-    //     }
-    // });
-    res.send(zipEntries);
-}));
-
-router.use('/tar', route(async (req, res, next) => {
-    const { dir, file,  } = req.body;
-
-    // let entries = [];
-    // tar.t({
-    //     file: dir + file
-    // })
-    // .on("onentry", (entry) => {
-    //     entries.push(entry);
-    // })
-    // .on("finish", () => {
-    //     res.send(entries);
-    // })
-    // .on("error", next);
-
-}));
-
-
 
 router.use('/download', route(async (req, res, next) => {
     const { dir, file } = req.query as any;
@@ -132,7 +53,10 @@ router.use('/download', route(async (req, res, next) => {
     }
 }));
 
-router.use('/file', route(async (req, res, next) => {
+/**
+ * Read files
+ */
+router.post('/file', route(async (req, res, next) => {
     // TODO: save file
     const { files } = req.body;
     const { only } = req.query;
@@ -183,6 +107,21 @@ router.use('/file', route(async (req, res, next) => {
     })))
     .then(result => res.send(result))
     .catch(err => next(err));
+}));
+
+/**
+ * Delete a file (unlink)
+ */
+router.post('/delete', route(async (req, res, next) => {
+    // TODO: save file
+    const { files } = req.body;
+    const wipe = !!req.query['wipe'];
+
+    if (!files || !Array.isArray(files)) return next(400);
+
+    Promise.all(files.map(file => wipe ? secureWipe(file) : fs.unlink(file)))
+        .then(result => res.send(result))
+        .catch(err => next(err));
 }));
 
 /**

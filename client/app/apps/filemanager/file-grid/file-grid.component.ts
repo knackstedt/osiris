@@ -240,13 +240,23 @@ export class FileGridComponent implements OnInit {
             label: "Move to Trash",
             icon: "delete",
             shortcutLabel: "Ctrl+A",
+            isVisible: data => !data.path.includes("#/"), // omit files in compressed dirs
             action: (evt) => {
-
+                this.fetch.post(`/api/filesystem/delete`, { files: [evt.path + evt.name] })
+            },
+        },
+        {
+            label: "Purge",
+            icon: "delete_forever",
+            isVisible: data => !data.path.includes("#/"), // omit files in compressed dirs
+            action: (evt) => {
+                this.fetch.post(`/api/filesystem/delete?wipe=true`, { files: [evt.path + evt.name]})
             },
         },
         {
             label: "Rename",
             icon: "drive_file_rename_outline",
+            isVisible: data => !data.path.includes("#/"), // omit files in compressed dirs
             shortcutLabel: "Ctrl+A",
             action: (evt) => {
 
