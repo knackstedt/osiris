@@ -49,12 +49,7 @@ import { RestApi } from './api/rest';
             // console.log(format);
             return format;
         }, {}) as any,
-        startupDirectories: [
-            "data",
-            "client",
-            "assets",
-            "log"
-        ],
+        startupDirectories: [],
         helmet: false
     });
 
@@ -84,24 +79,6 @@ import { RestApi } from './api/rest';
     app.use(helmet.permittedCrossDomainPolicies());
     app.use(helmet.referrerPolicy());
     app.use(helmet.xssFilter());
-
-    // Cache policies
-    app.use((req, res, next) => {
-        const cacheAge =
-            /\.(png|jpe?g|gif|svg|tiff|woff2?|wav|tff)/.test(req.url) ? "private, max-age=31536000" : // 365 days
-            /\.(css|js|html?|json)/.test(req.url) ? "private, max-age=86400" // 1 day
-                : "no-cache" // do not cache
-
-        res.setHeader("Cache-Control", cacheAge);
-
-        res.setHeader("Access-Control-Allow-Origin", environment.domain);
-        res.setHeader("X-Content-Type-Options", "nosniff");
-
-        next();
-    });
-
-    // Serve static assets in 'client' directory
-    app.use(express.static(__dirname + '/../client/'));
 
     app.use("/api/filesystem", FilesystemApi);
     app.use("/api/xorg", XOrgApi);
