@@ -1,6 +1,17 @@
-<input type="text" [(ngModel)]="config.background" />
-<div>
-    <div>
-        <button mat-flat-button><mat-icon>check</mat-icon>Save</button>
-    </div>
-</div>
+<app-window-template [window]="window">
+    <ng-template #content>
+
+        <div class="workspaces">
+            Workspaces
+            <div *ngFor="let workspace of config.workspaces" class="workspace">
+                <span>Name: </span>
+                <gtk-textbox [(value)]="workspace.label"></gtk-textbox>
+
+                <span>Background (CSS): </span>
+                <gtk-textbox [(value)]="workspace.background"></gtk-textbox>
+                <div class="background-preview" [style.background]="workspace.background"></div>
+            </div>
+        </div>
+        <input type="text" [(ngModel)]="config.background" />
+    </ng-template>
+</app-window-template>
