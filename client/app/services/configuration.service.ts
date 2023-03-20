@@ -18,7 +18,9 @@ export class ConfigurationService {
     // taskbarPosition = "top"; // top left bottom right
     // taskbarPosition = "right"; // top left bottom right
     // taskbarPosition = "bottom"; // top left bottom right
-    taskbarPosition = "left"; // top left bottom right
+    private _taskbarPosition: "top" | "right" | "bottom" | "left" = "left"; // top left bottom right
+    set taskbarPosition(pos: "top" | "right" | "bottom" | "left") { this._taskbarPosition = pos; this.apply()}
+    get taskbarPosition() { return this._taskbarPosition }
 
     get topOffset(){    return this.taskbarPosition == "top"    ?  this.taskbarWidth : 0}
     get rightOffset(){  return this.taskbarPosition == "right"  ? -this.taskbarWidth : 0}

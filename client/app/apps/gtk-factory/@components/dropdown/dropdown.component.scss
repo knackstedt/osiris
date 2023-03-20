@@ -1,25 +1,36 @@
 :host {
     display: inline-block;
+    width: 150px;
 }
 
-input {
-    border-radius: var(--gtk-input-radius);
-    background-color: var(--gtk-input-background-color);
-
-    border: 2px solid #0000;
+mat-select {
     color: var(--gtk-text-emphasis-color);
     outline: none;
 
     font-family: var(--gtk-font-family);
     font-size: var(--gtk-font-size);
-    padding: 8px;
+    text-align: initial;
 
     width: 100%;
     text-overflow: ellipsis;
+
+    border-radius: var(--gtk-input-radius);
+    background-color: var(--gtk-input-background-color);
+
+    border: 2px solid #0000;
 
     transition: all 250ms ease;
 
     &:focus {
         border-color: var(--gtk-input-active-border-color);
+    }
+}
+
+:host ::ng-deep {
+    .mat-mdc-select-arrow-wrapper {
+        padding-left: 18px;
+    }
+    .mat-mdc-select-trigger {
+        padding: 6px 10px;
     }
 }

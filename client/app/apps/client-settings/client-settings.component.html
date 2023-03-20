@@ -11,7 +11,23 @@
                 <gtk-textbox [(value)]="workspace.background"></gtk-textbox>
                 <div class="background-preview" [style.background]="workspace.background"></div>
             </div>
+
+            <div class="workspace">
+                <span>Parallax Background (CSS): </span>
+                <gtk-textbox [(value)]="config.background" style="width: 600px"></gtk-textbox>
+            </div>
+
+            <div class="workspace">
+                <span>Taskbar Side: </span>
+                <gtk-dropdown [(value)]="config.taskbarPosition" [options]="taskbarPositions"></gtk-dropdown>
+            </div>
+
+            <div class="workspace">
+
+                <span matTooltip="Control which direction the workspaces flow">Workspace Direction: </span>
+                <gtk-dropdown [(value)]="config.workspaceDirection" [options]="directionOptions"></gtk-dropdown>
+            </div>
         </div>
-        <input type="text" [(ngModel)]="config.background" />
+
     </ng-template>
 </app-window-template>

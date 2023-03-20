@@ -6,6 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { WindowTemplateComponent } from '../../components/window-template/window-template.component';
 import { GtkTextboxComponent } from '../gtk-factory/@components/textbox/textbox.component';
+import { GtkDropdownComponent } from '../gtk-factory/@components/dropdown/dropdown.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-client-settings',
@@ -16,13 +18,19 @@ import { GtkTextboxComponent } from '../gtk-factory/@components/textbox/textbox.
         FormsModule,
         MatButtonModule,
         MatIconModule,
+        MatTooltipModule,
         WindowTemplateComponent,
-        GtkTextboxComponent
+        GtkTextboxComponent,
+        GtkDropdownComponent
     ],
     standalone: true
 })
 export class ClientSettingsComponent implements OnInit {
     @Input() window;
+
+
+    directionOptions = [ "vertical", "horizontal" ];
+    taskbarPositions = [ "top", "right", "bottom", "left" ];
 
     constructor(
         public config: ConfigurationService

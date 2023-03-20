@@ -1,3 +1,11 @@
-<p>
-  dropdown works!
-</p>
+<mat-select
+    [value]="value"
+    (valueChange)="valueChange.next($event)"
+>
+    <mat-option
+        *ngFor="let option of _options"
+        [value]="option['id'] || option"
+    >
+        {{option['value'] || option}}
+    </mat-option>
+</mat-select>

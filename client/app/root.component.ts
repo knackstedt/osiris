@@ -90,12 +90,21 @@ export class RootComponent {
             }
         });
 
+        // this.windowManager.openWindow({
+        //     appId: "welcome",
+        //     workspace: 0,
+        //     center: true,
+        //     width: 600,
+        //     height: 400
+        // });
+
         this.windowManager.openWindow({
-            appId: "welcome",
+            appId: "client-settings",
             workspace: 0,
-            center: true,
-            width: 600,
-            height: 400
+            x: window.innerWidth/2-500,
+            y: window.innerHeight/2-400,
+            width: 1000,
+            height: 800,
         });
 
         // this.windowManager.openWindow({
