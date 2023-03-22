@@ -1,0 +1,83 @@
+<app-window-template [window]="window">
+    <ng-template #toolbar>
+        Checksum information
+    </ng-template>
+    <ng-template #content>
+        <div>
+            <mat-tab-group>
+                <mat-tab label="Music">
+                    <as-split>
+                        <as-split-area [minSize]="156">
+                            <ng-scrollbar
+                                style="height: 100%; width: 100%"
+                                track="vertical"
+                                pointerEventsMethod="scrollbar"
+                                [ngx-ctx-menu]="groupedCtxItems"
+                            >
+                                <div class="resize-observer" #fileViewport></div>
+                                <cdk-virtual-scroll-viewport
+                                    itemSize="64"
+                                    scrollViewport
+                                >
+                                    <div *ngFor="let item of []">
+                                        <div>
+                                            <img src="1" />
+                                        </div>
+                                        <div>
+                                            <div>Artist Name</div>
+                                            <div>1 album(s)</div>
+                                        </div>
+                                    </div>
+                                </cdk-virtual-scroll-viewport>
+                            </ng-scrollbar>
+                        </as-split-area>
+                        <as-split-area>
+                            <ng-scrollbar
+                                style="height: 100%; width: 100%"
+                                track="vertical"
+                                pointerEventsMethod="scrollbar"
+                                [ngx-ctx-menu]="musicCtxItems"
+                            >
+                                <div class="resize-observer" #fileViewport></div>
+                                <cdk-virtual-scroll-viewport
+                                    itemSize="134"
+                                    scrollViewport
+                                >
+                                </cdk-virtual-scroll-viewport>
+                            </ng-scrollbar>
+                        </as-split-area>
+                        <as-split-area [minSize]="156">
+                            <ng-scrollbar
+                                style="height: 100%; width: 100%"
+                                track="vertical"
+                                pointerEventsMethod="scrollbar"
+                                [ngx-ctx-menu]="queueCtxItems"
+                            >
+                                <div class="resize-observer" #fileViewport></div>
+                                <cdk-virtual-scroll-viewport
+                                    itemSize="134"
+                                    scrollViewport
+                                >
+                                    <div *ngFor="let item of []">
+                                        <div>
+                                            <img src="1" />
+                                        </div>
+                                        <div>
+                                            <div>Artist Name</div>
+                                            <div>1 album(s)</div>
+                                        </div>
+                                    </div>
+                                </cdk-virtual-scroll-viewport>
+                            </ng-scrollbar>
+                        </as-split-area>
+                    </as-split>
+                </mat-tab>
+                <mat-tab label="Now Playing"></mat-tab>
+                <mat-tab label="Playlists"></mat-tab>
+                <mat-tab label="Music Explorer"></mat-tab>
+                <mat-tab label="Podcasts"></mat-tab>
+            </mat-tab-group>
+        </div>
+
+    </ng-template>
+</app-window-template>
