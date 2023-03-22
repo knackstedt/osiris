@@ -1,15 +1,17 @@
 import { isDevMode, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { RootComponent } from './root.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { ComponentResolveStrategy, NgxLazyLoaderModule } from '@dotglitch/ngx-lazy-loader';
+import { ToastrModule } from 'ngx-toastr';
+
+import { RootComponent } from './root.component';
 import { TaskbarComponent } from './components/taskbar/taskbar.component';
 import { WindowComponent } from './components/workspace/window/window.component';
 import { WindowErrorComponent } from './apps/@framework/error/error.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { ComponentResolveStrategy, NgxLazyLoaderModule } from '@dotglitch/ngx-lazy-loader';
+
 import { NotFoundComponent } from 'client/app/apps/@framework/not-found/not-found.component';
 import { LazyProgressDistractorComponent } from 'client/app/apps/@framework/lazy-progress-distractor/lazy-progress-distractor.component';
 import { RegisteredApplications, LazyComponents, DialogComponents } from 'client/app/app.registry';
@@ -39,6 +41,7 @@ import { BackgroundComponent } from 'client/app/components/background/background
             loaderDistractorComponent: LazyProgressDistractorComponent,
             errorComponent: WindowErrorComponent
         }),
+        ToastrModule.forRoot(),
         CommonAppModule,
         BrowserModule,
         BrowserAnimationsModule,

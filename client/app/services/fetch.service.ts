@@ -2,12 +2,13 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { retry, catchError, delay, tap } from 'rxjs/operators';
 import { of, throwError } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
     providedIn: "root"
 })
 export class Fetch {
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private toastr: ToastrService) { }
 
     // Public interface for making AJAX transactions
     public get<T>(url: string, options: any = {}): Promise<T> {
@@ -43,6 +44,11 @@ export class Fetch {
                         throw error;
                     },
                     count: 2
+                }), catchError(err => {
+                    const title = err.error?.title || err.title;
+                    const message = err.error?.message || err.message;
+                    this.toastr.warning(title, message);
+                    return of(null);
                 }))
                 .subscribe(data => {
                     resolve(data as unknown as T);
