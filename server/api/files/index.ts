@@ -163,7 +163,7 @@ router.use('/', route(async (req, res, next) => {
     let { path, showHidden } = req.body;
 
     // TODO: make this work better?
-    if (path.includes(".zip#/")) {
+    if (path.includes(".zip#/") || path.endsWith('.zip')) {
         let [outerpath, innerpath] = path.split("#/");
         return res.send(readZipFolder(outerpath, innerpath));
     }
