@@ -46,7 +46,7 @@ export const getFilesInFolder:
             kind: "file"
         }[]
     }>
-    = async (folder: string, showHidden, recurse = 2) => {
+    = async (folder: string, showHidden = false, recurse = 2) => {
     if (!folder.endsWith('/')) folder += '/';
 
     const contents = await fs.readdir(folder, { withFileTypes: true });
@@ -55,7 +55,7 @@ export const getFilesInFolder:
         contents.filter(f => f.isDirectory())
             .filter(f => !f.name.startsWith('.'))
             .map(async p => ({
-                contents: recurse -1 > 0 ? await getFilesInFolder( folder + p.name + '/', showHidden) : null,
+                contents: recurse -1 > 0 ? await getFilesInFolder(folder + p.name + '/', showHidden) : null,
                 path: folder,
                 name: p.name,
                 kind: "directory" as "directory"
@@ -86,6 +86,23 @@ export const getFilesInFolder:
     return { dirs, files };
 }
 
+export const getFilesInFolderFlat = async (folder: string, showHidden?: boolean, depth: number = 20) => {
+    let structured = await getFilesInFolder(folder, showHidden, depth);
+
+    function r_files({dirs, files}) {
+        return [
+            ...dirs.map(d => r_files(d.contents)).flat(),
+            ...files
+        ];
+    }
+    return r_files(structured) as {
+        stats: Partial<fs.Stats>,
+        path: string,
+        name: string,
+        ext: string,
+        kind: "file";
+    }[];
+}
 
 // getFilesInFolder("./", 1)
 //     .then(res => console.log("files in folders", res))

@@ -3,9 +3,9 @@
         Checksum information
     </ng-template>
     <ng-template #content>
-        <div>
+        <div style="height: 100%">
             <mat-tab-group>
-                <mat-tab label="Music">
+                <!-- <mat-tab label="Music">
                     <as-split>
                         <as-split-area [minSize]="156">
                             <ng-scrollbar
@@ -72,8 +72,24 @@
                         </as-split-area>
                     </as-split>
                 </mat-tab>
-                <mat-tab label="Now Playing"></mat-tab>
-                <mat-tab label="Playlists"></mat-tab>
+                <mat-tab label="Now Playing">
+                    <app-visualizer></app-visualizer>
+                </mat-tab> -->
+                <mat-tab label="Playlists">
+
+                    <video
+                        #media
+                        controls
+                        crossorigin="anonymous"
+                        (pause)="vis.stop()"
+                        (play)="onPlay(vis)"
+                    >
+                        <source [src]="src | urlSanitizer">
+                    </video>
+                    <app-waveform></app-waveform>
+
+                    <app-visualizer #vis [mediaElement]="media"></app-visualizer>
+                </mat-tab>
                 <mat-tab label="Music Explorer"></mat-tab>
                 <mat-tab label="Podcasts"></mat-tab>
             </mat-tab-group>

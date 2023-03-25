@@ -1,6 +1,6 @@
 import { SecureServer } from "@dt-esa/secure-webserver";
 
-import express, { Express } from 'express';
+import { Express } from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
@@ -11,6 +11,7 @@ import { FilesystemApi } from "./api/files";
 import { TerminalSocketService } from "./api/terminal";
 import { XOrgApi } from './api/xorg';
 import { RestApi } from './api/rest';
+import { MusicApi } from './api/music';
 
 (async () => {
 
@@ -83,6 +84,7 @@ import { RestApi } from './api/rest';
     app.use("/api/filesystem", FilesystemApi);
     app.use("/api/xorg", XOrgApi);
     app.use("/api/rest", RestApi);
+    app.use("/api/music", MusicApi);
 
     // Listen on the specified port.
     await server.start();

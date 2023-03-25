@@ -7,13 +7,8 @@ import fs from "fs-extra";
 import crypto from 'crypto';
 import { secureWipe } from './util';
 import { readZipFolder } from './zip';
+import { parseFile, parseBuffer, IAudioMetadata } from 'music-metadata';
 
-
-process.on('uncaughtException', function (exception) {
-    console.log(exception); // to see your exception details in the console
-    // if you are on production, maybe you can send the exception details to your
-    // email as well ?
-});
 
 const router = express.Router();
 
@@ -21,11 +16,12 @@ const router = express.Router();
  * Stream download (support Chrome media stream chunking)
  */
 router.use('/download', route(async (req, res, next) => {
-    const { dir, file } = req.query as any;
-    if (!dir || !file) return next(400);
+
+    const file: string = req.query['path'] as string || (req.query['dir'] as string + req.query['file'] as string);
+    if (!file) return next(400);
 
     try {
-        let stats = await stat(dir + file);
+        let stats = await stat(file);
 
         if (req.headers.range) {
             const range = req.headers.range;
@@ -40,11 +36,11 @@ router.use('/download', route(async (req, res, next) => {
                 "content-length": contentLength
             });
 
-            const videoStream = fs.createReadStream(dir + file, { start, end });
+            const videoStream = fs.createReadStream(file, { start, end });
             videoStream.pipe(res);
         }
         else { // No range was specified so we just stream the response.
-            const stream = fs.createReadStream(dir + file);
+            const stream = fs.createReadStream(file);
             stream.on('error', err => next(err));
             res.setHeader("content-length", stats.size);
 
@@ -55,6 +51,8 @@ router.use('/download', route(async (req, res, next) => {
         next(ex);
     }
 }));
+
+const isAudioFile = /\.(aiff|aac|ape|asf|bwf|dsdiff|dsf|flac|mp[234]|mka|mkv|mpc|m4a|m4v|ogg|opus|speex|theora|vorbis|wav|webm|wv|wma)$/;
 
 /**
  * Read files
@@ -73,21 +71,30 @@ router.post('/file', route(async (req, res, next) => {
         res.setHeader("content-type", ct);
         let stats = await stat(file);
 
+        // get the audio stats
+        let metadata: Promise<IAudioMetadata>;
+        if (isAudioFile.test(file)) {
+            metadata = parseFile(file).catch(e => null);
+        }
+
         if (isText(file)) {
+            let contents = only != "stat" ? await readFile(file, { encoding: "utf-8" }) : null;
 
             resolve({
                 name: file,
-                meta: stats,
+                stats: stats,
                 type: "text",
-                content: only != "stat" && await readFile(file, { encoding: "utf-8" })
+                content: only != "stat" && contents
             });
         }
         else if (stats.size < 2 * 1024 * 1024) {
             let buf = await readFile(file);
+
             if (isText(null, buf)) {
                 resolve({
                     name: file,
-                    meta: stats,
+                    stats: stats,
+                    metadata: metadata ? (await metadata) : null,
                     type: "text",
                     content: only != "stat" && buf.toString()
                 });
@@ -95,7 +102,8 @@ router.post('/file', route(async (req, res, next) => {
             else {
                 resolve({
                     name: file,
-                    meta: stats,
+                    stats: stats,
+                    metadata: metadata ? (await metadata) : null,
                     type: "binary"
                 });
             }
@@ -103,7 +111,8 @@ router.post('/file', route(async (req, res, next) => {
         else {
             resolve({
                 name: file,
-                meta: stats,
+                stats: stats,
+                metadata: metadata ? (await metadata) : null,
                 type: "binary"
             });
         }

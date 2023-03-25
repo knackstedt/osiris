@@ -10,6 +10,11 @@ import { NgScrollbarModule } from 'ngx-scrollbar';
 import { ContextMenuItem, NgxContextMenuDirective } from '@dotglitch/ngx-ctx-menu';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FSDescriptor } from '../filemanager/filemanager.component';
+import { Fetch } from 'client/app/services/fetch.service';
+import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/visualizer.component';
+import { WaveformComponent } from './waveform/waveform.component';
+import { UrlSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
+import { VideoPlayerComponent } from '../video-player/video-player.component';
 
 @Component({
     selector: 'app-music-library',
@@ -24,13 +29,18 @@ import { FSDescriptor } from '../filemanager/filemanager.component';
         ScrollingModule,
         MatTabsModule,
         MatSliderModule,
-        MatIconModule
+        MatIconModule,
+        VisualizerComponent,
+        WaveformComponent,
+        UrlSanitizer
     ],
     standalone: true
 })
 export class MusicLibraryComponent implements OnInit {
 
     @Input() window: ManagedWindow;
+
+    @Input() src = "https://cdn.dotglitch.dev/music/joystock-firebird.mp3";
 
     commonCtxItems: ContextMenuItem<FSDescriptor>[] = [
         {
@@ -171,9 +181,58 @@ export class MusicLibraryComponent implements OnInit {
         }
     ];
 
-    constructor() { }
+    readonly groupModes = ["Artist", "Genre", "Album"];
+    groupMode = "Artist";
+    groupItems = [
+        {
+            label: "Joybeat - Happy",
+            image: "",
+            items: [
+                "/home/knackstedt/Music/joystock-oceanic-drift.mp3",
+                "/home/knackstedt/Music/joystock-summer-pop.mp3",
+                "/home/knackstedt/Music/joystock-upbeat-summer-electro-pop.mp3"
+            ]
+        },
+        {
+            label: "Joybeat - Epic",
+            image: "",
+            items: [
+                "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
+                "/home/knackstedt/Music/joystock-dark-epic-beat.mp3",
+                "/home/knackstedt/Music/joystock-epic.mp3"
+            ]
+        },
+    ];
+
+    tracks = [
+        "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
+        "/home/knackstedt/Music/joystock-dark-epic-beat.mp3",
+        "/home/knackstedt/Music/joystock-epic.mp3"
+    ];
+
+    queue = [{
+        image: "",
+
+    }
+        // "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
+        // "/home/knackstedt/Music/joystock-epic.mp3"
+    ]
+    context: AudioContext;
+
+    constructor(private feth: Fetch) {
+        // this.feth.get('/api/music/library').then(e => console.log(e));
+    }
 
     ngOnInit() {
+    }
+
+    getUrl(path: string) {
+        return "/api/filesystem/download?path=" + encodeURIComponent(path);
+    }
+
+    onPlay(vis: VisualizerComponent) {
+        this.context = new AudioContext();
+        vis.start(this.context);
     }
 
 }

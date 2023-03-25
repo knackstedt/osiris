@@ -70,25 +70,25 @@ export class RootComponent {
         public config: ConfigurationService
     ) {
 
-        this.windowManager.openWindow({
-            appId: "file-manager",
-            workspace: 0,
-            x: 100,
-            y: 50,
-            width: 1200,
-            height: 800,
+        // this.windowManager.openWindow({
+        //     appId: "file-manager",
+        //     workspace: 0,
+        //     x: 100,
+        //     y: 50,
+        //     width: 1200,
+        //     height: 800,
 
-            // This is an arbitrary data object that gets loaded into the app
-            data: {
-                // path: "/home/knackstedt/Applications/starcheat",
-                // path: "/home/knackstedt/Videos",
-                // path: "/home/knackstedt/Downloads/AssetRipper_linux_x64.zip",
-                path: "/home/knackstedt/Downloads",
-                // path: "/home/knackstedt/cache/",
-                showHidden: false,
-                search: ""
-            }
-        });
+        //     // This is an arbitrary data object that gets loaded into the app
+        //     data: {
+        //         // path: "/home/knackstedt/Applications/starcheat",
+        //         // path: "/home/knackstedt/Videos",
+        //         // path: "/home/knackstedt/Downloads/AssetRipper_linux_x64.zip",
+        //         path: "/home/knackstedt/Downloads",
+        //         // path: "/home/knackstedt/cache/",
+        //         showHidden: false,
+        //         search: ""
+        //     }
+        // });
 
         // this.windowManager.openWindow({
         //     appId: "welcome",
@@ -98,14 +98,25 @@ export class RootComponent {
         //     height: 400
         // });
 
+        // this.windowManager.openWindow({
+        //     appId: "client-settings",
+        //     workspace: 0,
+        //     x: window.innerWidth/2-500,
+        //     y: window.innerHeight/2-400,
+        //     width: 1000,
+        //     height: 800,
+        // });
+
         this.windowManager.openWindow({
-            appId: "client-settings",
+            appId: "music-library",
             workspace: 0,
-            x: window.innerWidth/2-500,
-            y: window.innerHeight/2-400,
+            x: window.innerWidth / 2 - 500,
+            y: window.innerHeight / 2 - 400,
             width: 1000,
             height: 800,
         });
+
+        // https://cdn.dotglitch.dev/music/joystock-firebird.mp3
 
         // this.windowManager.openWindow({
         //     appId: "material-factory",

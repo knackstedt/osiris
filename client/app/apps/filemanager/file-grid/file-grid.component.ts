@@ -14,6 +14,12 @@ import { ContextMenuItem, NgxContextMenuDirective } from '@dotglitch/ngx-ctx-men
 const itemWidth = (80 + 20);
 const margin = 10;
 
+const isArchive = (file: string | FSDescriptor) => {
+    const path = typeof file == 'string' ? file : (file.path + file.name);
+    const ext = path.split('.').pop();
+    return ["zip", "7z", "tar", 'tar.gz', 'tar.bz', 'rar'].includes(ext);
+}
+
 @Component({
     selector: 'app-file-grid',
     templateUrl: './file-grid.component.html',
@@ -191,10 +197,7 @@ export class FileGridComponent implements OnInit {
             icon: "open_in_new",
             isVisible: (data) => data.kind == "directory",
             action: (data) => {
-                console.log("New folder goodness");
-                console.log(data);
-
-                this.fileManager.initTab(data.path + data.name)
+                this.fileManager.initTab(data.path + data.name);
             }
         },
         {
@@ -247,7 +250,7 @@ export class FileGridComponent implements OnInit {
             },
         },
         {
-            label: "Purge",
+            label: "Shred file",
             icon: "delete_forever",
             isVisible: data => !data.path.includes("#/"), // omit files in compressed dirs
             action: (evt) => {
@@ -271,7 +274,7 @@ export class FileGridComponent implements OnInit {
             label: "Extract Here",
             icon: "folder_zip",
             shortcutLabel: "Ctrl+A",
-            isDisabled: (data) => data.kind == "file" && data.ext != ".zip",
+            isDisabled: (data) => data.kind == "file" && data.ext != ".zip" && isArchive(data),
             action: (evt) => {
                 // TODO
             },
@@ -280,7 +283,7 @@ export class FileGridComponent implements OnInit {
             label: "Extract to...",
             icon: "folder_zip",
             shortcutLabel: "Ctrl+A",
-            isDisabled: (data) => data.kind == "file" && data.ext != ".zip",
+            isDisabled: (data) => data.kind == "file" && data.ext != ".zip" && isArchive(data),
             action: (evt) => {
                 // TODO
             },
@@ -289,7 +292,7 @@ export class FileGridComponent implements OnInit {
             label: "Compress...",
             icon: "folder_zip",
             shortcutLabel: "Ctrl+A",
-            isDisabled: (data) => data.kind == "file" && data.ext != ".zip",
+            isDisabled: (data) => data.kind == "file",
             action: (evt) => {
                 // TODO
             },
@@ -297,6 +300,7 @@ export class FileGridComponent implements OnInit {
         {
             label: "Checksum",
             icon: "manage_search",
+            isDisabled: (data) => data.kind == "file",
             children: [
                 {
                     label: "MD5",
@@ -427,7 +431,6 @@ export class FileGridComponent implements OnInit {
 
                 this.resize();
             })
-            .catch(err => console.error(err));
     }
 
     flowRows() {

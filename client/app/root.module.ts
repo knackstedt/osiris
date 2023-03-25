@@ -16,8 +16,9 @@ import { NotFoundComponent } from 'client/app/apps/@framework/not-found/not-foun
 import { LazyProgressDistractorComponent } from 'client/app/apps/@framework/lazy-progress-distractor/lazy-progress-distractor.component';
 import { RegisteredApplications, LazyComponents, DialogComponents } from 'client/app/app.registry';
 import { WorkspaceComponent } from 'client/app/components/workspace/workspace.component';
-import { CommonAppModule } from './common.module';
 import { BackgroundComponent } from 'client/app/components/background/background.component';
+import { HTMLSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
     declarations: [
@@ -29,6 +30,8 @@ import { BackgroundComponent } from 'client/app/components/background/background
     ],
     imports: [
         CommonModule,
+        MatDialogModule,
+        HTMLSanitizer,
         NgxLazyLoaderModule.forRoot({
             // TODO: add additional registries
             entries: [
@@ -42,7 +45,6 @@ import { BackgroundComponent } from 'client/app/components/background/background
             errorComponent: WindowErrorComponent
         }),
         ToastrModule.forRoot(),
-        CommonAppModule,
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,

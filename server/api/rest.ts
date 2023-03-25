@@ -68,7 +68,7 @@ router.get('/', route(async (req, res, next) => {
                 { label: "Music", path: info.homedir + '/Music', icon: "library_music" },
                 { label: "Pictures", path: info.homedir + '/Pictures', icon: "photo_library" },
                 { label: "Videos", path: info.homedir + '/Videos', icon: "video_library" },
-                { label: "Trash", path: info.homedir + '/Trash', icon: "delete_outline" },
+                { label: "Trash", path: '/local/share/Trash', icon: "delete_outline" },
             ],
             // List of device locations (cameras, flash storage etc)
             deviceLocations: [
