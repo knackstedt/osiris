@@ -1,4 +1,5 @@
 import { Component, HostListener, Input, OnInit, ViewChild, ViewContainerRef, ElementRef } from '@angular/core';
+import { Polygon, Star } from 'client/app/apps/music-library/visualizer/michael-bromley';
 import { UrlSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
 
 
@@ -59,7 +60,7 @@ export class VisualizerComponent  {
         shadowBlur: 10
     }
 
-    preferences = {
+    freqPreferences = {
         width: 500,
         height: 500,
         inherit: true,
@@ -68,6 +69,14 @@ export class VisualizerComponent  {
         green: 240,
         blue: 50
     }
+
+    preferences = {
+        width: 500,
+        height: 500,
+        fullscreen: false,
+        inherit: true
+    }
+
 
     ctx: CanvasRenderingContext2D;
 
@@ -78,11 +87,11 @@ export class VisualizerComponent  {
 
     initAnalyzer() {
         if (!this.analyzer) {
-            const analyser = this.analyzer = this.context.createAnalyser();
+            const analyzer = this.analyzer = this.context.createAnalyser();
             const source = this.source = this.context.createMediaElementSource(this.mediaElement as any);
 
-            source.connect(analyser);
-            analyser.connect(this.context.destination);
+            source.connect(analyzer);
+            analyzer.connect(this.context.destination);
         }
     }
 
@@ -93,6 +102,7 @@ export class VisualizerComponent  {
         this.initAnalyzer();
         this.analyzer.fftSize = 1024; // reset to default
 
+        this.canvas.setAttribute('style', '');
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
 
@@ -101,7 +111,8 @@ export class VisualizerComponent  {
 
         // return this.renderFreq();
         // return this.renderBar();
-        return this.renderCircle();
+        // return this.renderCircle();
+        return this.renderMichaelBromley();
         switch(this.visualization) {
             case "bar": return this.renderBar();
             case "freq": return this.renderBar();
@@ -110,7 +121,28 @@ export class VisualizerComponent  {
     }
 
     stop() {
+        this.ctx.moveTo(0, 0);
         this.ctx.clearRect(0, 0, this.width, this.height);
+
+        if (this.mbBgCtx) {
+            this.mbMgCtx.moveTo(0, 0);
+            this.mbMgCtx.clearRect(0, 0, this.width, this.height);
+            this.mbBgCtx.moveTo(0, 0);
+            this.mbBgCtx.clearRect(0, 0, this.width, this.height);
+        }
+
+        if (this.sampleAudioStreamInterval) {
+            clearInterval(this.sampleAudioStreamInterval);
+            this.sampleAudioStreamInterval = null;
+        }
+        if (this.drawBgInterval) {
+            clearInterval(this.drawBgInterval);
+            this.drawBgInterval = null;
+        }
+        if (this.rotateForegroundInterval) {
+            clearInterval(this.rotateForegroundInterval);
+            this.rotateForegroundInterval = null;
+        }
 
         cancelAnimationFrame(this.requestAnimation);
     }
@@ -235,11 +267,11 @@ export class VisualizerComponent  {
             const barHeight = this.freqByteData[i] + this.freqFloatData[i];
 
 
-            this.preferences.red = 100 * (i / this.analyzer.frequencyBinCount);
-            this.preferences.blue = 150;
-            this.preferences.green = barHeight + 100 * (i / this.analyzer.frequencyBinCount);
+            this.freqPreferences.red = 100 * (i / this.analyzer.frequencyBinCount);
+            this.freqPreferences.blue = 150;
+            this.freqPreferences.green = barHeight + 100 * (i / this.analyzer.frequencyBinCount);
 
-            this.ctx.fillStyle = 'rgb(' + this.preferences.red + ', ' + this.preferences.green + ', ' + this.preferences.blue + ')';
+            this.ctx.fillStyle = 'rgb(' + this.freqPreferences.red + ', ' + this.freqPreferences.green + ', ' + this.freqPreferences.blue + ')';
             this.ctx.fillRect(this.freqBarProps.x, this.height - barHeight, this.freqBarProps.barWidth, barHeight);
 
             this.freqBarProps.x += this.freqBarProps.barWidth + 1;
@@ -259,17 +291,194 @@ export class VisualizerComponent  {
         for (var i = 0; i < this.analyzer.frequencyBinCount; i++) {
             const barHeight = this.freqByteData[i] + this.freqFloatData[i];
 
-            this.ctx.fillStyle = 'rgb(' + this.preferences.red + ', ' + this.preferences.green + ', ' + this.preferences.blue + ')';
+            this.ctx.fillStyle = 'rgb(' + this.freqPreferences.red + ', ' + this.freqPreferences.green + ', ' + this.freqPreferences.blue + ')';
             this.ctx.fillRect(this.freqBarProps.x, this.height - barHeight, this.freqBarProps.barWidth, barHeight);
 
             this.freqBarProps.x += this.freqBarProps.barWidth + 1;
         }
     }
 
+    mbFgCanvas: HTMLCanvasElement;
+    mbFgCtx: CanvasRenderingContext2D;
+    mbMgCanvas: HTMLCanvasElement;
+    mbMgCtx: CanvasRenderingContext2D;
+    mbBgCanvas: HTMLCanvasElement;
+    mbBgCtx: CanvasRenderingContext2D;
+    tiles: Polygon[] = [];
+    stars: Star[] = [];
+    volume = 0;
+    sampleAudioStreamInterval;
+    drawBgInterval;
+    rotateForegroundInterval;
+    tileSize: number;
+    fgRotation: number = 0;
+
+    renderMichaelBromley() {
+        this.analyzer.fftSize = 128;
+
+        // For the main canvas layer, cannibalize the regular canvas
+        this.mbFgCanvas = this.canvas;
+        this.mbFgCanvas.setAttribute('style', 'position: absolute; z-index: 10');
+        this.mbFgCtx = this.ctx;
+
+        /*
+            Middle Starfield Layer
+        */
+        this.mbMgCanvas = this.mbBgCanvas || document.createElement('canvas');
+        this.mbMgCtx = this.mbBgCtx || this.mbMgCanvas.getContext("2d");
+        this.mbMgCanvas.setAttribute('style', 'position: absolute; z-index: 5');
+        this.viewContainer.element.nativeElement.appendChild(this.mbMgCanvas);
+
+        /*
+            Background Image Layer
+        */
+        this.mbBgCanvas = this.mbBgCanvas || document.createElement('canvas');
+        this.mbBgCtx = this.mbBgCtx || this.mbBgCanvas.getContext("2d");
+        this.viewContainer.element.nativeElement.appendChild(this.mbBgCanvas);
+
+        this.makePolygonArray();
+        this.makeStarArray();
+
+        this.resize();
+        this.drawMichaelBromley();
+
+        this.sampleAudioStreamInterval = setInterval(this.sampleAudioStream.bind(this), 20);
+        this.drawBgInterval = setInterval(this.drawMbBg.bind(this), 100);
+        this.rotateForegroundInterval = setInterval(this.rotateForeground.bind(this), 20);
+    }
+
+	drawMichaelBromley() {
+        this.mbFgCtx.clearRect(-this.mbFgCanvas.width, -this.mbFgCanvas.height, this.mbFgCanvas.width * 2, this.mbFgCanvas.height * 2);
+        this.mbMgCtx.clearRect(-this.mbFgCanvas.width / 2, -this.mbFgCanvas.height / 2, this.mbFgCanvas.width, this.mbFgCanvas.height);
+
+        this.stars.forEach((star) => star.drawStar());
+        this.tiles.forEach((tile) => tile.drawPolygon());
+        this.tiles.forEach((tile) => {
+            if (tile.highlight > 0) {
+                tile.drawHighlight();
+            }
+        });
+
+        this.requestAnimation = window.requestAnimationFrame(this.drawMichaelBromley.bind(this));
+    }
+
+    drawMbBg() {
+        this.mbBgCtx.clearRect(0, 0, this.width, this.height);
+        var r, g, b, a;
+        var val = this.volume / 1000;
+
+        r = 200 + (Math.sin(val) + 1) * 28;
+        g = val * 2;
+        b = val * 8;
+        a = Math.sin(val + 3 * Math.PI / 2) + 1;
+        this.mbBgCtx.beginPath();
+        this.mbBgCtx.rect(0, 0, this.width, this.height);
+        /*
+            Create radial gradient
+        */
+        var grd = this.mbBgCtx.createRadialGradient(this.width / 2, this.height / 2, val, this.width / 2, this.height / 2, this.width - Math.min(Math.pow(val, 2.7), this.width - 20));
+        /*
+            Centre is transparent black
+        */
+        grd.addColorStop(0, 'rgba(0,0,0,0)');
+        grd.addColorStop(0.8, "rgba(" +
+            Math.round(r) + ", " +
+            Math.round(g) + ", " +
+            Math.round(b) + ", 0.4)");
+
+        this.mbBgCtx.fillStyle = grd;
+        this.mbBgCtx.fill();
+    }
+
+    sampleAudioStream() {
+        this.analyzer.getByteFrequencyData(this.freqByteData);
+
+        /*
+        Calculate an overall volume value
+        */
+        var total = 0;
+        /*
+                Get the volume from the first 80 bins, else it gets too loud with treble
+            */
+        for (var i = 0; i < 80; i++) {
+            total += this.freqByteData[i];
+        }
+
+        this.volume = total;
+    }
+
+    rotateForeground() {
+        for (let i = 0; i < this.tiles.length; i++) {
+            this.tiles[i].rotateVertices();
+        }
+    }
+
+	makePolygonArray() {
+        this.tiles = [];
+
+        let i = 0;
+        this.tiles.push(new Polygon(6, 0, 0, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation));
+
+        for (var layer = 1; layer < 32; layer++) {
+            this.tiles.push(new Polygon(6, 0, layer, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation)); i++;
+            this.tiles.push(new Polygon(6, 0, -layer, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation)); i++;
+
+            for (var x = 1; x < layer; x++) {
+                this.tiles.push(new Polygon(6, x, -layer, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation)); i++;
+                this.tiles.push(new Polygon(6, -x, layer, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation)); i++;
+                this.tiles.push(new Polygon(6, x, layer - x, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation)); i++;
+                this.tiles.push(new Polygon(6, -x, -layer + x, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation)); i++;
+            }
+            for (var y = -layer; y <= 0; y++) {
+                this.tiles.push(new Polygon(6, layer, y, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation)); i++;
+                this.tiles.push(new Polygon(6, -layer, -y, this.tileSize, this.mbFgCtx, i, this.analyzer, this.freqByteData, this.tiles, this.fgRotation)); i++;
+            }
+        }
+    }
+
+    /*
+        Build the star array.
+    */
+    makeStarArray() {
+        var x;
+        var y;
+        var starSize;
+
+        this.stars = [];
+        var limit = this.mbFgCanvas.width / 15;
+
+        for (var i = 0; i < limit; i++) {
+            x = (Math.random() - 0.5) * this.mbFgCanvas.width;
+            y = (Math.random() - 0.5) * this.mbFgCanvas.height;
+            starSize = (Math.random() + 0.1) * 3;
+            this.stars.push(new Star(x, y, starSize, this.mbMgCtx, this.mbFgCanvas, this.analyzer, this.freqByteData));
+        }
+    }
+
+
     @HostListener("window:resize")
     resize() {
         const bounds = (this.viewContainer.element?.nativeElement as HTMLElement)?.getBoundingClientRect();
         this.width = bounds.width;
         this.height = bounds.height;
+        this.canvas.height = this.height;
+        this.canvas.width = this.width;
+
+        if (this.mbBgCanvas) {
+            this.mbFgCtx.translate(this.mbFgCanvas.width / 2, this.mbFgCanvas.height / 2);
+            this.mbMgCanvas.width = this.width;
+            this.mbMgCanvas.height = this.height;
+            this.mbBgCanvas.width = this.width;
+            this.mbBgCanvas.height = this.height;
+            this.mbMgCtx.translate(this.mbFgCanvas.width / 2, this.mbFgCanvas.height / 2);
+
+            this.tileSize = 15;
+            // this.tileSize = this.mbFgCanvas.width > this.mbFgCanvas.height ? this.mbFgCanvas.width / 25 : this.mbFgCanvas.height / 25;
+
+            this.drawMbBg();
+            this.makePolygonArray();
+            this.makeStarArray();
+        }
     }
 }
+
