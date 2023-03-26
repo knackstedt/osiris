@@ -3,7 +3,7 @@
         Checksum information
     </ng-template>
     <ng-template #content>
-        <div style="height: 100%">
+        <div style="height: 100%; display: flex; flex-direction: column;">
             <mat-tab-group>
                 <!-- <mat-tab label="Music">
                     <as-split>
@@ -71,17 +71,15 @@
                             </ng-scrollbar>
                         </as-split-area>
                     </as-split>
-                </mat-tab>
-                <mat-tab label="Now Playing">
-                    <app-visualizer></app-visualizer>
                 </mat-tab> -->
-                <mat-tab label="Playlists">
-                    <app-player></app-player>
-
+                <mat-tab label="Now Playing">
+                    <app-visualizer *ngIf="player && player.mediaElement" #visualizer [mediaElement]="player.mediaElement"></app-visualizer>
                 </mat-tab>
+                <mat-tab label="Playlists"></mat-tab>
                 <mat-tab label="Music Explorer"></mat-tab>
                 <mat-tab label="Podcasts"></mat-tab>
             </mat-tab-group>
+            <app-player #player [visualizer]="visualizer" [showVisualizer]="false"></app-player>
         </div>
 
     </ng-template>

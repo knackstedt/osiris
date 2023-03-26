@@ -263,7 +263,7 @@ export class VisualizerComponent  {
         this.ctx.lineCap = 'round';
 
         for (let i = 0; i < numberOfBars; i++) {
-            let barHeight = this.freqByteData[i] + this.freqFloatData[i];
+            const barHeight = (this.freqByteData[i] + this.freqFloatData[i]) * 2;
 
             this.ctx.fillRect(i * this.barPreferences.spacer_width, this.height - barHeight, this.barPreferences.bar_width, barHeight);
         }
@@ -341,7 +341,7 @@ export class VisualizerComponent  {
         gradient.addColorStop(0, '#e60000');
 
         for (var i = 0; i < this.analyzer.frequencyBinCount; i++) {
-            const barHeight = this.freqByteData[i] + this.freqFloatData[i];
+            const barHeight = (this.freqByteData[i] + this.freqFloatData[i]) * 2;
 
             this.ctx.fillStyle = gradient;
             this.ctx.fillRect(this.freqBarProps.x, this.height - barHeight, this.freqBarProps.barWidth, barHeight);
@@ -361,7 +361,7 @@ export class VisualizerComponent  {
         this.ctx.clearRect(0, 0, this.width, this.height);
 
         for (var i = 0; i < this.analyzer.frequencyBinCount; i++) {
-            const barHeight = this.freqByteData[i] + this.freqFloatData[i];
+            const barHeight = (this.freqByteData[i] + this.freqFloatData[i]) * 2;
 
 
             this.freqPreferences.red = 100 * (i / this.analyzer.frequencyBinCount);
@@ -386,7 +386,7 @@ export class VisualizerComponent  {
         this.ctx.clearRect(0, 0, this.width, this.height);
 
         for (var i = 0; i < this.analyzer.frequencyBinCount; i++) {
-            const barHeight = this.freqByteData[i] + this.freqFloatData[i];
+            const barHeight = (this.freqByteData[i] + this.freqFloatData[i]) * 2;
 
             this.ctx.fillStyle = 'rgb(' + this.freqPreferences.red + ', ' + this.freqPreferences.green + ', ' + this.freqPreferences.blue + ')';
             this.ctx.fillRect(this.freqBarProps.x, this.height - barHeight, this.freqBarProps.barWidth, barHeight);

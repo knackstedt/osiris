@@ -41,8 +41,24 @@ app-visualizer {
         right: 12px;
         top: 4px;
     }
-    app-waveform {
-        height: 32px;
+    .slider {
+        position: relative;
+        z-index: 1;
+        mat-slider {
+            position: absolute;
+            left: 0;
+            right: 0;
+            z-index: 5;
+            input: {
+                transition: all 250ms ease;
+            }
+        }
+        app-waveform {
+            height: 32px;
+            width: 100%;
+            position: absolute;
+            z-index: 2;
+        }
     }
 }
 .volume {
@@ -51,3 +67,10 @@ app-visualizer {
 .controls {
 
 }
+
+
+// :host ::ng-deep {
+//     .mdc-slider__thumb {
+//         transition: transform 1000ms linear!important;
+//     }
+// }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSliderModule } from '@angular/material/slider';
@@ -12,6 +12,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FSDescriptor } from '../filemanager/filemanager.component';
 import { Fetch } from 'client/app/services/fetch.service';
 import { PlayerComponent } from './player/player.component';
+import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/visualizer.component';
 
 @Component({
     selector: 'app-music-library',
@@ -27,11 +28,13 @@ import { PlayerComponent } from './player/player.component';
         MatTabsModule,
         MatSliderModule,
         MatIconModule,
-        PlayerComponent
+        PlayerComponent,
+        VisualizerComponent
     ],
     standalone: true
 })
 export class MusicLibraryComponent implements OnInit {
+    @ViewChild(VisualizerComponent) visualizer: VisualizerComponent;
 
     @Input() window: ManagedWindow;
 

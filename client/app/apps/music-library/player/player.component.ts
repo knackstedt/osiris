@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input, ViewChild, ElementRef } from '@angular/core';
 import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/visualizer.component';
 import { WaveformComponent } from 'client/app/apps/music-library/waveform/waveform.component';
 import { UrlSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
@@ -23,7 +23,11 @@ import { CommonModule } from '@angular/common';
     standalone: true
 })
 export class PlayerComponent implements OnInit {
+    @ViewChild("media") mediaRef: ElementRef;
+    get mediaElement() { return this.mediaRef?.nativeElement }
     @ViewChild(VisualizerComponent) vis: VisualizerComponent;
+    @Input() visualizer: VisualizerComponent;
+    @Input() showVisualizer = true;
 
     @Input() mode: "small" | "full" = "full";
 
@@ -41,6 +45,8 @@ export class PlayerComponent implements OnInit {
     currentTime = 0;
     progress = 0;
     volume = 100;
+
+    lastv = 0;
 
     isShuffling = false;
     isRepeating = false;
@@ -67,14 +73,21 @@ export class PlayerComponent implements OnInit {
     onPlay() {
         this.state = "playing";
         this.context = new AudioContext();
-        this.vis.start(this.context);
+        this.vis?.start(this.context);
+        this.visualizer?.start(this.context);
     }
     onPause() {
         this.state = "paused";
-        this.vis.stop();
+        this.vis?.stop();
+        this.visualizer?.stop();
     }
     onEnd() {
         this.state = "waiting";
-        this.vis.stop();
+        this.vis?.stop();
+        this.visualizer?.stop();
+    }
+
+    debug(...args) {
+        console.log(args)
     }
 }

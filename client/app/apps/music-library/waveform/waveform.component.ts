@@ -25,7 +25,14 @@ export class WaveformComponent {
 
     @Input() barSize = 4;
     @Input() barSpacing = 2.48;
-    buffer: AudioBuffer;
+    @Input() set audioContext(ctx: AudioContext) {
+        if (!ctx) return;
+
+        const buf = ctx.createBuffer(1, 1024, ctx.sampleRate);
+        const peaks = this.getPeaks(1024, buf);
+        this.process(peaks);
+    };
+
     peaks: number[] = [];
 
     context = new AudioContext();
@@ -35,60 +42,19 @@ export class WaveformComponent {
 
     svgXml: string;
 
-    constructor(private viewContainer: ViewContainerRef) {
-
-    }
+    constructor(private viewContainer: ViewContainerRef) {}
 
     /**
      * Builds each waveform for the page.
      */
-    ngAfterViewInit() {
+    ngOnInit() {
         if (this.barSize > 0) {
             const bounds = (this.viewContainer.element.nativeElement as HTMLElement).getBoundingClientRect();
             this.barCount = Math.floor(bounds.width / (this.barSize + this.barSpacing));
         }
-        /*
-            Initializes a new XML Http Request.
-        */
-        var req = new XMLHttpRequest();
-
-        /*
-            Opens the src parameter for the audio file to read in.
-        */
-        req.open("GET", this.src, true);
-        req.responseType = "arraybuffer";
-
-        /*
-            When the ready state changes, check to see if we can render the
-            wave form.
-        */
-        req.onreadystatechange = (e) => {
-            if (req.readyState != 4 || req.status != 200) return;
-
-            this.context.decodeAudioData(req.response, bufferedAudio => {
-                this.buffer = bufferedAudio;
-
-                this.peaks = this.getPeaks(this.barCount-1, this.buffer);
-
-                this.process(this.barCount, this.buffer, this.peaks);
-            });
-        };
-        req.send();
     }
 
-    /**
-     * Processes the audio and generates the waveform.
-     *
-     * @param {sampleRate} sampleRate - The rate we should sample the audio.
-     * @param {arraybuffer} buffer - The Web Audio API
-     * @param {array} peaks - The peaks in the audio.
-     */
-    process(sampleRate, buffer, peaks) {
-        if (!buffer) return;
-
-        /*
-            Get the total peaks in the song.
-        */
+    process(peaks) {
         let totalPeaks = peaks.length;
 
         /*
@@ -212,5 +178,4 @@ export class WaveformComponent {
         */
         return mergedPeaks;
     }
-
 }

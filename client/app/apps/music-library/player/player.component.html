@@ -2,18 +2,20 @@
     #media
     crossorigin="anonymous"
     (timeupdate)="
-        duration = media.duration;
+        duration = media.duration || 100;
         currentTime = media.currentTime;
         progress = media.duration / media.currentTime;
+        debug('timeUpdate', media.currentTime, media.duration)
     "
     (pause)="onPause()"
     (play)="onPlay()"
-    (ended)="onEnd()"
->
+    (ended)="onPlay()"
+    >
+    <!-- (ended)="onEnd()" -->
     <source [src]="src | urlSanitizer">
 </audio>
 
-<app-visualizer #vis [mediaElement]="media"></app-visualizer>
+<app-visualizer *ngIf="showVisualizer" [mediaElement]="media"></app-visualizer>
 
 <div class="overlay">
     <div class="nav-controls">
@@ -30,9 +32,25 @@
             <div class="title">{{title || "no file specified"}}</div>
             <div class="duration">{{numToString(currentTime)}}</div>
         </div>
+        <div class="slider">
+            cur: {{currentTime}}
+            max: {{duration}}
+            last: {{lastv}}
+
+            <mat-slider>
+                <input
+                    #pslider
+                    matSliderThumb
+                    [min]="0"
+                    [max]="100"
+                    [value]="currentTime/duration*100"
+                    (valueChange)="media.currentTime = currentTime = (lastv = $event)*duration/100"
+                >
+            </mat-slider>
+            <app-waveform [audioContext]="context"></app-waveform>
+            <app-waveform [audioContext]="context"></app-waveform>
+        </div>
         <!-- [value]="progress" (valueChange)="media.currentTime = media.duration*progress/100" -->
-        <app-waveform [audioContext]="context"></app-waveform>
-        <app-waveform [audioContext]="context"></app-waveform>
     </div>
 
     <div class="volume">
