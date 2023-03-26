@@ -34,9 +34,9 @@ type BarOpts = {
 })
 export class VisualizerComponent  {
     @ViewChild("canvas") canvasRef: ElementRef<any>;
-    get canvas() { return this.canvasRef?.nativeElement }
+    get canvas() { return this.canvasRef?.nativeElement as HTMLCanvasElement }
 
-    @Input() visualization: "bar" | "circular" | "freq-1" | "freq-2" | "freq-3" | "michaelbromley" = "circular";
+    @Input() visualization: string = "circular";
 
     @Input() mediaElement: HTMLElement;
 
@@ -123,8 +123,8 @@ export class VisualizerComponent  {
         this.analyzer.fftSize = 1024; // reset to default
 
         this.canvas.setAttribute('style', '');
-        this.canvas.setAttribute("width", this.width);
-        this.canvas.setAttribute("height", this.height);
+        this.canvas.setAttribute("width", this.width.toString());
+        this.canvas.setAttribute("height", this.height.toString());
 
         this.freqByteData = new Uint8Array(this.analyzer.frequencyBinCount);
         this.freqFloatData = new Float32Array(this.analyzer.frequencyBinCount);
@@ -134,6 +134,8 @@ export class VisualizerComponent  {
         // return this.renderCircle();
         // return this.renderMichaelBromley();
         switch(this.visualization) {
+            case "spectrum": return this.renderSpectrum();
+            case "spectrum-mini": return this.renderSpectrum("mini");
             case "bar": return this.renderBar();
             case "circular": return this.renderCircle();
             case "freq-1": return this.renderFreq("basic");
@@ -176,8 +178,75 @@ export class VisualizerComponent  {
         this.mbBgCanvas = null;
         this.mbMgCtx = null;
         this.mbBgCtx = null;
+
+        this.spectrumCacheCanvas?.remove();
+        this.spectrumCacheCanvas = null;
+        this.spectrumCacheCtx = null;
     }
 
+    spectrumCacheCanvas: HTMLCanvasElement;
+    spectrumCacheCtx: CanvasRenderingContext2D;
+    isSpectrumMini = false;
+    renderSpectrum(state?: string) {
+        if (state == "mini") this.isSpectrumMini = true;
+
+        this.spectrumCacheCanvas = this.spectrumCacheCanvas || document.createElement("canvas");
+        this.spectrumCacheCanvas.width = this.width;
+        this.spectrumCacheCanvas.height = this.height;
+        this.spectrumCacheCtx = this.spectrumCacheCtx || this.spectrumCacheCanvas.getContext("2d");
+        this.spectrumCallback();
+    }
+    spectrumCallback() {
+        this.requestAnimation = requestAnimationFrame(this.spectrumCallback.bind(this));
+
+        this.freqBarProps.x = 0;
+
+        this.analyzer.getByteFrequencyData(this.freqByteData);
+        this.analyzer.getFloatFrequencyData(this.freqFloatData);
+
+        const spectrumWidth = this.analyzer.frequencyBinCount / 4;
+        const lineWidth = 4;
+        const y = this.height / 2;
+
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.spectrumCacheCtx.clearRect(0, 0, this.width, this.height);
+
+
+        let gradient;
+        if (this.isSpectrumMini) {
+            gradient = this.ctx.createLinearGradient(0, this.height / 4, 0, this.height - (this.height/4));
+            gradient.addColorStop(0, '#03C1EB');
+            gradient.addColorStop(1, '#86F3B8');
+        }
+
+        for (let i = this.freqByteData.length - 1; i >= 0; i--) {
+            const frequency = this.freqByteData[i] + this.freqFloatData[i];
+            const fNorm = frequency / 256;
+            const x = i / spectrumWidth * this.width;
+            const hue = 110 * (1 - fNorm);
+            const height = 0.25 * this.height * fNorm;
+
+            this.ctx.beginPath();
+            this.ctx.lineCap = "round";
+            this.ctx.lineWidth = lineWidth;
+            this.ctx.strokeStyle = this.isSpectrumMini ? gradient : `hsla(${hue}, 60%, 50%, 1)`;
+            this.ctx.moveTo(x, y - height);
+            this.ctx.lineTo(x, y + height);
+            this.ctx.stroke();
+            this.ctx.closePath();
+        }
+
+        // this.spectrumCacheCtx.save();
+        // this.spectrumCacheCtx.filter = 'blur(5px)';
+        // this.spectrumCacheCtx.drawImage(this.canvas, 0, 0);
+        // this.spectrumCacheCtx.restore();
+
+        // this.spectrumCacheCtx.save();
+        // this.spectrumCacheCtx.globalCompositeOperation = 'lighter';
+        // this.spectrumCacheCtx.drawImage(this.canvas, 0, 0);
+        // this.spectrumCacheCtx.restore();
+
+    }
 
     renderBar() {
         this.requestAnimation = requestAnimationFrame(this.renderBar.bind(this));
