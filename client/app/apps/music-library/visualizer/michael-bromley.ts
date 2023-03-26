@@ -13,6 +13,7 @@ export class Polygon {
     x: number;
     vertices: any[];
     streamData: any;
+    volume = 0;
 
     constructor(sides, x, y, tileSize, ctx, num, analyser, streamData, tiles, fgRotation) {
         this.analyser = analyser;
@@ -68,7 +69,9 @@ export class Polygon {
         */
         let rotation = this.fgRotation;
 
-        rotation -= this.analyser.volume > 10000 ? Math.sin(this.analyser.volume / 800000) : -0.001;
+        // rotation -= this.volume / 800000;
+        rotation -= Math.sin(this.volume / 800000);
+
         for (let i = 0; i <= this.sides - 1; i += 1) {
             this.vertices[i][0] = this.vertices[i][0] - this.vertices[i][1] * Math.sin(rotation);
             this.vertices[i][1] = this.vertices[i][1] + this.vertices[i][0] * Math.sin(rotation);
@@ -170,18 +173,6 @@ export class Polygon {
     calculateOffset(coords) {
         this.analyser.getByteFrequencyData(this.streamData);
 
-        /*
-            Calculate an overall volume value
-        */
-        var total = 0;
-        /*
-            Get the volume from the first 80 bins, else it gets too loud with treble
-        */
-        for (var i = 0; i < 80; i++) {
-            total += this.streamData[i];
-        }
-
-        var volume = total;
 
         var angle = Math.atan(coords[1] / coords[0]);
 
@@ -193,9 +184,9 @@ export class Polygon {
         /*
             This factor makes the visualization go crazy wild
         */
-        var mentalFactor = Math.min(Math.max((Math.tan(volume / 6000) * 0.5), -20), 2);
+        var mentalFactor = Math.min(Math.max((Math.tan(this.volume / 8000) * 0.5), -20), 2);
 
-        var offsetFactor = Math.pow(distance / 3, 2) * (volume / 2000000) * (Math.pow(this.high, 1.3) / 300) * mentalFactor;
+        var offsetFactor = Math.pow(distance / 3, 2) * (this.volume / 2000000) * (Math.pow(this.high, 1.3) / 300) * mentalFactor;
         var offsetX = Math.cos(angle) * offsetFactor;
         var offsetY = Math.sin(angle) * offsetFactor;
         offsetX *= (coords[0] < 0) ? -1 : 1;

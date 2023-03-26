@@ -2,6 +2,12 @@ import { Component, HostListener, Input, OnInit, ViewChild, ViewContainerRef, El
 import { Polygon, Star } from 'client/app/apps/music-library/visualizer/michael-bromley';
 import { UrlSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
 
+/**
+ * Visualizations are rewritten from
+ * https://github.com/521dimensions/amplitudejs
+ * Note: the referenced source has many bugs and
+ * problems, thus we include fixes as well.
+ */
 
 type BarOpts = {
     bar_color: '#ff0000',
@@ -355,6 +361,7 @@ export class VisualizerComponent  {
         this.tiles.forEach((tile) => tile.drawPolygon());
         this.tiles.forEach((tile) => {
             if (tile.highlight > 0) {
+                tile.volume = this.volume;
                 tile.drawHighlight();
             }
         });
@@ -395,12 +402,10 @@ export class VisualizerComponent  {
 
         /*
         Calculate an overall volume value
+            generally between 0000 -> 10,000
         */
         var total = 0;
-        /*
-                Get the volume from the first 80 bins, else it gets too loud with treble
-            */
-        for (var i = 0; i < 80; i++) {
+        for (var i = 0; i < this.analyzer.frequencyBinCount; i++) {
             total += this.freqByteData[i];
         }
 
@@ -409,6 +414,7 @@ export class VisualizerComponent  {
 
     rotateForeground() {
         for (let i = 0; i < this.tiles.length; i++) {
+            this.tiles[i].volume = this.volume;
             this.tiles[i].rotateVertices();
         }
     }
