@@ -76,19 +76,8 @@
                     <app-visualizer></app-visualizer>
                 </mat-tab> -->
                 <mat-tab label="Playlists">
+                    <app-player></app-player>
 
-                    <video
-                        #media
-                        controls
-                        crossorigin="anonymous"
-                        (pause)="vis.stop()"
-                        (play)="onPlay(vis)"
-                    >
-                        <source [src]="src | urlSanitizer">
-                    </video>
-                    <app-waveform></app-waveform>
-
-                    <app-visualizer #vis [mediaElement]="media"></app-visualizer>
                 </mat-tab>
                 <mat-tab label="Music Explorer"></mat-tab>
                 <mat-tab label="Podcasts"></mat-tab>

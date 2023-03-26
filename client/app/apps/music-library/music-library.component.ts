@@ -11,10 +11,7 @@ import { ContextMenuItem, NgxContextMenuDirective } from '@dotglitch/ngx-ctx-men
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FSDescriptor } from '../filemanager/filemanager.component';
 import { Fetch } from 'client/app/services/fetch.service';
-import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/visualizer.component';
-import { WaveformComponent } from './waveform/waveform.component';
-import { UrlSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
-import { VideoPlayerComponent } from '../video-player/video-player.component';
+import { PlayerComponent } from './player/player.component';
 
 @Component({
     selector: 'app-music-library',
@@ -30,9 +27,7 @@ import { VideoPlayerComponent } from '../video-player/video-player.component';
         MatTabsModule,
         MatSliderModule,
         MatIconModule,
-        VisualizerComponent,
-        WaveformComponent,
-        UrlSanitizer
+        PlayerComponent
     ],
     standalone: true
 })
@@ -40,7 +35,6 @@ export class MusicLibraryComponent implements OnInit {
 
     @Input() window: ManagedWindow;
 
-    @Input() src = "https://cdn.dotglitch.dev/music/joystock-firebird.mp3";
 
     commonCtxItems: ContextMenuItem<FSDescriptor>[] = [
         {
@@ -217,7 +211,6 @@ export class MusicLibraryComponent implements OnInit {
         // "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
         // "/home/knackstedt/Music/joystock-epic.mp3"
     ]
-    context: AudioContext;
 
     constructor(private feth: Fetch) {
         // this.feth.get('/api/music/library').then(e => console.log(e));
@@ -230,9 +223,5 @@ export class MusicLibraryComponent implements OnInit {
         return "/api/filesystem/download?path=" + encodeURIComponent(path);
     }
 
-    onPlay(vis: VisualizerComponent) {
-        this.context = new AudioContext();
-        vis.start(this.context);
-    }
 
 }

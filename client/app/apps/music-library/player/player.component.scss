@@ -1,0 +1,53 @@
+
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+app-visualizer {
+    height: 100%;
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    display: flex;
+}
+
+.nav-controls {
+
+}
+
+.seeker {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .top {
+        position: relative;
+        display: flex;
+    }
+    .title {
+
+    }
+    .duration {
+        position: absolute;
+        right: 12px;
+        top: 4px;
+    }
+    app-waveform {
+        height: 32px;
+    }
+}
+.volume {
+
+}
+.controls {
+
+}

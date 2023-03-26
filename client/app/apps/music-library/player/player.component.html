@@ -1,0 +1,67 @@
+<audio
+    #media
+    crossorigin="anonymous"
+    (timeupdate)="
+        duration = media.duration;
+        currentTime = media.currentTime;
+        progress = media.duration / media.currentTime;
+    "
+    (pause)="onPause()"
+    (play)="onPlay()"
+    (ended)="onEnd()"
+>
+    <source [src]="src | urlSanitizer">
+</audio>
+
+<app-visualizer #vis [mediaElement]="media"></app-visualizer>
+
+<div class="overlay">
+    <div class="nav-controls">
+        <button mat-icon-button (click)="1"><mat-icon>skip_previous</mat-icon></button>
+
+        <button mat-icon-button *ngIf="state != 'playing'" (click)="media.play()"><mat-icon>play_arrow</mat-icon></button>
+        <button mat-icon-button *ngIf="state == 'playing'" (click)="media.pause()"><mat-icon>pause</mat-icon></button>
+
+        <button mat-icon-button (click)="1"><mat-icon>skip_next</mat-icon></button>
+    </div>
+
+    <div class="seeker">
+        <div class="top">
+            <div class="title">{{title || "no file specified"}}</div>
+            <div class="duration">{{numToString(currentTime)}}</div>
+        </div>
+        <!-- [value]="progress" (valueChange)="media.currentTime = media.duration*progress/100" -->
+        <app-waveform [audioContext]="context"></app-waveform>
+        <app-waveform [audioContext]="context"></app-waveform>
+    </div>
+
+    <div class="volume">
+        <mat-icon *ngIf="volume <= .1">volume_mute</mat-icon>
+        <mat-icon *ngIf="volume > .1 && volume < 50">volume_down</mat-icon>
+        <mat-icon *ngIf="volume > 50">volume_up</mat-icon>
+
+        <mat-slider>
+            <input
+                #_
+                matSliderThumb
+                [value]="volume"
+                (pointermove)="volume = _.valueAsNumber; media.volume = (volume / 100)"
+                (wheel)="volume = volume + $event.deltaY"
+            >
+        </mat-slider>
+    </div>
+    <!-- TODO: Equalizer -->
+    <!-- <button><mat-icon>equalizer</mat-icon></button> -->
+
+    <div class="controls">
+        <button mat-icon-button (click)="isRepeating = !isRepeating">
+            <mat-icon *ngIf="!isRepeating">repeat</mat-icon>
+            <mat-icon *ngIf="isRepeating">repeat_on</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="isShuffling = !isShuffling">
+            <mat-icon *ngIf="!isShuffling">shuffle</mat-icon>
+            <mat-icon *ngIf="isShuffling">shuffle_on</mat-icon>
+        </button>
+    </div>
+</div>

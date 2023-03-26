@@ -110,6 +110,8 @@ export class VisualizerComponent  {
             const analyzer = this.analyzer = this.context.createAnalyser();
             const source = this.source = this.context.createMediaElementSource(this.mediaElement as any);
 
+
+
             source.connect(analyzer);
             analyzer.connect(this.context.destination);
         }
