@@ -1,1 +1,18 @@
-<canvas #canvas></canvas>
+
+<mat-form-field appearance="outline">
+    <mat-label>Visualizer Mode</mat-label>
+    <mat-select (valueChange)="onModeSelect($event)">
+        <mat-option value="bar">Bars</mat-option>
+        <mat-option value="circular">Circle</mat-option>
+        <mat-optgroup label="Frequency">
+            <mat-option value="freq-1">Basic</mat-option>
+            <mat-option value="freq-2">Dynamic</mat-option>
+            <mat-option value="freq-3">Gradient</mat-option>
+        </mat-optgroup>
+        <mat-option value="michaelbromley">Michael Bromley</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<div class="container">
+    <canvas #canvas></canvas>
+</div>

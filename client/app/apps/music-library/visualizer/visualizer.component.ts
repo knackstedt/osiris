@@ -1,6 +1,7 @@
-import { Component, HostListener, Input, OnInit, ViewChild, ViewContainerRef, ElementRef } from '@angular/core';
+import { Component, HostListener, Input, ViewChild, ViewContainerRef, ElementRef } from '@angular/core';
 import { Polygon, Star } from 'client/app/apps/music-library/visualizer/michael-bromley';
 import { UrlSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
+import { MatSelectModule } from '@angular/material/select';
 
 /**
  * Visualizations are rewritten from
@@ -26,7 +27,8 @@ type BarOpts = {
     templateUrl: './visualizer.component.html',
     styleUrls: ['./visualizer.component.scss'],
     imports: [
-        UrlSanitizer
+        UrlSanitizer,
+        MatSelectModule
     ],
     standalone: true
 })
@@ -34,9 +36,19 @@ export class VisualizerComponent  {
     @ViewChild("canvas") canvasRef: ElementRef<any>;
     get canvas() { return this.canvasRef?.nativeElement }
 
-    @Input() visualization: "bar" | "circular" | "freq" | "michaelbromley" = "circular";
+    @Input() visualization: "bar" | "circular" | "freq-1" | "freq-2" | "freq-3" | "michaelbromley" = "circular";
 
     @Input() mediaElement: HTMLElement;
+
+    readonly modes = [
+        "bar",
+        "circular",
+        "freq-1",
+        "freq-2",
+        "freq-3",
+        "michaelbromley"
+    ];
+
     context: AudioContext;
 
     freqByteData: Uint8Array;
@@ -76,20 +88,22 @@ export class VisualizerComponent  {
         blue: 50
     }
 
-    preferences = {
-        width: 500,
-        height: 500,
-        fullscreen: false,
-        inherit: true
-    }
-
-
     ctx: CanvasRenderingContext2D;
 
     width: number;
     height: number;
 
     constructor(private viewContainer: ViewContainerRef) { }
+
+    onModeSelect(mode: string) {
+        this.visualization = mode as any;
+
+        // Restart the animation
+        if (this.requestAnimation) {
+            this.stop();
+            this.start(this.context);
+        }
+    }
 
     initAnalyzer() {
         if (!this.analyzer) {
@@ -118,15 +132,20 @@ export class VisualizerComponent  {
         // return this.renderFreq();
         // return this.renderBar();
         // return this.renderCircle();
-        return this.renderMichaelBromley();
+        // return this.renderMichaelBromley();
         switch(this.visualization) {
             case "bar": return this.renderBar();
-            case "freq": return this.renderBar();
-            case "michaelbromley": return this.renderBar();
+            case "circular": return this.renderCircle();
+            case "freq-1": return this.renderFreq("basic");
+            case "freq-2": return this.renderFreq("dynamic");
+            case "freq-3": return this.renderFreq("gradient");
+            case "michaelbromley": return this.renderMichaelBromley();
         }
     }
 
     stop() {
+        cancelAnimationFrame(this.requestAnimation);
+
         this.ctx.moveTo(0, 0);
         this.ctx.clearRect(0, 0, this.width, this.height);
 
@@ -150,7 +169,13 @@ export class VisualizerComponent  {
             this.rotateForegroundInterval = null;
         }
 
-        cancelAnimationFrame(this.requestAnimation);
+        // Cleanup
+        this.mbMgCanvas?.remove();
+        this.mbBgCanvas?.remove();
+        this.mbMgCanvas = null;
+        this.mbBgCanvas = null;
+        this.mbMgCtx = null;
+        this.mbBgCtx = null;
     }
 
 
@@ -210,28 +235,23 @@ export class VisualizerComponent  {
         x: 0,
         barWidth: 0
     }
-    renderFreq() {
+
+    renderFreq(type: string) {
 
         // Control the number of frequency groups in the analyzer;
         this.analyzer.fftSize = 256;
 
         this.freqBarProps.barWidth = (this.width / this.analyzer.frequencyBinCount) * 2;
 
-        // switch (this.preferences.type) {
-        //     case 'gradient':
-        //         this.renderGradientAnimation();
-        //         break;
-        //     case 'dynamic':
-        //         this.renderDynamicColorAnimation();
-        //         break;
-        //     default:
-        //     case 'single':
-        //         break;
-        //     }
-                // this.renderDynamicColorAnimation();
-                this.renderGradientAnimation();
-
-        // this.renderSingleColorAnimation();
+        switch (type) {
+            case 'gradient':
+                return this.renderGradientAnimation();
+            case 'dynamic':
+                return this.renderDynamicColorAnimation();
+            default:
+            case 'basic':
+                return this.renderGradientAnimation();
+        }
     }
 
     renderGradientAnimation() {
@@ -324,7 +344,7 @@ export class VisualizerComponent  {
 
         // For the main canvas layer, cannibalize the regular canvas
         this.mbFgCanvas = this.canvas;
-        this.mbFgCanvas.setAttribute('style', 'position: absolute; z-index: 10');
+        this.mbFgCanvas.setAttribute('style', 'position: absolute; z-index: 2');
         this.mbFgCtx = this.ctx;
 
         /*
@@ -332,7 +352,7 @@ export class VisualizerComponent  {
         */
         this.mbMgCanvas = this.mbBgCanvas || document.createElement('canvas');
         this.mbMgCtx = this.mbBgCtx || this.mbMgCanvas.getContext("2d");
-        this.mbMgCanvas.setAttribute('style', 'position: absolute; z-index: 5');
+        this.mbMgCanvas.setAttribute('style', 'position: absolute; z-index: 1');
         this.viewContainer.element.nativeElement.appendChild(this.mbMgCanvas);
 
         /*
