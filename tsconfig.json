@@ -22,10 +22,22 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
+    "jsx": "react",
     "lib": [
       "es2020",
       "dom"
     ],
+    "paths": {
+        "@dotglitch/ngx-ctx-menu": [
+            "../@dotglitch_ngx-ctx-menu/dist/ngx-ctx-menu"
+        ],
+        "@dotglitch/ngx-lazy-loader": [
+            "../@dotglitch_ngx-lazy-loader/dist/ngx-lazy-loader"
+        ],
+        "@angular/*": [
+            "node_modules/@angular/*"
+        ]
+    },
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
