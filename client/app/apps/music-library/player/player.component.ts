@@ -24,7 +24,15 @@ import { CommonModule } from '@angular/common';
 })
 export class PlayerComponent implements OnInit {
     @ViewChild("media") mediaRef: ElementRef;
-    get mediaElement() { return this.mediaRef?.nativeElement }
+    get mediaElement() { return this.mediaRef?.nativeElement as HTMLMediaElement }
+
+    private _analyzer: AnalyserNode;
+    get analyzer() {return this._analyzer;}
+
+    private _source: MediaElementAudioSourceNode;
+    get source() {return this._source;}
+
+
     @ViewChild(VisualizerComponent) vis: VisualizerComponent;
     @Input() visualizer: VisualizerComponent;
     @Input() showVisualizer = true;
@@ -45,8 +53,6 @@ export class PlayerComponent implements OnInit {
     currentTime = 0;
     progress = 0;
     volume = 100;
-
-    lastv = 0;
 
     isShuffling = false;
     isRepeating = false;
@@ -72,15 +78,31 @@ export class PlayerComponent implements OnInit {
 
     onPlay() {
         this.state = "playing";
-        this.context = new AudioContext();
-        this.vis?.start(this.context);
-        this.visualizer?.start(this.context);
+
+        this.context = this.context || new AudioContext();
+
+        if (!this.analyzer) {
+            this._analyzer = this.context.createAnalyser();
+            this._analyzer.connect(this.context.destination);
+        }
+
+        if (!this.source) {
+            this._source = this.context.createMediaElementSource(this.mediaElement as any);
+            this._source.connect(this.analyzer);
+        }
+
+        this.vis?.start(this.context, this.analyzer, this.source);
+        this.visualizer?.start(this.context, this.analyzer, this.source);
+
+        this.mediaElement.volume = this.volume / 100;
     }
+
     onPause() {
         this.state = "paused";
         this.vis?.stop();
         this.visualizer?.stop();
     }
+
     onEnd() {
         this.state = "waiting";
         this.vis?.stop();

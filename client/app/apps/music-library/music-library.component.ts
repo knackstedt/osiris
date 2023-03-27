@@ -38,7 +38,6 @@ export class MusicLibraryComponent implements OnInit {
 
     @Input() window: ManagedWindow;
 
-
     commonCtxItems: ContextMenuItem<FSDescriptor>[] = [
         {
             label: "Play Now",
@@ -183,7 +182,7 @@ export class MusicLibraryComponent implements OnInit {
     groupItems = [
         {
             label: "Joybeat - Happy",
-            image: "",
+            image: "https://www.joystock.org/logos/joystock_icon.png",
             items: [
                 "/home/knackstedt/Music/joystock-oceanic-drift.mp3",
                 "/home/knackstedt/Music/joystock-summer-pop.mp3",
@@ -192,7 +191,7 @@ export class MusicLibraryComponent implements OnInit {
         },
         {
             label: "Joybeat - Epic",
-            image: "",
+            image: "https://www.joystock.org/logos/joystock_icon.png",
             items: [
                 "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
                 "/home/knackstedt/Music/joystock-dark-epic-beat.mp3",
@@ -202,9 +201,14 @@ export class MusicLibraryComponent implements OnInit {
     ];
 
     tracks = [
-        "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
-        "/home/knackstedt/Music/joystock-dark-epic-beat.mp3",
-        "/home/knackstedt/Music/joystock-epic.mp3"
+        {
+            name: "Big Epic Rock",
+            artist: "Joystock",
+            url: "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
+            image: "https://www.joystock.org/track-images/epic.jpg"
+        }
+        // "/home/knackstedt/Music/joystock-dark-epic-beat.mp3",
+        // "/home/knackstedt/Music/joystock-epic.mp3"
     ];
 
     queue = [{

@@ -5,9 +5,9 @@
     <ng-template #content>
         <div style="height: 100%; display: flex; flex-direction: column;">
             <mat-tab-group>
-                <!-- <mat-tab label="Music">
-                    <as-split>
-                        <as-split-area [minSize]="156">
+                <mat-tab label="Music">
+                    <as-split [gutterSize]="2">
+                        <as-split-area [minSize]="156/2" [size]="156">
                             <ng-scrollbar
                                 style="height: 100%; width: 100%"
                                 track="vertical"
@@ -19,19 +19,19 @@
                                     itemSize="64"
                                     scrollViewport
                                 >
-                                    <div *ngFor="let item of []">
-                                        <div>
-                                            <img src="1" />
+                                    <div class="group-item" *ngFor="let item of groupItems">
+                                        <div class="photo">
+                                            <img [src]="item.image"/>
                                         </div>
-                                        <div>
-                                            <div>Artist Name</div>
-                                            <div>1 album(s)</div>
+                                        <div class="text">
+                                            <div class="name">{{item.label}}</div>
+                                            <div class="subtext">{{item.items.length}} album(s)</div>
                                         </div>
                                     </div>
                                 </cdk-virtual-scroll-viewport>
                             </ng-scrollbar>
                         </as-split-area>
-                        <as-split-area>
+                        <as-split-area [minSize]="10">
                             <ng-scrollbar
                                 style="height: 100%; width: 100%"
                                 track="vertical"
@@ -43,10 +43,16 @@
                                     itemSize="134"
                                     scrollViewport
                                 >
+                                    <table>
+                                        <tr *cdkVirtualFor="let item of tracks">
+                                            <td>{{item.name}}</td>
+                                            <td>{{item.artist}}</td>
+                                        </tr>
+                                    </table>
                                 </cdk-virtual-scroll-viewport>
                             </ng-scrollbar>
                         </as-split-area>
-                        <as-split-area [minSize]="156">
+                        <as-split-area [minSize]="156/2" [size]="156">
                             <ng-scrollbar
                                 style="height: 100%; width: 100%"
                                 track="vertical"
@@ -71,9 +77,16 @@
                             </ng-scrollbar>
                         </as-split-area>
                     </as-split>
-                </mat-tab> -->
+                </mat-tab>
                 <mat-tab label="Now Playing">
-                    <app-visualizer *ngIf="player && player.mediaElement" #visualizer [mediaElement]="player.mediaElement"></app-visualizer>
+                    <ng-template matTabContent>
+                        <app-visualizer
+                            #visualizer
+                            *ngIf="player && player.mediaElement"
+                            [mediaElement]="player.mediaElement"
+                            (load)="visualizer.start(player.context, player.analyzer, player.source)"
+                        />
+                    </ng-template>
                 </mat-tab>
                 <mat-tab label="Playlists"></mat-tab>
                 <mat-tab label="Music Explorer"></mat-tab>

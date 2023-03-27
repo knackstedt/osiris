@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, ViewChild, ViewContainerRef, ElementRef } from '@angular/core';
+import { Component, HostListener, Input, ViewChild, ViewContainerRef, ElementRef, EventEmitter, Output } from '@angular/core';
 import { Polygon, Star } from 'client/app/apps/music-library/visualizer/michael-bromley';
 import { UrlSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
 import { MatSelectModule } from '@angular/material/select';
@@ -40,6 +40,12 @@ export class VisualizerComponent  {
 
     @Input() mediaElement: HTMLElement;
 
+    context: AudioContext;
+    analyzer: AnalyserNode;
+    source: MediaElementAudioSourceNode;
+
+    @Output() load = new EventEmitter();
+
     readonly modes = [
         "bar",
         "circular",
@@ -49,14 +55,11 @@ export class VisualizerComponent  {
         "michaelbromley"
     ];
 
-    context: AudioContext;
 
     freqByteData: Uint8Array;
     freqFloatData: Float32Array;
 
     requestAnimation: number;
-    analyzer: AnalyserNode;
-    source: MediaElementAudioSourceNode;
 
     barPreferences = {
         bar_color: '#ff0000',
@@ -95,33 +98,38 @@ export class VisualizerComponent  {
 
     constructor(private viewContainer: ViewContainerRef) { }
 
+    ngAfterViewInit() {
+        this.load.emit()
+    }
+    ngOnDestroy() {
+        // this.analyzer.disconnect();
+        // this.source.disconnect();
+    }
+
     onModeSelect(mode: string) {
         this.visualization = mode as any;
 
         // Restart the animation
         if (this.requestAnimation) {
             this.stop();
-            this.start(this.context);
+            this.start();
         }
     }
 
-    initAnalyzer() {
-        if (!this.analyzer) {
-            const analyzer = this.analyzer = this.context.createAnalyser();
-            const source = this.source = this.context.createMediaElementSource(this.mediaElement as any);
+    start(ctx?: AudioContext, analyzer?, source?) {
+        console.log("START VIS")
 
-
-
-            source.connect(analyzer);
-            analyzer.connect(this.context.destination);
+        if (this.ctx) {
+            this.ctx.clearRect(0, 0, this.width, this.height)
         }
-    }
 
-    start(ctx: AudioContext) {
-        this.context = ctx;
+        if (ctx) {
+            this.context = ctx;
+            this.analyzer = analyzer;
+            this.source = source
+        }
         this.resize();
         this.ctx = this.canvas.getContext('2d');
-        this.initAnalyzer();
         this.analyzer.fftSize = 1024; // reset to default
 
         this.canvas.setAttribute('style', '');
@@ -184,6 +192,10 @@ export class VisualizerComponent  {
         this.spectrumCacheCanvas?.remove();
         this.spectrumCacheCanvas = null;
         this.spectrumCacheCtx = null;
+
+        for (let i = 0; i < this.freqByteData.length; i++) {
+            this.freqByteData[i] = this.freqFloatData[i] = 0;
+        }
     }
 
     spectrumCacheCanvas: HTMLCanvasElement;
@@ -269,6 +281,7 @@ export class VisualizerComponent  {
         }
     }
 
+    rotation = 0;
     renderCircle() {
         this.requestAnimation = requestAnimationFrame(this.renderCircle.bind(this));
 
@@ -277,29 +290,38 @@ export class VisualizerComponent  {
 
         this.ctx.clearRect(0, 0, this.width, this.height);
 
-        for (
-            var cx = this.width / 4,
-            cy = this.height / 2,
-            a = cx - (this.width/8),
-            i = Math.floor((2 * a * Math.PI) / (this.circlePreferences.barWidth + this.circlePreferences.barSpacing)),
-            s = i - Math.floor((25 * i) / 100),
-            n = Math.floor(this.freqByteData.length / i),
-            r = 0;
-            r < s;
-            r++
-        ) {
-            var h = this.freqByteData[r * n] + this.freqFloatData[r * n],
-                c = (2 * r * Math.PI) / i + Math.PI,
-                o = ((135 - this.circlePreferences.barWidth) * Math.PI) / 180,
-                f = a - (h / 12 - this.circlePreferences.barHeight),
-                l = this.circlePreferences.barWidth,
-                d = h / 6 + this.circlePreferences.barHeight;
-            this.ctx.save(),
-                this.ctx.translate(cx, cy),
-                this.ctx.rotate(c - o),
-                this.ctx.fillRect(0, f, l, d),
-                this.ctx.restore();
+        const centerX = this.width / 2;
+        const centerY = this.height / 2;
+        const radius = Math.min(centerX, centerY) - 150; // approx 100 pixels for outer line height
+        const barWidth = Math.floor((2 * radius * Math.PI) / (this.circlePreferences.barWidth + this.circlePreferences.barSpacing));
+        const barCount = barWidth - Math.floor((25 * barWidth) / 100);
+        const n = Math.floor(this.freqByteData.length / barWidth);
+
+        this.rotation += .001;
+
+        this.ctx.fillStyle = "white";
+        for (let i = 0; i < barCount; i++) {
+            const amplitude = this.freqByteData[i * n] + this.freqFloatData[i * n];
+
+            const deg1 = (2 * i * Math.PI) / barCount + Math.PI;
+
+            const yOffset = radius - (amplitude / 2);
+            const barw = this.circlePreferences.barWidth;
+            const barh = amplitude;
+
+            this.ctx.save();
+            this.ctx.translate(centerX, centerY);
+            this.ctx.rotate(deg1 + this.rotation);
+            this.ctx.fillStyle = "white";
+            this.ctx.fillRect(0, yOffset, barw, barh);
+
+            // this.ctx.fillStyle = "red";
+            // this.ctx.fillRect(0, radius + i, barw, 2);
+            this.ctx.restore();
         }
+
+        this.ctx.fillStyle = "red";
+        this.ctx.fillRect(centerX, centerY, 1, 1);
     }
 
     freqBarProps = {

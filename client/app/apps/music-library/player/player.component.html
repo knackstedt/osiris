@@ -5,7 +5,6 @@
         duration = media.duration || 100;
         currentTime = media.currentTime;
         progress = media.duration / media.currentTime;
-        debug('timeUpdate', media.currentTime, media.duration)
     "
     (pause)="onPause()"
     (play)="onPlay()"
@@ -33,18 +32,21 @@
             <div class="duration">{{numToString(currentTime)}}</div>
         </div>
         <div class="slider">
-            cur: {{currentTime}}
-            max: {{duration}}
-            last: {{lastv}}
-
             <mat-slider>
                 <input
-                    #pslider
+                    #_slider
                     matSliderThumb
                     [min]="0"
                     [max]="100"
                     [value]="currentTime/duration*100"
-                    (valueChange)="media.currentTime = currentTime = (lastv = $event)*duration/100"
+                    (valueChange)="media.currentTime = currentTime = $event*duration/100"
+                    (pointermove)="
+                        currentTime = _slider.valueAsNumber*duration/100;
+                        (
+                            (media.currentTime - currentTime) > 3 ||
+                            (media.currentTime - currentTime) < -3
+                        ) ? media.currentTime = currentTime : null;
+                    "
                 >
             </mat-slider>
             <app-waveform [audioContext]="context"></app-waveform>
@@ -60,11 +62,13 @@
 
         <mat-slider>
             <input
-                #_
+                #_volume
                 matSliderThumb
+                [min]="0"
+                [max]="100"
                 [value]="volume"
-                (pointermove)="volume = _.valueAsNumber; media.volume = (volume / 100)"
-                (wheel)="volume = volume + $event.deltaY"
+                (wheel)="volume = volume - ($event.deltaY/10); media.volume = volume / 100"
+                (pointermove)="volume = _volume.valueAsNumber; media.volume = (volume / 100)"
             >
         </mat-slider>
     </div>

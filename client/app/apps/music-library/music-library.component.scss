@@ -5,3 +5,30 @@
 app-player {
     height: 48px;
 }
+
+.group-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+
+    .photo {
+        margin-right: 8px;
+        padding: 4px;
+        img {
+            max-width: 64px;
+            max-height: 64px;
+            object-fit: contain;
+            object-position: center;
+        }
+    }
+
+    .text {
+        .name {
+            font-weight: bolder;
+        }
+        .subtext {
+            font-size: 12px;
+            font-weight: lighter;
+        }
+    }
+}
