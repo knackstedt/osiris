@@ -46,10 +46,10 @@ const _getFileMatches = (files) => {
         if (files instanceof Array) {
             return resolve(files);
         }
-        return glob(files, (err, matches) => {
-            if (err) return reject(err);
+        return glob(files).then(matches => {
             return resolve(matches);
-        });
+        })
+        .catch(err => reject(err));
     }) as Promise<string[]>;
 };
 
