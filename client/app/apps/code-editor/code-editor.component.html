@@ -1,6 +1,6 @@
 <app-window-template [window]="windowRef">
     <ng-template #toolbar>
-        <p>{{windowRef.data.filename}}</p>
+        <p>{{windowRef.data?.filename}}</p>
         <button>save</button>
         <button>rename</button>
         <button>delete</button>

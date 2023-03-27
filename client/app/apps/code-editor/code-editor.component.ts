@@ -9,6 +9,8 @@ import { NgxLazyLoaderComponent } from '@dotglitch/ngx-lazy-loader';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
+// https://github1s.com/microsoft/vscode
+
 @Component({
     selector: 'app-code-editor',
     templateUrl: './code-editor.component.html',
