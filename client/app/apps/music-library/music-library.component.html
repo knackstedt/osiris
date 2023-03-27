@@ -4,7 +4,7 @@
     </ng-template>
     <ng-template #content>
         <div style="height: 100%; display: flex; flex-direction: column;">
-            <mat-tab-group>
+            <mat-tab-group *ngIf="player">
                 <mat-tab label="Music">
                     <as-split [gutterSize]="2">
                         <as-split-area [minSize]="156/2" [size]="156">
@@ -82,7 +82,6 @@
                     <ng-template matTabContent>
                         <app-visualizer
                             #visualizer
-                            *ngIf="player && player.mediaElement"
                             [mediaElement]="player.mediaElement"
                             (load)="visualizer.start(player.context, player.analyzer, player.source)"
                         />
@@ -92,8 +91,14 @@
                 <mat-tab label="Music Explorer"></mat-tab>
                 <mat-tab label="Podcasts"></mat-tab>
             </mat-tab-group>
-            <app-player #player [visualizer]="visualizer" [showVisualizer]="false"></app-player>
+            <app-player
+                #player
+                [showVisualizer]="false"
+                [title]="currentTrack.title"
+                [src]="currentTrack.url"
+                (next)="playNext()"
+                (previous)="playPrevious()"
+            />
         </div>
-
     </ng-template>
 </app-window-template>

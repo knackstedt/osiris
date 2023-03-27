@@ -117,7 +117,8 @@ export class VisualizerComponent  {
     }
 
     start(ctx?: AudioContext, analyzer?, source?) {
-        console.log("START VIS")
+        if (!this.analyzer && !analyzer)
+            return;
 
         if (this.ctx) {
             this.ctx.clearRect(0, 0, this.width, this.height)
@@ -139,10 +140,6 @@ export class VisualizerComponent  {
         this.freqByteData = new Uint8Array(this.analyzer.frequencyBinCount);
         this.freqFloatData = new Float32Array(this.analyzer.frequencyBinCount);
 
-        // return this.renderFreq();
-        // return this.renderBar();
-        // return this.renderCircle();
-        // return this.renderMichaelBromley();
         switch(this.visualization) {
             case "spectrum": return this.renderSpectrum();
             case "spectrum-mini": return this.renderSpectrum("mini");

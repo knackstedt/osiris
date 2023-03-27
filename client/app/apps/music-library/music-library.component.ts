@@ -35,6 +35,7 @@ import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/vi
 })
 export class MusicLibraryComponent implements OnInit {
     @ViewChild(VisualizerComponent) visualizer: VisualizerComponent;
+    @ViewChild(PlayerComponent) player: PlayerComponent;
 
     @Input() window: ManagedWindow;
 
@@ -211,13 +212,20 @@ export class MusicLibraryComponent implements OnInit {
         // "/home/knackstedt/Music/joystock-epic.mp3"
     ];
 
+    queueIndex = 0;
     queue = [{
-        image: "",
-
+        title: "Oceanic Drift",
+        url: "/api/filesystem/download?path=/home/knackstedt/Music/joystock-big-epic-rock.mp3"
+    },
+    {
+        title: "Epic",
+        url: "/api/filesystem/download?path=/home/knackstedt/Music/joystock-epic.mp3"
     }
         // "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
         // "/home/knackstedt/Music/joystock-epic.mp3"
     ]
+
+    currentTrack = this.queue[this.queueIndex];
 
     constructor(private feth: Fetch) {
         // this.feth.get('/api/music/library').then(e => console.log(e));
@@ -231,4 +239,34 @@ export class MusicLibraryComponent implements OnInit {
     }
 
 
+    onResize() {
+        this.visualizer.resize();
+    }
+
+    playPrevious() {
+        this.queueIndex -= 1;
+
+        if (this.queueIndex < 0) {
+                this.queueIndex = 0;
+        }
+
+        this.currentTrack = this.queue[this.queueIndex];
+        this.player.onPlay(this.currentTrack);
+    }
+
+    playNext() {
+        console.log("this.playNext");
+        this.queueIndex += 1;
+
+        if (this.queueIndex > this.queue.length) {
+            if (this.player.isRepeating)
+                this.queueIndex = 0;
+        }
+
+        this.currentTrack = this.queue[this.queueIndex];
+
+        this.player.onPlay(this.currentTrack);
+
+        // TODO: shuffle
+    }
 }

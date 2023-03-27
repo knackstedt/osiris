@@ -34,7 +34,7 @@ app-visualizer {
         display: flex;
     }
     .title {
-
+        position: absolute;
     }
     .duration {
         position: absolute;
@@ -44,17 +44,15 @@ app-visualizer {
     .slider {
         position: relative;
         z-index: 1;
+        height: 100%;
         mat-slider {
             position: absolute;
             left: 0;
             right: 0;
             z-index: 5;
-            input: {
-                transition: all 250ms ease;
-            }
         }
         app-waveform {
-            height: 32px;
+            height: 100%;
             width: 100%;
             position: absolute;
             z-index: 2;

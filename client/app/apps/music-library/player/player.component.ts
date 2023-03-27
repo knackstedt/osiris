@@ -1,11 +1,11 @@
-import { Component, OnInit, EventEmitter, Output, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input, ViewChild, ElementRef, ViewChildren } from '@angular/core';
 import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/visualizer.component';
-import { WaveformComponent } from 'client/app/apps/music-library/waveform/waveform.component';
 import { UrlSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { MusicLibraryComponent } from 'client/app/apps/music-library/music-library.component';
 
 @Component({
     selector: 'app-player',
@@ -14,7 +14,6 @@ import { CommonModule } from '@angular/common';
     imports: [
         CommonModule,
         VisualizerComponent,
-        WaveformComponent,
         UrlSanitizer,
         MatButtonModule,
         MatSliderModule,
@@ -25,6 +24,7 @@ import { CommonModule } from '@angular/common';
 export class PlayerComponent implements OnInit {
     @ViewChild("media") mediaRef: ElementRef;
     get mediaElement() { return this.mediaRef?.nativeElement as HTMLMediaElement }
+
 
     private _analyzer: AnalyserNode;
     get analyzer() {return this._analyzer;}
@@ -39,7 +39,7 @@ export class PlayerComponent implements OnInit {
 
     @Input() mode: "small" | "full" = "full";
 
-    @Input() src = "https://cdn.dotglitch.dev/music/joystock-firebird.mp3";
+    @Input() src: string;
     @Input() title: string;
 
     @Output() next = new EventEmitter();
@@ -59,7 +59,7 @@ export class PlayerComponent implements OnInit {
 
     state: "playing" | "paused" | "waiting" = "waiting";
 
-    constructor() { }
+    constructor(private libraryComponent: MusicLibraryComponent) { }
 
     ngOnInit() {
     }
@@ -76,7 +76,14 @@ export class PlayerComponent implements OnInit {
         return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
     }
 
-    onPlay() {
+    onPlay(track?) {
+        if (track) {
+            this.src = track.url;
+        }
+        // Update media element's src
+        this.mediaElement.src = this.src;
+
+        console.log("playing src", this.src)
         this.state = "playing";
 
         this.context = this.context || new AudioContext();
@@ -91,25 +98,57 @@ export class PlayerComponent implements OnInit {
             this._source.connect(this.analyzer);
         }
 
+
         this.vis?.start(this.context, this.analyzer, this.source);
         this.visualizer?.start(this.context, this.analyzer, this.source);
+        this.libraryComponent.visualizer?.start(this.context, this.analyzer, this.source);
 
         this.mediaElement.volume = this.volume / 100;
+
+        this.mediaElement.play()
+
     }
 
     onPause() {
         this.state = "paused";
         this.vis?.stop();
         this.visualizer?.stop();
+        this.libraryComponent.visualizer?.stop();
     }
 
     onEnd() {
         this.state = "waiting";
         this.vis?.stop();
         this.visualizer?.stop();
+        this.libraryComponent.visualizer?.stop();
+
+        this.duration = 0;
+        this.currentTime = 0;
+        this.progress = 0;
+
+        console.log("firing playnext")
+        this.next.emit();
+    }
+    onProgress() {
+        // this.waveforms.forEach(w => w.render(this.context, this._analyzer, this._source))
+    }
+
+    onPreviousTrack() {
+        this.previous.emit();
+    }
+
+    onNextTrack() {
+        this.next.emit();
     }
 
     debug(...args) {
         console.log(args)
+    }
+
+    volumeOnWheel(event: WheelEvent) {
+        // Clamp min to 0 and max to 100
+        this.volume = Math.max(Math.min(this.volume - (event.deltaY / 10), 100), 0);
+
+        this.mediaElement.volume = this.volume / 100;
     }
 }

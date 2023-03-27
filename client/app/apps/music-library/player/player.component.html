@@ -7,23 +7,21 @@
         progress = media.duration / media.currentTime;
     "
     (pause)="onPause()"
-    (play)="onPlay()"
-    (ended)="onPlay()"
+    (ended)="onEnd()"
+    (progress)="onProgress()"
     >
-    <!-- (ended)="onEnd()" -->
-    <source [src]="src | urlSanitizer">
 </audio>
 
 <app-visualizer *ngIf="showVisualizer" [mediaElement]="media"></app-visualizer>
 
 <div class="overlay">
     <div class="nav-controls">
-        <button mat-icon-button (click)="1"><mat-icon>skip_previous</mat-icon></button>
+        <button mat-icon-button (click)="onPreviousTrack()"><mat-icon>skip_previous</mat-icon></button>
 
-        <button mat-icon-button *ngIf="state != 'playing'" (click)="media.play()"><mat-icon>play_arrow</mat-icon></button>
+        <button mat-icon-button *ngIf="state != 'playing'" (click)="onPlay()"><mat-icon>play_arrow</mat-icon></button>
         <button mat-icon-button *ngIf="state == 'playing'" (click)="media.pause()"><mat-icon>pause</mat-icon></button>
 
-        <button mat-icon-button (click)="1"><mat-icon>skip_next</mat-icon></button>
+        <button mat-icon-button (click)="onNextTrack()"><mat-icon>skip_next</mat-icon></button>
     </div>
 
     <div class="seeker">
@@ -49,8 +47,6 @@
                     "
                 >
             </mat-slider>
-            <app-waveform [audioContext]="context"></app-waveform>
-            <app-waveform [audioContext]="context"></app-waveform>
         </div>
         <!-- [value]="progress" (valueChange)="media.currentTime = media.duration*progress/100" -->
     </div>
@@ -67,7 +63,7 @@
                 [min]="0"
                 [max]="100"
                 [value]="volume"
-                (wheel)="volume = volume - ($event.deltaY/10); media.volume = volume / 100"
+                (wheel)="volumeOnWheel($event)"
                 (pointermove)="volume = _volume.valueAsNumber; media.volume = (volume / 100)"
             >
         </mat-slider>
