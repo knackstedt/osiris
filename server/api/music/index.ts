@@ -4,9 +4,10 @@ import { readFile, stat, access } from "fs-extra";
 import { isText } from 'istextorbinary';
 import mime from "mime-types";
 import fs from "fs-extra";
-import { parseFile } from 'music-metadata';
+import { IAudioMetadata, parseFile } from 'music-metadata';
 import { Server, Socket } from "socket.io";
 import { Level } from 'level';
+import { musicdb } from '../../db';
 
 const router = express.Router();
 
@@ -17,17 +18,72 @@ router.use('/scan', route(async (req, res, next) => {
 
     const files = await getFilesInFolderFlat(`/home/knackstedt/Music`);
 
+    // Custom JSON replacer to encode buffers as simple objects.
+    function replacer(key, value) {
+        if (Buffer.isBuffer(value)) return `Buffer[${value.byteLength}]`;
+        return value;
+    }
+
     let count = 0;
-    await Promise.all(files.map(async f => {
+    let dbEntries = [];
+
+    // Iterate through all files.
+    for (let i = 0; i < files.length; i++) {
+        const f = files[i]
         const file = f.path + f.name;
-        const meta = await parseFile(file).catch(e => (null));
-        if (!meta) return;
+        const meta: IAudioMetadata = await parseFile(file).catch(e => (null));
+        if (!meta) continue;
 
-        await fs.writeFile(file + '_meta.json', JSON.stringify(meta));
+        for (let i = 0; i < meta.common.picture?.length; i++) {
+            let picture = meta.common.picture[i];
+            let out = file + "_cover " + picture.type + " ." + picture.format.split('/').pop();
+            await fs.outputFile(out, picture.data);
+        }
+
+        const entry = {
+            path: f.path,
+            name: f.name,
+            duration: meta.format.duration,
+            ...meta,
+        };
+
+        // Clear out image buffers from native metadata
+        Object.keys(entry.native).forEach(nk => {
+            entry.native[nk].forEach(e => {
+                if (typeof e.value == "object")
+                    e.value.data = undefined;
+            })
+        });
+
+        // Clear normal picture data.
+        entry.common.picture?.forEach(p => {
+            p.data = undefined;
+        })
+
+        dbEntries.push(entry);
+
         count++;
-    }));
+    }
 
-    res.send(count);
+
+    let ids = [];
+    for await (const key of musicdb.keys()) {
+        ids.push(parseInt(key.split('!').pop()));
+    }
+    ids = ids.filter(i => i != 'NaN');
+
+    ids.sort();
+    let itemId = (parseInt(ids.pop()) + 1) || 1;
+
+    dbEntries.forEach(e => e['_id'] = itemId++);
+
+    let tx = musicdb.batch();
+
+    dbEntries.forEach(e => tx.put(e['_id'], JSON.stringify(e, replacer)));
+
+    await tx.write();
+
+    res.send({ status: "ok", scanned: count });
 }));
 
 /**

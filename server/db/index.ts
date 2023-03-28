@@ -2,6 +2,8 @@ import { Level } from 'level';
 import * as express from "express";
 import { route } from '../util';
 
+const db = new Level(__dirname + '/../../data', { valueEncoding: 'json' });
+
 const prefixes = [
     "os.system",
     "os.terminal",
@@ -9,12 +11,12 @@ const prefixes = [
     "os.music"
 ];
 
-const db = new Level(__dirname + '/../../data', { valueEncoding: 'json' });
-
-export const systemdb = db.sublevel("os.system", { valueEncoding: "json", separator: '\x01' });
-
-
 const databases = prefixes.map(p => ({ prefix: p, db: db.sublevel(p, { valueEncoding: 'json' }) }));
+
+export const systemdb       = databases.find(d => d.prefix == "os.system").db;
+export const terminaldb     = databases.find(d => d.prefix == "os.terminal").db;
+export const filemanagerdb  = databases.find(d => d.prefix == "os.filemanager").db;
+export const musicdb        = databases.find(d => d.prefix == "os.music").db;
 
 const router = express.Router();
 
@@ -49,11 +51,12 @@ router.post('/:source', route(async (req, res, next) => {
 
     let ids = []
     for await (const key of db.keys()) {
-        ids.push(key.split('!').pop());
+        ids.push(parseInt(key.split('!').pop()));
     }
     ids = ids.filter(i => i != 'NaN');
 
-    ids.sort();
+    ids.sort((a, b) => a - b);
+
     const itemId = (parseInt(ids.pop()) + 1) || 1;
     const data = req.body;
     data['_id'] = itemId;
@@ -101,9 +104,10 @@ router.get('/:source', route(async (req, res, next) => {
 
         let ids = [];
         for await (const key of db.keys()) {
-            ids.push(key);
+            let v = parseInt(key);
+            ids.push(Number.isNaN(v) ? key : v);
         }
-        ids.sort();
+        ids.sort((a, b) => a - b);
 
         // TODO: facilitate odata-like filtering.
         res.send(await db.getMany(ids));
@@ -112,5 +116,19 @@ router.get('/:source', route(async (req, res, next) => {
 
 }));
 
+router.use('/:source/keys', route(async (req, res, next) => {
+    const { source } = parseUrl(req.params['source']);
+    const { db } = databases.find(d => d.prefix == source);
+
+    let ids = [];
+    for await (const key of db.keys()) {
+        let v = parseInt(key.split('!').pop());
+        ids.push(Number.isNaN(v) ? key : v);
+    }
+
+    ids.sort((a, b) => a-b);
+
+    res.send(ids);
+}));
 
 export const DataApi = router;
