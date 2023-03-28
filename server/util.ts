@@ -3,7 +3,6 @@
 
 import { RequestHandler } from "express";
 import * as fs from "fs-extra";
-import { catchError } from 'rxjs/operators';
 
 // We use this route to 'throw' an error when an async route has an unhandled exception.
 export const route = (fn: RequestHandler) => (req, res, next) => {
@@ -14,19 +13,6 @@ export const route = (fn: RequestHandler) => (req, res, next) => {
     catch(ex) {
         next(ex);
     }
-    return null;
-    // return Promise
-        // .resolve(fn(req, res, next))
-        // .catch(next);
-    return new Promise((resolve, reject) => {
-        try {
-            resolve(fn(req, res, next));
-        }
-        catch(ex) {
-            console.error("Mother")
-            next(ex);
-        }
-    }).catch(err => next(err));
 }
 
 

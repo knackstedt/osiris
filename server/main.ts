@@ -12,6 +12,7 @@ import { TerminalSocketService } from "./api/terminal";
 import { XOrgApi } from './api/xorg';
 import { RestApi } from './api/rest';
 import { MusicApi } from './api/music';
+import { DataApi } from './db';
 
 (async () => {
 
@@ -85,6 +86,7 @@ import { MusicApi } from './api/music';
     app.use("/api/xorg", XOrgApi);
     app.use("/api/rest", RestApi);
     app.use("/api/music", MusicApi);
+    app.use("/api/data", DataApi);
 
     // Listen on the specified port.
     await server.start();
