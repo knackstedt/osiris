@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSliderModule } from '@angular/material/slider';
@@ -11,8 +11,8 @@ import { ContextMenuItem, NgxContextMenuDirective } from '@dotglitch/ngx-ctx-men
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FSDescriptor } from '../filemanager/filemanager.component';
 import { Fetch } from 'client/app/services/fetch.service';
-import { PlayerComponent } from './player/player.component';
 import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/visualizer.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
     selector: 'app-music-library',
@@ -28,16 +28,32 @@ import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/vi
         MatTabsModule,
         MatSliderModule,
         MatIconModule,
-        PlayerComponent,
+        MatButtonModule,
         VisualizerComponent
     ],
     standalone: true
 })
 export class MusicLibraryComponent implements OnInit {
     @ViewChild(VisualizerComponent) visualizer: VisualizerComponent;
-    @ViewChild(PlayerComponent) player: PlayerComponent;
+
+    @ViewChild("progressSlider") progressSliderRef: ElementRef;
+    get progressSlider() { return this.progressSliderRef.nativeElement as HTMLElement }
+    @ViewChild("volumeSlider") volumeSliderRef: ElementRef;
+    get volumeSlider() { return this.volumeSliderRef.nativeElement as HTMLElement }
+
+    @ViewChild("media") mediaRef: ElementRef;
+    get mediaElement() { return this.mediaRef?.nativeElement as HTMLMediaElement; }
 
     @Input() window: ManagedWindow;
+
+    private _analyzer: AnalyserNode;
+    get analyzer() { return this._analyzer; }
+
+    private _source: MediaElementAudioSourceNode;
+    get source() { return this._source; }
+    context: AudioContext;
+
+
 
     commonCtxItems: ContextMenuItem<FSDescriptor>[] = [
         {
@@ -227,8 +243,29 @@ export class MusicLibraryComponent implements OnInit {
 
     currentTrack = this.queue[this.queueIndex];
 
+    duration = 0;
+    currentTime = 0;
+    progress = 0;
+    volume = 50;
+
+    isShuffling = false;
+    isRepeating = false;
+
+    state: "playing" | "paused" | "waiting" = "waiting";
+
     constructor(private feth: Fetch) {
         // this.feth.get('/api/music/library').then(e => console.log(e));
+    }
+
+    numToString(num: number) {
+        const hours = Math.floor(num / (60 * 60));
+        const minutes = Math.floor(num / 60);
+        const seconds = Math.floor(num % 60);
+
+        if (hours)
+            return `${hours}:${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+
+        return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
     }
 
     ngOnInit() {
@@ -251,7 +288,7 @@ export class MusicLibraryComponent implements OnInit {
         }
 
         this.currentTrack = this.queue[this.queueIndex];
-        this.player.onPlay(this.currentTrack);
+        this.onPlay();
     }
 
     playNext() {
@@ -259,14 +296,76 @@ export class MusicLibraryComponent implements OnInit {
         this.queueIndex += 1;
 
         if (this.queueIndex > this.queue.length) {
-            if (this.player.isRepeating)
+            if (this.isRepeating)
                 this.queueIndex = 0;
         }
 
         this.currentTrack = this.queue[this.queueIndex];
 
-        this.player.onPlay(this.currentTrack);
+        this.onPlay();
 
         // TODO: shuffle
+    }
+
+    updateTimeInterval: number;
+    onPlay() {
+        // Update media element's src
+        this.mediaElement.src = this.currentTrack.url;
+
+        this.state = "playing";
+
+        this.context = this.context || new AudioContext();
+
+        if (!this.analyzer) {
+            this._analyzer = this.context.createAnalyser();
+            this._analyzer.connect(this.context.destination);
+        }
+
+        if (!this.source) {
+            this._source = this.context.createMediaElementSource(this.mediaElement as any);
+            this._source.connect(this.analyzer);
+        }
+
+        this.visualizer?.start(this.context, this.analyzer, this.source);
+
+        this.mediaElement.volume = this.volume / 100;
+        this.mediaElement.play();
+
+        // this.updateTimeInterval = setInterval(() => {
+        //     this.progress += .1;
+        // }, 100) as any;
+    }
+
+    onTimeUpdate() {
+        // Only update duration when
+        if (this.duration == 0) {
+            this.duration = this.mediaElement.duration || 100;
+        }
+        this.currentTime = this.mediaElement.currentTime;
+
+        this.progress = this.currentTime/this.duration*100;
+    }
+
+    onPause() {
+        this.state = "paused";
+        this.visualizer?.stop();
+    }
+
+    onEnd() {
+        this.state = "waiting";
+        this.visualizer?.stop();
+
+        this.duration = 0;
+        this.currentTime = 0;
+        this.progress = 0;
+
+        this.playNext();
+    }
+
+    volumeOnWheel(event: WheelEvent) {
+        // Clamp min to 0 and max to 100
+        this.volume = Math.max(Math.min(this.volume - (event.deltaY / 10), 100), 0);
+
+        this.mediaElement.volume = this.volume / 100;
     }
 }
