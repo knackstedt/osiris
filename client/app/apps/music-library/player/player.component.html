@@ -27,7 +27,8 @@
     <div class="seeker">
         <div class="top">
             <div class="title">{{title || "no file specified"}}</div>
-            <div class="duration">{{numToString(currentTime)}}</div>
+            <div class="duration" *ngIf="duration == 0">0:00:00</div>
+            <div class="duration" *ngIf="duration != 0">{{numToString(currentTime)}}/{{numToString(duration)}}</div>
         </div>
         <div class="slider">
             <mat-slider>

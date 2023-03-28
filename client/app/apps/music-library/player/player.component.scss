@@ -18,10 +18,7 @@ app-visualizer {
     right: 0;
     height: 48px;
     display: flex;
-}
-
-.nav-controls {
-
+    background-color: var(--background-color);
 }
 
 .seeker {
@@ -32,14 +29,16 @@ app-visualizer {
     .top {
         position: relative;
         display: flex;
+        top: 6px;
     }
     .title {
         position: absolute;
+        font-weight: bolder;
+        color: var(--text-bright-color);
     }
     .duration {
         position: absolute;
         right: 12px;
-        top: 4px;
     }
     .slider {
         position: relative;
@@ -49,6 +48,7 @@ app-visualizer {
             position: absolute;
             left: 0;
             right: 0;
+            top: 10px;
             z-index: 5;
         }
         app-waveform {
@@ -60,15 +60,22 @@ app-visualizer {
     }
 }
 .volume {
-
-}
-.controls {
-
+    display: flex;
+    align-items: center;
 }
 
+:host ::ng-deep {
 
-// :host ::ng-deep {
-//     .mdc-slider__thumb {
-//         transition: transform 1000ms linear!important;
-//     }
-// }
+    .mat-mdc-slider .mdc-slider__track {
+        --mdc-slider-inactive-track-height: 3px;
+        --mdc-slider-active-track-height: 3px;
+        --mdc-slider-inactive-track-color: #dfdfdf;
+    }
+
+    .mat-mdc-slider .mdc-slider__thumb-knob {
+        width: 16px;
+        height: 16px;
+        --mdc-slider-handle-width: 4px;
+        --mdc-slider-handle-height: 4px;
+    }
+}
