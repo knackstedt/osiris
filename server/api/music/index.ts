@@ -21,6 +21,8 @@ router.use('/scan', route(async (req, res, next) => {
     // Custom JSON replacer to encode buffers as simple objects.
     function replacer(key, value) {
         if (Buffer.isBuffer(value)) return `Buffer[${value.byteLength}]`;
+        if (key == "quality") return undefined;
+        if (key == "native") return undefined;
         return value;
     }
 
@@ -90,21 +92,15 @@ router.use('/scan', route(async (req, res, next) => {
  * Load the whole music library... (/home/user/Music)
  */
 router.use('/library', route(async (req, res, next) => {
-    if (!fs.access(`/home/knackstedt/Music/.osiris-stat`)) {
-        // trigger scan
+    let ids = [];
+    for await (const key of musicdb.keys()) {
+        ids.push(parseInt(key.split('!').pop()));
     }
+    ids = ids.filter(i => i != 'NaN');
 
-    const files = await getFilesInFolderFlat(`/home/knackstedt/Music`);
+    let values = await musicdb.getMany(ids);
 
-    await Promise.all(files.map(async f => {
-        const meta = await parseFile(f.path + f.name).catch(e => (null));
-        if (!meta) return;
-        f['meta'] = {
-            native: meta.native
-        };
-    }));
-
-    res.send(files);
+    res.send(values.map(v => JSON.parse(v)));
 }));
 
 
@@ -116,7 +112,7 @@ class MusicLibrary {
 
     constructor(private socket: Socket, opts) {
 
-        this.db = new Level(opts.path + ".db", {valueEncoding: 'json'});
+        this.db = new Level(opts.path + ".db", { valueEncoding: 'json' });
     }
 
     scanNum = 0;
