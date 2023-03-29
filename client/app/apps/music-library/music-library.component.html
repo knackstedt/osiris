@@ -6,8 +6,10 @@
         <div style="height: 100%; display: flex; flex-direction: column;">
             <mat-tab-group *ngIf="media">
                 <mat-tab label="Music">
-                    <as-split [gutterSize]="2">
-                        <as-split-area [minSize]="156/2" [size]="156">
+                    <as-split [gutterSize]="2" unit="pixel">
+
+                        <!-- Group selection -->
+                        <as-split-area [minSize]="200" [size]="240">
                             <ng-scrollbar
                                 style="height: 100%; width: 100%"
                                 track="vertical"
@@ -16,43 +18,65 @@
                             >
                                 <div class="resize-observer" #fileViewport></div>
                                 <cdk-virtual-scroll-viewport
-                                    itemSize="64"
+                                    itemSize="60"
                                     scrollViewport
                                 >
-                                    <div class="group-item" *ngFor="let item of groupItems">
+                                    <div class="group-item" *ngFor="let item of groupItems" (dblclick)="selectGrouping(item)">
                                         <div class="photo">
                                             <img [src]="item.image"/>
                                         </div>
                                         <div class="text">
                                             <div class="name">{{item.label}}</div>
-                                            <div class="subtext">{{item.items.length}} album(s)</div>
+                                            <div class="subtext">{{item.items.length}} items(s)</div>
                                         </div>
                                     </div>
                                 </cdk-virtual-scroll-viewport>
                             </ng-scrollbar>
                         </as-split-area>
+
+                        <!-- Current View -->
                         <as-split-area [minSize]="10">
                             <ng-scrollbar
                                 style="height: 100%; width: 100%"
-                                track="vertical"
+                                track="all"
                                 pointerEventsMethod="scrollbar"
                                 [ngx-ctx-menu]="musicCtxItems"
                             >
                                 <div class="resize-observer" #fileViewport></div>
                                 <cdk-virtual-scroll-viewport
-                                    itemSize="134"
+                                    itemSize="27"
                                     scrollViewport
                                 >
                                     <table>
-                                        <tr *cdkVirtualFor="let item of tracks">
-                                            <td>{{item.name}}</td>
-                                            <td>{{item.artist}}</td>
-                                        </tr>
+                                        <thead>
+                                            <tr style="position: sticky; top: 0">
+                                                <th>Artist</th>
+                                                <th>Title</th>
+                                                <th>Album</th>
+                                                <th>Genre</th>
+                                                <th style="">Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                class="track"
+                                                *cdkVirtualFor="let item of tracks"
+                                                (dblclick)="addTrack(item)"
+                                            >
+                                                <td>{{item.common.artist}}</td>
+                                                <td>{{item.common.title || item.name}}</td>
+                                                <td>{{item.common.album}}</td>
+                                                <td>{{item.common.genre.join()}}</td>
+                                                <td>{{numToString(item.duration)}}</td>
+                                            </tr>
+                                        </tbody>
                                     </table>
                                 </cdk-virtual-scroll-viewport>
                             </ng-scrollbar>
                         </as-split-area>
-                        <as-split-area [minSize]="156/2" [size]="156">
+
+                        <!-- Queue -->
+                        <as-split-area [minSize]="156" [size]="250">
                             <ng-scrollbar
                                 style="height: 100%; width: 100%"
                                 track="vertical"
@@ -61,18 +85,23 @@
                             >
                                 <div class="resize-observer" #fileViewport></div>
                                 <cdk-virtual-scroll-viewport
-                                    itemSize="134"
+                                    itemSize="60"
                                     scrollViewport
                                 >
-                                    <div *ngFor="let item of []">
-                                        <div>
-                                            <img src="1" />
-                                        </div>
-                                        <div>
-                                            <div>Artist Name</div>
-                                            <div>1 album(s)</div>
-                                        </div>
-                                    </div>
+                                    <table class="queue">
+                                        <tr *cdkVirtualFor="let item of queue">
+                                            <td>
+                                                <img class="img" [src]="getTrackPicture(item) | urlSanitizer" />
+                                            </td>
+                                            <td class="title">
+                                                <mat-icon *ngIf="currentTrack == item">volume_down</mat-icon>
+                                                <div>{{item.title}}</div>
+                                            </td>
+                                            <td class="duration">
+                                                {{numToString(item.duration)}}
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </cdk-virtual-scroll-viewport>
                             </ng-scrollbar>
                         </as-split-area>
@@ -115,23 +144,23 @@
 
                     <div class="seeker">
                         <div class="top">
-                            <div class="title">{{currentTrack?.title || "no file specified"}}</div>
-                            <!-- <div class="duration" *ngIf="duration == 0">0:00:00</div> -->
-                            <!-- <div class="duration" *ngIf="duration != 0">{{numToString(currentTime)}}/{{numToString(duration)}}</div> -->
-                            <div class="duration">{{progress}}::{{numToString(currentTime)}}/{{numToString(duration)}}</div>
+                            <div class="title">{{currentTrack?.common.title || "no file specified"}}</div>
+                            <div class="duration" *ngIf="duration == 0">0:00:00</div>
+                            <div class="duration" *ngIf="duration != 0">{{numToString(currentTime)}}/{{numToString(duration)}}</div>
                         </div>
                         <div class="slider">
-                            <mat-slider>
+                            <mat-slider
+                                    [min]="0"
+                                    [max]="duration"
+                                    [step]=".1"
+                                >
                                 <input
                                     #progressSlider
                                     matSliderThumb
-                                    [min]="0"
-                                    [max]="100"
-                                    [step]=".1"
-                                    [(value)]="progress"
-                                    (valueChange)="media.currentTime = $event*duration/100"
+                                    [(value)]="currentTime"
+                                    (valueChange)="media.currentTime = currentTime = $event"
                                     (pointermove)="
-                                        currentTime = progressSlider.valueAsNumber*duration/100;
+                                        currentTime = progressSlider.valueAsNumber;
                                         (
                                             (media.currentTime - currentTime) > 3 ||
                                             (media.currentTime - currentTime) < -3
@@ -147,7 +176,7 @@
                     <div class="volume">
                         <mat-icon *ngIf="volume <= .1">volume_mute</mat-icon>
                         <mat-icon *ngIf="volume > .1 && volume < 50">volume_down</mat-icon>
-                        <mat-icon *ngIf="volume > 50">volume_up</mat-icon>
+                        <mat-icon *ngIf="volume >= 50">volume_up</mat-icon>
 
                         <mat-slider>
                             <input

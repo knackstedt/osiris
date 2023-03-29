@@ -10,17 +10,6 @@ import { MatSelectModule } from '@angular/material/select';
  * problems, thus we include fixes as well.
  */
 
-type BarOpts = {
-    bar_color: '#ff0000',
-    width: 500,
-    height: 200,
-    inherit: true,
-    spacer_width: 10,
-    bar_width: 5,
-    offset: 100,
-    cutoff: 23;
-}
-
 
 @Component({
     selector: 'app-visualizer',
@@ -101,6 +90,7 @@ export class VisualizerComponent  {
     ngAfterViewInit() {
         this.load.emit()
     }
+
     ngOnDestroy() {
         // this.analyzer.disconnect();
         // this.source.disconnect();
@@ -129,6 +119,7 @@ export class VisualizerComponent  {
             this.analyzer = analyzer;
             this.source = source
         }
+
         this.resize();
         this.ctx = this.canvas.getContext('2d');
         this.analyzer.fftSize = 1024; // reset to default
@@ -354,7 +345,7 @@ export class VisualizerComponent  {
 
         this.ctx.clearRect(0, 0, this.width, this.height);
 
-        var gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
         gradient.addColorStop(1, '#00ff00');
         gradient.addColorStop(0.5, '#ff8000');
         gradient.addColorStop(0, '#e60000');

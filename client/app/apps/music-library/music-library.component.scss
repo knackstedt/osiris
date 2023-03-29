@@ -2,6 +2,28 @@
     height: 100%;
 }
 
+img {
+    position: relative;
+
+    &:before,
+    &:after {
+        content: ' ';
+        display: block;
+        position: absolute;
+
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+
+        background: var(--panel-background-color);
+    }
+    &:after {
+        z-index: 1;
+        opacity: .5;
+        background-image: url(../../../assets/icons/mimetypes/media-optical-symbolic.svg);
+    }
+}
 
 .group-item {
     display: flex;
@@ -12,8 +34,10 @@
         margin-right: 8px;
         padding: 4px;
         img {
-            max-width: 64px;
-            max-height: 64px;
+            max-width: 48px;
+            max-height: 48px;
+            width: 48px;
+            height: 48px;
             object-fit: contain;
             object-position: center;
         }
@@ -53,7 +77,8 @@
         .top {
             position: relative;
             display: flex;
-            top: 6px;
+            font-size: 14px;
+            top: 10px;
         }
 
         .title {
@@ -78,6 +103,7 @@
                 right: 0;
                 top: 10px;
                 z-index: 5;
+                margin-left: 0;
             }
 
             app-waveform {
@@ -108,5 +134,58 @@
         height: 16px;
         --mdc-slider-handle-width: 4px;
         --mdc-slider-handle-height: 4px;
+    }
+}
+
+
+.queue {
+
+    tr {
+
+    }
+
+    .img {
+        max-width: 48px;
+        max-height: 48px;
+        object-fit: contain;
+        object-position: center;
+    }
+    .title {
+        display: inline-block;
+        -webkit-line-clamp: 1;
+        text-overflow: ellipsis;
+        width: 100%;
+        overflow: hidden;
+    }
+    .duration {
+        text-align: center;
+    }
+}
+
+.track,
+.group-item {
+    text-align: left;
+}
+
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+
+    tr {
+        background-color: var(--panel-background-color);
+
+        &:nth-child(even) {
+            background-color: var(--table-row-alt-background-color);
+        }
+        &:hover {
+            background-color: var(--table-row-hover-background-color);
+        }
+
+        td {
+            padding: 4px 6px;
+            text-overflow: ellipsis;
+            white-space: pre;
+        }
     }
 }

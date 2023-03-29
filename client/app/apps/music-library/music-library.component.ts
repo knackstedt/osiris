@@ -13,6 +13,22 @@ import { FSDescriptor } from '../filemanager/filemanager.component';
 import { Fetch } from 'client/app/services/fetch.service';
 import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/visualizer.component';
 import { MatButtonModule } from '@angular/material/button';
+import { UrlSanitizer } from '../../pipes/urlsanitizer.pipe';
+import { IAudioMetadata } from 'music-metadata';
+
+type AudioFile = {
+    name: string,
+    path: string,
+    duration: number,
+    images: string
+} & IAudioMetadata;
+
+type AudioGroup = {
+    image;
+    items;
+    label;
+    query;
+}
 
 @Component({
     selector: 'app-music-library',
@@ -29,7 +45,8 @@ import { MatButtonModule } from '@angular/material/button';
         MatSliderModule,
         MatIconModule,
         MatButtonModule,
-        VisualizerComponent
+        VisualizerComponent,
+        UrlSanitizer
     ],
     standalone: true
 })
@@ -194,54 +211,18 @@ export class MusicLibraryComponent implements OnInit {
         }
     ];
 
-    readonly groupModes = ["Artist", "Genre", "Album"];
-    groupMode = "Artist";
-    groupItems = [
-        {
-            label: "Joybeat - Happy",
-            image: "https://www.joystock.org/logos/joystock_icon.png",
-            items: [
-                "/home/knackstedt/Music/joystock-oceanic-drift.mp3",
-                "/home/knackstedt/Music/joystock-summer-pop.mp3",
-                "/home/knackstedt/Music/joystock-upbeat-summer-electro-pop.mp3"
-            ]
-        },
-        {
-            label: "Joybeat - Epic",
-            image: "https://www.joystock.org/logos/joystock_icon.png",
-            items: [
-                "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
-                "/home/knackstedt/Music/joystock-dark-epic-beat.mp3",
-                "/home/knackstedt/Music/joystock-epic.mp3"
-            ]
-        },
-    ];
+    readonly groupModes = ["artist", "Genre", "Album"];
+    groupMode = "artist";
+    groupItems: AudioGroup[] = [];
 
-    tracks = [
-        {
-            name: "Big Epic Rock",
-            artist: "Joystock",
-            url: "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
-            image: "https://www.joystock.org/track-images/epic.jpg"
-        }
-        // "/home/knackstedt/Music/joystock-dark-epic-beat.mp3",
-        // "/home/knackstedt/Music/joystock-epic.mp3"
-    ];
+    AudioFile
+
+    tracks: AudioFile[] = [];
 
     queueIndex = 0;
-    queue = [{
-        title: "Oceanic Drift",
-        url: "/api/filesystem/download?path=/home/knackstedt/Music/joystock-big-epic-rock.mp3"
-    },
-    {
-        title: "Epic",
-        url: "/api/filesystem/download?path=/home/knackstedt/Music/joystock-epic.mp3"
-    }
-        // "/home/knackstedt/Music/joystock-big-epic-rock.mp3",
-        // "/home/knackstedt/Music/joystock-epic.mp3"
-    ]
+    queue: AudioFile[] = [];
 
-    currentTrack = this.queue[this.queueIndex];
+    currentTrack: AudioFile = this.queue[this.queueIndex];
 
     duration = 0;
     currentTime = 0;
@@ -253,8 +234,46 @@ export class MusicLibraryComponent implements OnInit {
 
     state: "playing" | "paused" | "waiting" = "waiting";
 
-    constructor(private feth: Fetch) {
-        // this.feth.get('/api/music/library').then(e => console.log(e));
+    constructor(private fetch: Fetch) {
+        this.fetch.get<AudioFile[]>('/api/music/library').then(items => {
+            this.groupItems = [];
+
+            items.forEach(item => {
+                const groupKey = item.common[this.groupMode] || "default";
+                let group = this.groupItems.find(g => g.query == groupKey);
+                if (!group) {
+                    this.groupItems.push(group = {
+                        image: this.getTrackPicture(item),
+                        items: [],
+                        label: groupKey,
+                        query: groupKey
+                    });
+                }
+
+                group.items.push(item);
+            });
+
+            this.groupItems.sort((a, b) => a.label > b.label ? 1 : -1);
+
+            this.tracks = this.groupItems[0].items;
+        });
+
+        this.fetch.get(`/api/data/os.music/queue`).then(queue => {
+            this.queue = queue as any || [];
+        })
+
+    }
+
+    debug(...args) {
+        console.log(...args)
+    }
+
+    selectGrouping(item: AudioGroup) {
+        this.tracks = item.items;
+    }
+
+    getTrackPicture(item: AudioFile) {
+        return `/api/filesystem/download?path=${item.images[0]}`
     }
 
     numToString(num: number) {
@@ -275,9 +294,21 @@ export class MusicLibraryComponent implements OnInit {
         return "/api/filesystem/download?path=" + encodeURIComponent(path);
     }
 
+    addTrack(item: AudioFile) {
+        this.debug('add track', item);
+        this.queue.push(item);
+        this.queue = [...this.queue]; // trick change detection
+
+        if (this.state == "waiting")  {
+            this.currentTrack = this.queue[this.queueIndex = 0];
+            this.onPlay()
+        }
+
+        this.fetch.post(`/api/data/os.music/queue`, this.queue)
+    }
 
     onResize() {
-        this.visualizer.resize();
+        this.visualizer?.resize();
     }
 
     playPrevious() {
@@ -309,8 +340,13 @@ export class MusicLibraryComponent implements OnInit {
 
     updateTimeInterval: number;
     onPlay() {
+        // Default to the first item in the queue
+        if (!this.currentTrack && this.queue.length > 0)
+            this.currentTrack = this.queue[this.queueIndex = 0];
+
         // Update media element's src
-        this.mediaElement.src = this.currentTrack.url;
+        const url = `/api/filesystem/download?path=${this.currentTrack.path + this.currentTrack.name}`
+        this.mediaElement.src = url;
 
         this.state = "playing";
 
@@ -338,9 +374,7 @@ export class MusicLibraryComponent implements OnInit {
 
     onTimeUpdate() {
         // Only update duration when
-        if (this.duration == 0) {
-            this.duration = this.mediaElement.duration || 100;
-        }
+        this.duration = this.mediaElement.duration || 100;
         this.currentTime = this.mediaElement.currentTime;
 
         this.progress = this.currentTime/this.duration*100;
@@ -364,8 +398,21 @@ export class MusicLibraryComponent implements OnInit {
 
     volumeOnWheel(event: WheelEvent) {
         // Clamp min to 0 and max to 100
-        this.volume = Math.max(Math.min(this.volume - (event.deltaY / 10), 100), 0);
+        this.volume = event.deltaY == 0 ? this.volume
+                    : event.deltaY > 0
+                        ? Math.max(this.volume - 10, 0)
+                        : Math.min(this.volume + 10, 100);
 
         this.mediaElement.volume = this.volume / 100;
     }
+
+
+    onTrackDoubleClick() {
+
+    }
+    onTrackSelect() {
+
+    }
+
+
 }
