@@ -2,6 +2,10 @@ import { Level } from 'level';
 import * as express from "express";
 import { route } from '../util';
 
+// TODO: consider using https://github.com/levelgraph/levelgraph
+/// https://www.npmjs.com/package/level-party
+/// https://www.npmjs.com/package/lev
+
 const db = new Level(__dirname + '/../../data', { valueEncoding: 'json' });
 
 const prefixes = [
@@ -33,7 +37,7 @@ const parseUrl = (url: string) => {
 }
 
 router.use('/:source', (req, res, next) => {
-    const prefix = req.params.source?.split('(')[0];
+    const prefix = req.params.source?.split(/[(]/)[0];
     const db = databases.find(d => d.prefix == prefix);
 
     if (!db)
@@ -115,6 +119,41 @@ router.get('/:source', route(async (req, res, next) => {
     }
 
 }));
+
+
+/**
+ * POST: Create new entry in table via JSON payload.
+ */
+router.post('/:source/:entry', route(async (req, res, next) => {
+    const { source, entry } = req.params;
+    const { db } = databases.find(d => d.prefix == source);
+
+    await db.put(entry, req.body);
+
+    res.send({ status: "ok" });
+}));
+
+router.patch('/:source/:entry', route(async (req, res, next) => {
+    const { source, entry } = req.params;
+    const { db } = databases.find(d => d.prefix == source);
+
+    res.send(await db.put(entry, req.body));
+}));
+
+router.delete('/:source/:entry', route(async (req, res, next) => {
+    const { source, entry } = req.params;
+    const { db } = databases.find(d => d.prefix == source);
+
+    res.send(await db.del(entry));
+}));
+
+router.get('/:source/:entry', route(async (req, res, next) => {
+    const { source, entry } = req.params;
+    const { db } = databases.find(d => d.prefix == source);
+
+    res.send(await db.get(entry.toString()));
+}));
+
 
 router.use('/:source/keys', route(async (req, res, next) => {
     const { source } = parseUrl(req.params['source']);

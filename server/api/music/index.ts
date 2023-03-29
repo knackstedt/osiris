@@ -1,8 +1,5 @@
 import * as express from "express";
-import { route, getFilesInFolder, getFilesInFolderFlat } from '../../util';
-import { readFile, stat, access } from "fs-extra";
-import { isText } from 'istextorbinary';
-import mime from "mime-types";
+import { route, getFilesInFolderFlat } from '../../util';
 import fs from "fs-extra";
 import { IAudioMetadata, parseFile } from 'music-metadata';
 import { Server, Socket } from "socket.io";
@@ -36,9 +33,15 @@ router.use('/scan', route(async (req, res, next) => {
         const meta: IAudioMetadata = await parseFile(file).catch(e => (null));
         if (!meta) continue;
 
-        for (let i = 0; i < meta.common.picture?.length; i++) {
-            let picture = meta.common.picture[i];
-            let out = file + "_cover " + picture.type + " ." + picture.format.split('/').pop();
+        let images = [];
+        for (let j = 0; j < meta.common.picture?.length; j++) {
+            let picture = meta.common.picture[j];
+            const type =
+                picture.type?.includes("front") && "front" ||
+                picture.type?.includes("back") && "back" ||
+                "other";
+            let out = file + "_" + type + "." + picture.format.split('/').pop();
+            images.push(out);
             await fs.outputFile(out, picture.data);
         }
 
@@ -46,6 +49,7 @@ router.use('/scan', route(async (req, res, next) => {
             path: f.path,
             name: f.name,
             duration: meta.format.duration,
+            images,
             ...meta,
         };
 
@@ -96,7 +100,8 @@ router.use('/library', route(async (req, res, next) => {
     for await (const key of musicdb.keys()) {
         ids.push(parseInt(key.split('!').pop()));
     }
-    ids = ids.filter(i => i != 'NaN');
+    ids = ids.sort();
+    ids = ids.filter(i => !Number.isNaN(i));
 
     let values = await musicdb.getMany(ids);
 
