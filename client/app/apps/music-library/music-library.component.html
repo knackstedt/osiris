@@ -36,7 +36,22 @@
 
                         <!-- Current View -->
                         <as-split-area [minSize]="10">
-                            <ng-scrollbar
+                            <ngx-datatable
+                                style="height: 100%; width: 100%"
+                                [rows]="tracks"
+                                [columns]="[
+                                    { prop: 'common.artist', name: 'Artist' },
+                                    { prop: 'common.title', name: 'Title' },
+                                    { prop: 'common.album', name: 'Album' },
+                                    { prop: 'common.genres', name: 'Genre' },
+                                    { prop: 'duration', name: 'Time' }
+                                ]"
+                                [virtualization]="true"
+                                [rowHeight]="26"
+                                [headerHeight]="26"
+                                [scrollbarV]="true"
+                            />
+                            <!-- <ng-scrollbar
                                 style="height: 100%; width: 100%"
                                 track="all"
                                 pointerEventsMethod="scrollbar"
@@ -72,7 +87,7 @@
                                         </tbody>
                                     </table>
                                 </cdk-virtual-scroll-viewport>
-                            </ng-scrollbar>
+                            </ng-scrollbar> -->
                         </as-split-area>
 
                         <!-- Queue -->

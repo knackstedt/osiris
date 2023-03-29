@@ -30,6 +30,7 @@
     "@fontsource/fira-sans": "^4.5.10",
     "@fontsource/material-icons": "^4.5.4",
     "@fontsource/roboto": "^4.5.8",
+    "@swimlane/ngx-datatable": "^20.1.0",
     "adm-zip": "^0.5.9",
     "angular-split": "^15.0.0",
     "connect-redis": "^6.1.3",

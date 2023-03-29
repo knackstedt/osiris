@@ -15,6 +15,7 @@ import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/vi
 import { MatButtonModule } from '@angular/material/button';
 import { UrlSanitizer } from '../../pipes/urlsanitizer.pipe';
 import { IAudioMetadata } from 'music-metadata';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 type AudioFile = {
     name: string,
@@ -45,6 +46,7 @@ type AudioGroup = {
         MatSliderModule,
         MatIconModule,
         MatButtonModule,
+        NgxDatatableModule,
         VisualizerComponent,
         UrlSanitizer
     ],
@@ -69,8 +71,6 @@ export class MusicLibraryComponent implements OnInit {
     private _source: MediaElementAudioSourceNode;
     get source() { return this._source; }
     context: AudioContext;
-
-
 
     commonCtxItems: ContextMenuItem<FSDescriptor>[] = [
         {
@@ -254,6 +254,13 @@ export class MusicLibraryComponent implements OnInit {
             });
 
             this.groupItems.sort((a, b) => a.label > b.label ? 1 : -1);
+
+            this.groupItems.unshift({
+                image: null,
+                items,
+                label: "All Artists",
+                query: ""
+            });
 
             this.tracks = this.groupItems[0].items;
         });
