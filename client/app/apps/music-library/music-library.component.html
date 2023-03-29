@@ -3,8 +3,8 @@
         Checksum information
     </ng-template>
     <ng-template #content>
-        <div style="height: 100%; display: flex; flex-direction: column;">
-            <mat-tab-group *ngIf="media">
+        <div style="height: 100%; display: flex; flex-direction: column; overflow: hidden">
+            <mat-tab-group *ngIf="media" style="overflow: hidden; flex: 1">
                 <mat-tab label="Music">
                     <as-split [gutterSize]="2" unit="pixel">
 
@@ -36,58 +36,17 @@
 
                         <!-- Current View -->
                         <as-split-area [minSize]="10">
-                            <ngx-datatable
-                                style="height: 100%; width: 100%"
-                                [rows]="tracks"
+                            <app-tabulator
+                                [dataSource]="tracks"
                                 [columns]="[
-                                    { prop: 'common.artist', name: 'Artist' },
-                                    { prop: 'common.title', name: 'Title' },
-                                    { prop: 'common.album', name: 'Album' },
-                                    { prop: 'common.genres', name: 'Genre' },
-                                    { prop: 'duration', name: 'Time' }
+                                    { field: 'common.artist', title: 'Artist' },
+                                    { field: 'common.title', title: 'Title' },
+                                    { field: 'common.album', title: 'Album' },
+                                    { field: 'common.genres', title: 'Genre' },
+                                    { field: 'duration', title: 'Time' }
                                 ]"
-                                [virtualization]="true"
-                                [rowHeight]="26"
-                                [headerHeight]="26"
-                                [scrollbarV]="true"
+                                (activate)="$event.type == 'dblclick' ? addTrack($event.row) : 1"
                             />
-                            <!-- <ng-scrollbar
-                                style="height: 100%; width: 100%"
-                                track="all"
-                                pointerEventsMethod="scrollbar"
-                                [ngx-ctx-menu]="musicCtxItems"
-                            >
-                                <div class="resize-observer" #fileViewport></div>
-                                <cdk-virtual-scroll-viewport
-                                    itemSize="27"
-                                    scrollViewport
-                                >
-                                    <table>
-                                        <thead>
-                                            <tr style="position: sticky; top: 0">
-                                                <th>Artist</th>
-                                                <th>Title</th>
-                                                <th>Album</th>
-                                                <th>Genre</th>
-                                                <th style="">Time</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr
-                                                class="track"
-                                                *cdkVirtualFor="let item of tracks"
-                                                (dblclick)="addTrack(item)"
-                                            >
-                                                <td>{{item.common.artist}}</td>
-                                                <td>{{item.common.title || item.name}}</td>
-                                                <td>{{item.common.album}}</td>
-                                                <td>{{item.common.genre.join()}}</td>
-                                                <td>{{numToString(item.duration)}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </cdk-virtual-scroll-viewport>
-                            </ng-scrollbar> -->
                         </as-split-area>
 
                         <!-- Queue -->

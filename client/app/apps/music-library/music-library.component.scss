@@ -174,22 +174,22 @@ img {
 }
 
 
-:host ::ng-deep {
+// :host ::ng-deep {
 
-    datatable-row-wrapper {
-        background-color: var(--panel-background-color);
+//     datatable-row-wrapper {
+//         background-color: var(--panel-background-color);
 
-        &:nth-child(even) {
-            background-color: var(--table-row-alt-background-color);
-        }
-        &:hover {
-            background-color: var(--table-row-hover-background-color);
-        }
+//         &:nth-child(even) {
+//             background-color: var(--table-row-alt-background-color);
+//         }
+//         &:hover {
+//             background-color: var(--table-row-hover-background-color);
+//         }
 
-        datatable-body-cell {
-            padding: 4px 6px;
-            text-overflow: ellipsis;
-            white-space: pre;
-        }
-    }
-}
+//         datatable-body-cell {
+//             padding: 4px 6px;
+//             text-overflow: ellipsis;
+//             white-space: pre;
+//         }
+//     }
+// }

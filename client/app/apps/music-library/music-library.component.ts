@@ -15,7 +15,7 @@ import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/vi
 import { MatButtonModule } from '@angular/material/button';
 import { UrlSanitizer } from '../../pipes/urlsanitizer.pipe';
 import { IAudioMetadata } from 'music-metadata';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { TabulatorComponent } from 'client/app/components/tabulator/tabulator.component';
 
 type AudioFile = {
     name: string,
@@ -46,9 +46,9 @@ type AudioGroup = {
         MatSliderModule,
         MatIconModule,
         MatButtonModule,
-        NgxDatatableModule,
         VisualizerComponent,
-        UrlSanitizer
+        UrlSanitizer,
+        TabulatorComponent
     ],
     standalone: true
 })
