@@ -43,9 +43,9 @@
                                     { field: 'common.title', title: 'Title' },
                                     { field: 'common.album', title: 'Album' },
                                     { field: 'common.genres', title: 'Genre' },
-                                    { field: 'duration', title: 'Time' }
+                                    { field: 'duration', title: 'Time', formatter: durationFormatter }
                                 ]"
-                                (activate)="$event.type == 'dblclick' ? addTrack($event.row) : 1"
+                                (rowDblClick)="addTrack($event.data)"
                             />
                         </as-split-area>
 
@@ -69,10 +69,13 @@
                                             </td>
                                             <td class="title">
                                                 <mat-icon *ngIf="currentTrack == item">volume_down</mat-icon>
-                                                <div>{{item.title}}</div>
+                                                <div>{{item.common.title}}</div>
                                             </td>
                                             <td class="duration">
                                                 {{numToString(item.duration)}}
+                                            </td>
+                                            <td>
+                                                <button mat-icon-button (click)="removeFromQueue(item)"><mat-icon>close</mat-icon></button>
                                             </td>
                                         </tr>
                                     </table>

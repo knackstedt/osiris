@@ -16,6 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { UrlSanitizer } from '../../pipes/urlsanitizer.pipe';
 import { IAudioMetadata } from 'music-metadata';
 import { TabulatorComponent } from 'client/app/components/tabulator/tabulator.component';
+import { CellComponent, EmptyCallback } from 'tabulator-tables';
 
 type AudioFile = {
     name: string,
@@ -220,7 +221,13 @@ export class MusicLibraryComponent implements OnInit {
     tracks: AudioFile[] = [];
 
     queueIndex = 0;
-    queue: AudioFile[] = [];
+    private _queue = [];
+    set queue(data: AudioFile[]) {
+        this._queue = data;
+        this.saveQueue();
+    };
+    get queue() { return this._queue };
+
 
     currentTrack: AudioFile = this.queue[this.queueIndex];
 
@@ -294,6 +301,10 @@ export class MusicLibraryComponent implements OnInit {
         return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
     }
 
+    durationFormatter = ((cell: CellComponent, formatterParams: {}, onRendered: EmptyCallback) => {
+        return this.numToString(cell.getData()['duration']);
+    }).bind(this)
+
     ngOnInit() {
     }
 
@@ -310,7 +321,30 @@ export class MusicLibraryComponent implements OnInit {
             this.currentTrack = this.queue[this.queueIndex = 0];
             this.onPlay()
         }
+    }
 
+    removeFromQueue(track: AudioFile) {
+        const pos = this.queue.findIndex(t => t.path + t.name == track.path + track.name);
+        if (pos < 0) throw new Error("What happened here?!")
+
+        this.queue.splice(pos, 1);
+        this.queue = [...this.queue];
+
+        if (pos == this.queueIndex) {
+            this.currentTrack = this.queue[this.queueIndex];
+            if (this.state == "playing") {
+                this.onPause();
+                this.onPlay();
+            }
+        }
+
+        // Removed before the queue index, so reduce it by 1.
+        if (pos < this.queueIndex) {
+            this.queueIndex--;
+        }
+    }
+
+    saveQueue() {
         this.fetch.post(`/api/data/os.music/queue`, this.queue)
     }
 
