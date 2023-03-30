@@ -13,6 +13,7 @@ import { XOrgApi } from './api/xorg';
 import { RestApi } from './api/rest';
 import { MusicApi } from './api/music';
 import { DataApi } from './db';
+import { MetricSocketService } from './api/os/metrics';
 
 (async () => {
 
@@ -91,7 +92,8 @@ import { DataApi } from './db';
     // Listen on the specified port.
     await server.start();
     const httpserver = server.getServer();
-    new TerminalSocketService(httpserver);
+    // new TerminalSocketService(httpserver);
+    new MetricSocketService(httpserver);
 
     app.use((req, res, next) => next(404));
     app.use(ErrorHandler);

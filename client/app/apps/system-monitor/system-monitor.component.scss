@@ -1,0 +1,10 @@
+:host {
+    display: block;
+    overflow: hidden;
+}
+
+:host ::ng-deep {
+    .mat-mdc-tab.mdc-tab {
+        height: 28px;
+    }
+}
