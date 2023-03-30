@@ -44,8 +44,12 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnResize {
         console.log(this.windowRef, this.cwd);
     }
 
+    ngOnDestroy() {
+        this.socket.close();
+    }
+
     ngAfterViewInit(): void {
-        const socket = this.socket = io({path: "/ws/terminal.io"});
+        const socket = this.socket = io({path: "/ws/metrics.io"});
 
         socket.on("init-error", ex => {
             console.log("Pty failed to init", ex);
