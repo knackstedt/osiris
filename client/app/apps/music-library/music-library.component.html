@@ -3,100 +3,101 @@
         Checksum information
     </ng-template>
     <ng-template #content>
-        <div style="height: 100%; display: flex; flex-direction: column; overflow: hidden">
-            <mat-tab-group *ngIf="media" style="overflow: hidden; flex: 1">
-                <mat-tab label="Music">
-                    <as-split [gutterSize]="2" unit="pixel">
+        <div class="contents">
+            <div class="container">
+                <as-split [gutterSize]="2" unit="pixel">
+                    <as-split-area [minSize]="156" [size]="250">
+                        <mat-tab-group *ngIf="media" style="overflow: hidden; flex: 1">
+                            <mat-tab label="Music">
+                                <as-split [gutterSize]="2" unit="pixel">
 
-                        <!-- Group selection -->
-                        <as-split-area [minSize]="200" [size]="240">
-                            <ng-scrollbar
-                                style="height: 100%; width: 100%"
-                                track="vertical"
-                                pointerEventsMethod="scrollbar"
-                                [ngx-ctx-menu]="groupedCtxItems"
-                            >
-                                <div class="resize-observer" #fileViewport></div>
-                                <cdk-virtual-scroll-viewport
-                                    itemSize="60"
-                                    scrollViewport
-                                >
-                                    <div class="group-item" *ngFor="let item of groupItems" (dblclick)="selectGrouping(item)">
-                                        <div class="photo">
-                                            <img [src]="item.image"/>
-                                        </div>
-                                        <div class="text">
-                                            <div class="name">{{item.label}}</div>
-                                            <div class="subtext">{{item.items.length}} items(s)</div>
-                                        </div>
-                                    </div>
-                                </cdk-virtual-scroll-viewport>
-                            </ng-scrollbar>
-                        </as-split-area>
+                                    <!-- Group selection -->
+                                    <as-split-area [minSize]="200" [size]="240">
+                                        <ng-scrollbar
+                                            style="height: 100%; width: 100%"
+                                            track="vertical"
+                                            pointerEventsMethod="scrollbar"
+                                            [ngx-ctx-menu]="groupedCtxItems"
+                                        >
+                                            <div class="resize-observer" #fileViewport></div>
+                                            <cdk-virtual-scroll-viewport
+                                                itemSize="60"
+                                                scrollViewport
+                                            >
+                                                <div class="group-item" *ngFor="let item of groupItems" (dblclick)="selectGrouping(item)">
+                                                    <div class="photo">
+                                                        <img [src]="item.image"/>
+                                                    </div>
+                                                    <div class="text">
+                                                        <div class="name">{{item.label}}</div>
+                                                        <div class="subtext">{{item.items.length}} items(s)</div>
+                                                    </div>
+                                                </div>
+                                            </cdk-virtual-scroll-viewport>
+                                        </ng-scrollbar>
+                                    </as-split-area>
 
-                        <!-- Current View -->
-                        <as-split-area [minSize]="10">
-                            <app-tabulator
-                                [dataSource]="tracks"
-                                [columns]="[
-                                    { field: 'common.artist', title: 'Artist' },
-                                    { field: 'common.title', title: 'Title' },
-                                    { field: 'common.album', title: 'Album' },
-                                    { field: 'common.genres', title: 'Genre' },
-                                    { field: 'duration', title: 'Time', formatter: durationFormatter }
-                                ]"
-                                (rowDblClick)="addTrack($event.data)"
-                            />
-                        </as-split-area>
-
-                        <!-- Queue -->
-                        <as-split-area [minSize]="156" [size]="250">
-                            <ng-scrollbar
-                                style="height: 100%; width: 100%"
-                                track="vertical"
-                                pointerEventsMethod="scrollbar"
-                                [ngx-ctx-menu]="queueCtxItems"
-                            >
-                                <div class="resize-observer" #fileViewport></div>
-                                <cdk-virtual-scroll-viewport
-                                    itemSize="54"
-                                    scrollViewport
-                                >
-                                    <table class="queue">
-                                        <tr *cdkVirtualFor="let item of queue">
-                                            <td>
-                                                <img class="img" [src]="getTrackPicture(item) | urlSanitizer" />
-                                            </td>
-                                            <td class="title">
-                                                <mat-icon *ngIf="currentTrack == item">volume_down</mat-icon>
-                                                {{item.common.title}}
-                                            </td>
-                                            <td class="duration">
-                                                {{numToString(item.duration)}}
-                                            </td>
-                                            <td>
-                                                <button mat-icon-button (click)="removeFromQueue(item)"><mat-icon>close</mat-icon></button>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </cdk-virtual-scroll-viewport>
-                            </ng-scrollbar>
-                        </as-split-area>
-                    </as-split>
-                </mat-tab>
-                <mat-tab label="Now Playing">
-                    <ng-template matTabContent>
-                        <app-visualizer
-                            #visualizer
-                            [mediaElement]="media"
-                            (load)="visualizer.start(context, analyzer, source)"
-                        />
-                    </ng-template>
-                </mat-tab>
-                <mat-tab label="Playlists"></mat-tab>
-                <mat-tab label="Music Explorer"></mat-tab>
-                <mat-tab label="Podcasts"></mat-tab>
-            </mat-tab-group>
+                                    <!-- Current View -->
+                                    <as-split-area [minSize]="10">
+                                        <app-tabulator
+                                            [dataSource]="tracks"
+                                            [columns]="[
+                                                { field: 'common.artist', title: 'Artist' },
+                                                { field: 'common.title', title: 'Title' },
+                                                { field: 'common.album', title: 'Album' },
+                                                { field: 'common.genres', title: 'Genre' },
+                                                { field: 'duration', title: 'Time', formatter: durationFormatter }
+                                            ]"
+                                            (rowDblClick)="addTrack($event.data)"
+                                            (rowContext)="onRowCtx($event)"
+                                        />
+                                    </as-split-area>
+                                </as-split>
+                            </mat-tab>
+                            <mat-tab label="Now Playing">
+                                <ng-template matTabContent>
+                                    <app-visualizer
+                                        #visualizer
+                                        [mediaElement]="media"
+                                        (load)="visualizer.start(context, analyzer, source)"
+                                    />
+                                </ng-template>
+                            </mat-tab>
+                            <mat-tab label="Playlists"></mat-tab>
+                            <mat-tab label="Music Explorer"></mat-tab>
+                            <mat-tab label="Podcasts"></mat-tab>
+                        </mat-tab-group>
+                    </as-split-area>
+                    <!-- Queue -->
+                    <as-split-area [minSize]="156" [size]="250">
+                        <ng-scrollbar style="height: 100%; width: 100%" track="vertical" pointerEventsMethod="scrollbar"
+                            [ngx-ctx-menu]="queueCtxItems">
+                            <div class="resize-observer" #fileViewport></div>
+                            <cdk-virtual-scroll-viewport itemSize="54" scrollViewport>
+                                <table class="queue">
+                                    <tr *cdkVirtualFor="let item of queue">
+                                        <td>
+                                            <img class="img" [src]="getTrackPicture(item) | urlSanitizer" />
+                                        </td>
+                                        <td class="title">
+                                            <mat-icon *ngIf="currentTrack == item">volume_down</mat-icon>
+                                            {{item.common.title}}
+                                        </td>
+                                        <td class="duration">
+                                            {{numToString(item.duration)}}
+                                        </td>
+                                        <td>
+                                            <button class="close" mat-icon-button (click)="removeFromQueue(item)">
+                                                <mat-icon>close</mat-icon>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </cdk-virtual-scroll-viewport>
+                        </ng-scrollbar>
+                    </as-split-area>
+                </as-split>
+            </div>
 
             <div class="controls">
 

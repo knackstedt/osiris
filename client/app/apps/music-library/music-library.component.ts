@@ -7,9 +7,8 @@ import { WindowTemplateComponent } from '../../components/window-template/window
 import { ManagedWindow } from '../../services/window-manager.service';
 import { AngularSplitModule } from 'angular-split';
 import { NgScrollbarModule } from 'ngx-scrollbar';
-import { ContextMenuItem, NgxContextMenuDirective } from '@dotglitch/ngx-ctx-menu';
+import { ContextMenuItem, NgxContextMenuDirective, openContextMenu } from '@dotglitch/ngx-ctx-menu';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { FSDescriptor } from '../filemanager/filemanager.component';
 import { Fetch } from 'client/app/services/fetch.service';
 import { VisualizerComponent } from 'client/app/apps/music-library/visualizer/visualizer.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +16,7 @@ import { UrlSanitizer } from '../../pipes/urlsanitizer.pipe';
 import { IAudioMetadata } from 'music-metadata';
 import { TabulatorComponent } from 'client/app/components/tabulator/tabulator.component';
 import { CellComponent, EmptyCallback } from 'tabulator-tables';
+import { MatDialog } from '@angular/material/dialog';
 
 type AudioFile = {
     name: string,
@@ -247,7 +247,10 @@ export class MusicLibraryComponent implements OnInit {
 
     state: "playing" | "paused" | "waiting" = "waiting";
 
-    constructor(private fetch: Fetch) {
+    constructor(
+        private fetch: Fetch,
+        private dialog: MatDialog
+    ) {
         this.fetch.get<AudioFile[]>('/api/music/library').then(items => {
             this.groupItems = [];
 
@@ -287,6 +290,10 @@ export class MusicLibraryComponent implements OnInit {
             if (this.queueIndex > this.queue.length) this.queueIndex = 0;
         })
 
+    }
+
+    onRowCtx({ event, row }) {
+        openContextMenu(this.dialog, this.musicCtxItems, row.getData(), event);
     }
 
     debug(...args) {
