@@ -73,12 +73,14 @@ export class MusicLibraryComponent implements OnInit {
     get source() { return this._source; }
     context: AudioContext;
 
-    commonCtxItems: ContextMenuItem<FSDescriptor>[] = [
+    commonCtxItems: ContextMenuItem<AudioGroup>[] = [
         {
             label: "Play Now",
             shortcutLabel: "Alt+Enter",
             icon: "create_new_folder",
-            action: (data) => { }
+            action: (data) => {
+
+            }
         },
         {
             label: "Play Shuffled",
@@ -97,7 +99,7 @@ export class MusicLibraryComponent implements OnInit {
         },
     ]
 
-    groupedCtxItems: ContextMenuItem<FSDescriptor>[] = [
+    groupedCtxItems: ContextMenuItem<AudioGroup>[] = [
         ...this.commonCtxItems,
         "separator",
         {
@@ -114,7 +116,7 @@ export class MusicLibraryComponent implements OnInit {
         },
     ];
 
-    musicCtxItems: ContextMenuItem<FSDescriptor>[] = [
+    musicCtxItems: ContextMenuItem<AudioGroup>[] = [
         ...this.commonCtxItems,
         "separator",
         {
@@ -152,7 +154,11 @@ export class MusicLibraryComponent implements OnInit {
         }
     ];
 
-    queueCtxItems: ContextMenuItem<FSDescriptor>[] = [
+    queueCtxItems: ContextMenuItem<AudioFile>[] = [
+        {
+            label: "Clear Queue",
+            icon: "clear_all",
+        },
         {
             label: "Show Upcoming Tracks",
             icon: "create_new_folder",
@@ -272,8 +278,13 @@ export class MusicLibraryComponent implements OnInit {
             this.tracks = this.groupItems[0].items;
         });
 
-        this.fetch.get(`/api/data/os.music/queue`).then(queue => {
+        this.fetch.get<any>(`/api/data/os.music/queue`).then(({queue, index}) => {
             this.queue = queue as any || [];
+            this.queueIndex = index;
+
+            // Prevent invalid queue indexes.
+            if (this.queueIndex < 0) this.queueIndex = 0;
+            if (this.queueIndex > this.queue.length) this.queueIndex = 0;
         })
 
     }
@@ -345,7 +356,7 @@ export class MusicLibraryComponent implements OnInit {
     }
 
     saveQueue() {
-        this.fetch.post(`/api/data/os.music/queue`, this.queue)
+        this.fetch.post(`/api/data/os.music/queue`, {queue: this.queue, index: this.queueIndex})
     }
 
     onResize() {

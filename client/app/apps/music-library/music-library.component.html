@@ -59,7 +59,7 @@
                             >
                                 <div class="resize-observer" #fileViewport></div>
                                 <cdk-virtual-scroll-viewport
-                                    itemSize="60"
+                                    itemSize="54"
                                     scrollViewport
                                 >
                                     <table class="queue">
@@ -69,7 +69,7 @@
                                             </td>
                                             <td class="title">
                                                 <mat-icon *ngIf="currentTrack == item">volume_down</mat-icon>
-                                                <div>{{item.common.title}}</div>
+                                                {{item.common.title}}
                                             </td>
                                             <td class="duration">
                                                 {{numToString(item.duration)}}
