@@ -7,6 +7,7 @@
             <mat-tab label="Processes">
                 <ng-template matTabContent>
                     <app-tabulator
+                        key="pid"
                         [dataSource]="metricData?.processes?.list"
                         [columns]="[
                             { field: 'name', title: 'Process Name' },
@@ -23,6 +24,7 @@
             <mat-tab label="NetworkConnections">
                 <ng-template matTabContent>
                     <app-tabulator
+                        key="pid"
                         [dataSource]="_metricData?.networkConnections"
                         [columns]="[
                             { field: 'process', title: 'Process Name' },
@@ -44,6 +46,7 @@
             </mat-tab>
             <mat-tab label="File Systems">
                 <app-tabulator
+                    key="fs"
                     [dataSource]="_metricData?.fsSize"
                     [columns]="[
                         { field: 'fs', title: 'Device' },
@@ -58,14 +61,16 @@
             </mat-tab>
             <mat-tab label="Networks">
                 <app-tabulator [dataSource]="_metricData?.wifiNetworks"
-                [columns]="[
-                    { field: 'ssid', title: 'Name' },
-                    { field: 'bssid', title: 'MAC' },
-                    { field: 'mode', title: 'mode' },
-                    { field: 'channel', title: 'Channel' },
-                    { field: 'frequency', title: 'Frequency' },
-                    { field: 'signalLevel', title: 'Strength' }
-                ]" />
+                    key="bssid"
+                    [columns]="[
+                        { field: 'ssid', title: 'Name' },
+                        { field: 'bssid', title: 'MAC' },
+                        { field: 'mode', title: 'mode' },
+                        { field: 'channel', title: 'Channel' },
+                        { field: 'frequency', title: 'Frequency' },
+                        { field: 'signalLevel', title: 'Strength' }
+                    ]"
+                />
             </mat-tab>
             <mat-tab label="???">
                 <!-- View system arch... -->

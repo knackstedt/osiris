@@ -22,7 +22,20 @@ export class TabulatorComponent<T = any> {
     @Input() set dataSource(data: Object[]) {
         this._dataSource = data;
 
-        this.table?.setData(this.dataSource);
+        if (this.table?.getDataCount() > 0) {
+            const current = this.table.getData();
+            const ids = current.filter(i => !!i[this.key]).map(i => i[this.key]);
+
+            const newItems = data.filter(d => !ids.includes(d[this.key]));
+            const updatedItems = data.filter(d => ids.includes(d[this.key]));
+            const removedItems = ids.filter(id => !data.find(d => d[this.key] == id));
+
+            this.table.updateData(updatedItems);
+            this.table.addData(newItems);
+            removedItems.forEach(i => this.table.deleteRow(i));
+        }
+        else
+            this.table?.setData(this.dataSource);
     };
     get dataSource() { return this._dataSource };
 
@@ -32,6 +45,8 @@ export class TabulatorComponent<T = any> {
         this.table?.setColumns(this.columns);
     };
     get columns() { return this._columns }
+
+    @Input() key: string;
 
     table: Tabulator;
 
@@ -46,6 +61,7 @@ export class TabulatorComponent<T = any> {
 
     ngAfterViewInit() {
         const table = this.table = new Tabulator(this.tableRef.nativeElement, {
+            index: this.key,
             data: this._dataSource,
             reactiveData: true,
             columns: this._columns,
