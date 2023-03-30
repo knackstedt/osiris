@@ -33,9 +33,17 @@
             [style.z-index]="window.zindex"
             [style.width]="window.width + 'px'"
             [style.height]="window.height + 'px'"
-            [style.transform]="'translate3d(' + window.x + 'px, ' + window.y + 'px, 0)'"
+            [style.top]="window.y + 'px'"
+            [style.left]="window.x + 'px'"
             [style.--width]="window.width + 'px'"
             [style.--height]="window.height + 'px'"
         />
+        <!--
+            Cannot use this until webkit fixes the blurring
+            that this causes when there are additional transforms
+            on descendant elements.
+         -->
+            <!-- [style.transform]="'translate3d(' + window.x + 'px, ' + window.y + 'px, 0)'" -->
+
     </ng-container>
 </div>
