@@ -8,3 +8,15 @@
         height: 28px;
     }
 }
+
+.resources {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    overflow: hidden;
+
+    app-live-graph {
+        height: 100%;
+        flex: 1;
+    }
+}
