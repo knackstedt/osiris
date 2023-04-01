@@ -22,17 +22,21 @@ export class TabulatorComponent<T = any> {
     @Input() set dataSource(data: Object[]) {
         this._dataSource = data;
 
+        // TODO: this is performance hell for reasons I do not understand.
         if (this.table?.getDataCount() > 0) {
-            const current = this.table.getData();
-            const ids = current.filter(i => !!i[this.key]).map(i => i[this.key]);
+            (async () => {
+                const container = this.table.element.querySelector(".tabulator-tableholder");
+                const initialTop = container.scrollTop;
+                const initialLeft = container.scrollLeft;
 
-            const newItems = data.filter(d => !ids.includes(d[this.key]));
-            const updatedItems = data.filter(d => ids.includes(d[this.key]));
-            const removedItems = ids.filter(id => !data.find(d => d[this.key] == id));
-
-            this.table.updateData(updatedItems);
-            this.table.addData(newItems);
-            removedItems.forEach(i => this.table.deleteRow(i));
+                await this.table.setData(data);
+                // @ts-ignore
+                container.scrollTo({ left: initialLeft, top: initialTop+1, behavior: "instant" });
+                setTimeout(() => {
+                    // @ts-ignore
+                    container.scrollTo({ left: initialLeft, top: initialTop, behavior: "instant" });
+                })
+            })()
         }
         else
             this.table?.setData(this.dataSource);
@@ -63,7 +67,7 @@ export class TabulatorComponent<T = any> {
         const table = this.table = new Tabulator(this.tableRef.nativeElement, {
             index: this.key,
             data: this._dataSource,
-            reactiveData: true,
+            // reactiveData: true,
             columns: this._columns,
             layout: 'fitDataFill',
             height: "100%",
@@ -73,7 +77,6 @@ export class TabulatorComponent<T = any> {
         table.on("rowClick", (e, row) => this.rowClick.next({ event: e, row, data: row.getData() }));
         table.on("rowContext", (e, row) => this.rowContext.next({ event: e, row, data: row.getData() }));
         table.on("rowDblClick", (e, row) => this.rowDblClick.next({ event: e, row, data: row.getData() }));
-
     }
 
     ngOnChanges(changes: SimpleChanges): void {
