@@ -78,6 +78,7 @@
                             <cdk-virtual-scroll-viewport itemSize="54" scrollViewport>
                                 <table class="queue">
                                     <tr
+                                        #row
                                         *cdkVirtualFor="let item of queue; let i = index"
                                         (dblClick)="skipQueue(i)"
                                         [class.active]="i == queueIndex"
@@ -93,7 +94,7 @@
                                             {{numToString(item.duration)}}
                                         </td>
                                         <td>
-                                            <button class="close" mat-icon-button (click)="removeFromQueue(item)">
+                                            <button class="close" mat-icon-button (click)="removeFromQueue(item, row)">
                                                 <mat-icon>close</mat-icon>
                                             </button>
                                         </td>

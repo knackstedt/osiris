@@ -199,6 +199,9 @@ img {
     }
 
     tr {
+        position: relative;
+        transform: translateX(0);
+        transition: transform 250ms ease, opacity 250ms ease;
 
         &:after {
             content: "";
@@ -220,6 +223,10 @@ img {
                 left: 0;
                 width: 100%;
             }
+        }
+        &.removing {
+            transform: translateX(300px);
+            opacity: 0;
         }
     }
     tr:hover .close mat-icon {

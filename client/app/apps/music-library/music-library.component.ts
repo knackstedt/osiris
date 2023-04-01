@@ -370,38 +370,42 @@ export class MusicLibraryComponent implements OnInit {
         }
     }
 
-    removeFromQueue(track: AudioFile) {
+    removeFromQueue(track: AudioFile, element?) {
         const pos = this.queue.findIndex(t => t.path + t.name == track.path + track.name);
         if (pos < 0) throw new Error("What happened here?!")
 
-        this.queue.splice(pos, 1);
-        this.queue = [...this.queue];
+        element?.classList.add("removing");
 
-        if (pos == this.queueIndex) {
-            this.queueIndex;
-            if (this.state == "playing") {
-                this.onPause();
-                this.onPlay();
-            }
-        }
+        this.queue.splice(pos, 1);
+
+        // What case is this for?
+        // causes break when removing something from the queue normally
+        // if (this.state == "playing" && this.queue.length > 0) {
+        //     this.onPlay();
+        // }
 
         // Removed before the queue index, so reduce it by 1.
         if (pos < this.queueIndex) {
             this.queueIndex--;
         }
 
-        // Prevent invalid queue index
-        if (this.queueIndex < 0 || this.queueIndex > this.queue.length)
-            this.queueIndex = 0;
-
-        if (this.state == "playing" && this.queue.length > 0) {
-            this.onPlay();
-        }
-
         // If the queue is now empty, clear state
         if (this.queue.length == 0) {
             this.onEnd();
         }
+
+        // Only actually perform the mutations after the animation completes
+        setTimeout(() => {
+            this.queue = [...this.queue];
+
+            if (pos == this.queueIndex) {
+                if (this.state == "playing") {
+                    this.onPause();
+                    this.onPlay();
+                }
+            }
+
+        }, 250)
     }
 
     /**
