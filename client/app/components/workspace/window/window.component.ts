@@ -6,8 +6,7 @@ import { ConfigurationService } from '../../../services/configuration.service';
 @Component({
     selector: 'app-window',
     templateUrl: './window.component.html',
-    styleUrls: ['./window.component.scss'],
-    // encapsulation: ViewEncapsulation.None
+    styleUrls: ['./window.component.scss']
 })
 export class WindowComponent implements OnInit {
 
@@ -41,10 +40,8 @@ export class WindowComponent implements OnInit {
     configChange() {
         const el = this.viewContainer.element.nativeElement;
 
-        el.setAttribute('maxized-width', 'calc(100% - ' + (this.config.leftOffset + this.config.rightOffset) + 'px)');
-        el.setAttribute('maxized-height', 'calc(100% - ' + (this.config.topOffset + this.config.bottomOffset) + 'px)');
+        el.setAttribute('maximized-width', 'calc(100% - ' + (this.config.leftOffset + this.config.rightOffset) + 'px)');
+        el.setAttribute('maximized-height', 'calc(100% - ' + (this.config.topOffset + this.config.bottomOffset) + 'px)');
 
-        // el['--maxized-width'] = 'calc(100% - ' + this.config.leftOffset + this.config.rightOffset + ')';
-        // el['--maxized-height'] = 'calc(100% - ' + this.config.topOffset + this.config.bottomOffset + ')';
     }
 }

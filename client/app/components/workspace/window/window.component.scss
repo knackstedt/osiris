@@ -5,8 +5,8 @@
     min-height: 200px;
     max-width: 200vw;
     max-height: 150vh;
-    will-change: transform, width, height;
-    transition: transform 200ms ease-in-out, width 200ms ease-in-out, height 200ms ease-in-out;
+    will-change: position, width, height;
+    transition: position 200ms ease-in-out, width 200ms ease-in-out, height 200ms ease-in-out;
     cursor: unset;
     box-sizing: content-box;
     touch-action: none;
@@ -31,14 +31,14 @@
     }
 
     &.maximized {
-        transform: translate3d(0, 0, 0) !important;
+        // transform: translate3d(0, 0, 0) !important;
         width: var(--maximized-width, 100%) !important;
         height: var(--maximized-height, 100%) !important;
 
-        top: var(--top-offset, 0);
+        top: var(--top-offset, 0) !important;
+        left: var(--left-offset, 0) !important;
         right: var(--right-offset, 0);
         bottom: var(--bottom-offset, 0);
-        left: var(--left-offset, 0);
 
         &>.window {
             height: 100%;
