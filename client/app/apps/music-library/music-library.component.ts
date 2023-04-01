@@ -73,13 +73,17 @@ export class MusicLibraryComponent implements OnInit {
     get source() { return this._source; }
     context: AudioContext;
 
-    commonCtxItems: ContextMenuItem<AudioGroup>[] = [
+
+    groupedCtxItems: ContextMenuItem<AudioGroup>[] = [
         {
             label: "Play Now",
             shortcutLabel: "Alt+Enter",
             icon: "create_new_folder",
             action: (data) => {
-
+                this.queue = [];
+                this.onEnd(true);
+                data.items.forEach(item => this.addTrack(item));
+                this.onPlay();
             }
         },
         {
@@ -90,24 +94,26 @@ export class MusicLibraryComponent implements OnInit {
         {
             label: "Queue Next",
             icon: "bookmark",
-            action: (evt) => { }
+            action: (evt) => {
+                evt.items.forEach(item => this.addTrack(item));
+
+                if (this.state == "waiting")
+                    this.onPlay();
+            }
         },
         {
             label: "Queue Last",
             icon: "bookmark",
             action: (evt) => { }
         },
-    ]
-
-    groupedCtxItems: ContextMenuItem<AudioGroup>[] = [
-        ...this.commonCtxItems,
+        
         "separator",
         {
             label: "Send To",
             icon: "find_in_page",
         },
         {
-            label: "Include in Playlist",
+            label: "Add to Playlist",
             icon: "bookmark"
         },
         {
@@ -116,78 +122,80 @@ export class MusicLibraryComponent implements OnInit {
         },
     ];
 
-    musicCtxItems: ContextMenuItem<AudioGroup>[] = [
-        ...this.commonCtxItems,
+    musicCtxItems: ContextMenuItem<AudioFile>[] = [
+        {
+            label: "Play Now",
+            shortcutLabel: "Alt+Enter",
+            icon: "create_new_folder",
+            action: (data) => {
+                this.queue = [];
+                this.onEnd(true);
+                this.addTrack(data);
+                this.onPlay();
+            }
+        },
+        {
+            label: "Play Shuffled",
+            icon: "bookmark",
+            action: (evt) => { }
+        },
+        {
+            label: "Queue Next",
+            icon: "bookmark",
+            action: (evt) => {
+                console.log(evt);
+                this.queue.push(evt);
+                if (this.state == "waiting")
+                    this.onPlay();
+            }
+        },
+        {
+            label: "Queue Last",
+            icon: "bookmark",
+            action: (evt) => { }
+        },
         "separator",
         {
             label: "Edit",
             icon: "create_new_folder",
-        }, {
+        },
+        {
             label: "Rating",
             icon: "create_new_folder",
         },
         {
-            label: "Include in Playlist",
-            icon: "create_new_folder",
-        },
-        {
-            label: "Send To",
+            label: "Add to Playlist",
             icon: "create_new_folder",
         },
         {
             label: "Delete",
             icon: "create_new_folder",
         },
-        "separator",
-        {
-            label: "Auto-Tag by Album",
-            icon: "create_new_folder",
-        },
-        {
-            label: "Auto-Tag by Track",
-            icon: "create_new_folder",
-        },
-        "separator",
-        {
-            label: "Search",
-            icon: "create_new_folder",
-        }
+        // "separator",
+        // {
+        //     label: "Auto-Tag by Album",
+        //     icon: "create_new_folder",
+        // },
+        // {
+        //     label: "Auto-Tag by Track",
+        //     icon: "create_new_folder",
+        // },
+        // "separator",
+        // {
+        //     label: "Search",
+        //     icon: "create_new_folder",
+        // }
     ];
 
     queueCtxItems: ContextMenuItem<AudioFile>[] = [
         {
             label: "Clear Queue",
             icon: "clear_all",
-        },
-        {
-            label: "Show Upcoming Tracks",
-            icon: "create_new_folder",
+            action: (evt) => this.onEnd(true)
         },
         "separator",
         {
             label: "Play Now",
-            icon: "create_new_folder",
-        },
-        {
-            label: "Queue Next",
-            icon: "create_new_folder",
-        },
-        {
-            label: "Skip Track",
-            icon: "create_new_folder",
-        },
-        {
-            label: "Play More...",
-            icon: "create_new_folder",
-        },
-        "separator",
-        {
-            label: "Stop After Track",
-            icon: "create_new_folder",
-        },
-        "separator",
-        {
-            label: "List",
             icon: "create_new_folder",
         },
         "separator",
@@ -196,25 +204,13 @@ export class MusicLibraryComponent implements OnInit {
             icon: "create_new_folder",
         },
         {
-            label: "Rating",
-            icon: "create_new_folder",
-        },
-        {
-            label: "Include in Playlist",
-            icon: "create_new_folder",
-        },
-        {
-            label: "Send To",
+            label: "Add to Playlist",
             icon: "create_new_folder",
         },
         {
             label: "Remove",
             icon: "create_new_folder",
-        },
-        "separator",
-        {
-            label: "Search",
-            icon: "create_new_folder",
+            action: evt => this.removeFromQueue(evt)
         }
     ];
 
@@ -226,7 +222,40 @@ export class MusicLibraryComponent implements OnInit {
 
     tracks: AudioFile[] = [];
 
-    queueIndex = 0;
+
+    // Getter and setter for queue index to ensure
+    // the index never gets sent to hell
+    private _queueIndex = 0;
+    set queueIndex(i: number) {
+        if (i < 0) {
+            this._queueIndex = 0;
+            return;
+        }
+
+        if (i > this.queue.length) {
+            if (this.isRepeating)
+                this._queueIndex = 0;
+            else
+                this._queueIndex = this.queue.length;
+            return;
+        }
+
+        this._queueIndex = i;
+    }
+    // Getter uses same logic, in case the queue has been modified async
+    get queueIndex() {
+        if (this._queueIndex < 0)
+            return this._queueIndex = 0;
+
+        if (this._queueIndex > this.queue.length) {
+            if (this.isRepeating)
+                return this._queueIndex = 0
+            return this._queueIndex = this.queue.length;
+        }
+
+        return this._queueIndex;
+    }
+
     private _queue = [];
     set queue(data: AudioFile[]) {
         this._queue = data;
@@ -234,8 +263,9 @@ export class MusicLibraryComponent implements OnInit {
     };
     get queue() { return this._queue };
 
-
-    currentTrack: AudioFile = this.queue[this.queueIndex];
+    get currentTrack() {
+        return this.queue[this.queueIndex];
+    }
 
     duration = 0;
     currentTime = 0;
@@ -331,12 +361,11 @@ export class MusicLibraryComponent implements OnInit {
     }
 
     addTrack(item: AudioFile) {
-        this.debug('add track', item);
         this.queue.push(item);
         this.queue = [...this.queue]; // trick change detection
 
         if (this.state == "waiting")  {
-            this.currentTrack = this.queue[this.queueIndex = 0];
+            this.queueIndex = 0;
             this.onPlay()
         }
     }
@@ -349,7 +378,7 @@ export class MusicLibraryComponent implements OnInit {
         this.queue = [...this.queue];
 
         if (pos == this.queueIndex) {
-            this.currentTrack = this.queue[this.queueIndex];
+            this.queueIndex;
             if (this.state == "playing") {
                 this.onPause();
                 this.onPlay();
@@ -360,6 +389,27 @@ export class MusicLibraryComponent implements OnInit {
         if (pos < this.queueIndex) {
             this.queueIndex--;
         }
+
+        // Prevent invalid queue index
+        if (this.queueIndex < 0 || this.queueIndex > this.queue.length)
+            this.queueIndex = 0;
+
+        if (this.state == "playing" && this.queue.length > 0) {
+            this.onPlay();
+        }
+
+        // If the queue is now empty, clear state
+        if (this.queue.length == 0) {
+            this.onEnd();
+        }
+    }
+
+    /**
+     * Skip the queue to a selected item
+     */
+    skipQueue(i: number) {
+        this._queueIndex = i;
+        this.onPlay();
     }
 
     saveQueue() {
@@ -372,26 +422,15 @@ export class MusicLibraryComponent implements OnInit {
 
     playPrevious() {
         this.queueIndex -= 1;
+        this.saveQueue();
 
-        if (this.queueIndex < 0) {
-                this.queueIndex = 0;
-        }
-
-        this.currentTrack = this.queue[this.queueIndex];
         this.onPlay();
     }
 
     playNext() {
-        console.log("this.playNext");
         this.queueIndex += 1;
 
-        if (this.queueIndex > this.queue.length) {
-            if (this.isRepeating)
-                this.queueIndex = 0;
-        }
-
-        this.currentTrack = this.queue[this.queueIndex];
-
+        this.saveQueue();
         this.onPlay();
 
         // TODO: shuffle
@@ -401,10 +440,18 @@ export class MusicLibraryComponent implements OnInit {
     onPlay() {
         // Default to the first item in the queue
         if (!this.currentTrack && this.queue.length > 0)
-            this.currentTrack = this.queue[this.queueIndex = 0];
+            this.queueIndex = 0;
+
+        // Resume from paused state
+        if (this.state == "paused" ) {
+            this.state = "playing";
+            this.visualizer?.start(this.context, this.analyzer, this.source);
+            this.mediaElement.play();
+            return;
+        }
 
         // Update media element's src
-        const url = `/api/filesystem/download?path=${this.currentTrack.path + this.currentTrack.name}`
+        const url = `/api/filesystem/download?path=${this.currentTrack.path + this.currentTrack.name}`;
         this.mediaElement.src = url;
 
         this.state = "playing";
@@ -440,11 +487,12 @@ export class MusicLibraryComponent implements OnInit {
     }
 
     onPause() {
+        this.mediaElement.pause();
         this.state = "paused";
         this.visualizer?.stop();
     }
 
-    onEnd() {
+    onEnd(purge = false) {
         this.state = "waiting";
         this.visualizer?.stop();
 
@@ -452,7 +500,13 @@ export class MusicLibraryComponent implements OnInit {
         this.currentTime = 0;
         this.progress = 0;
 
-        this.playNext();
+        if (purge) {
+            this.mediaElement.pause();
+            this.queue = [];
+        }
+        else {
+            this.playNext();
+        }
     }
 
     volumeOnWheel(event: WheelEvent) {

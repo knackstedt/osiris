@@ -198,6 +198,30 @@ img {
         }
     }
 
+    tr {
+
+        &:after {
+            content: "";
+            position: absolute;
+            background-color: #0000002b;
+            left: 0;
+            width: 0;
+            height: 2px;
+            bottom: 5px;
+            transition: position 250ms ease, width 250ms ease, background-color 250ms ease;
+        }
+        &:hover {
+            background-color: var(--dialog-background-color);
+        }
+        &.active{
+            background: var(--panel-background-color);
+
+            &::after {
+                left: 0;
+                width: 100%;
+            }
+        }
+    }
     tr:hover .close mat-icon {
         opacity: .7;
     }

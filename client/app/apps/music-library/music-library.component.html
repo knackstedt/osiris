@@ -1,7 +1,4 @@
 <app-window-template [window]="window">
-    <ng-template #toolbar>
-        Checksum information
-    </ng-template>
     <ng-template #content>
         <div class="contents">
             <div class="container">
@@ -17,14 +14,19 @@
                                             style="height: 100%; width: 100%"
                                             track="vertical"
                                             pointerEventsMethod="scrollbar"
-                                            [ngx-ctx-menu]="groupedCtxItems"
                                         >
                                             <div class="resize-observer" #fileViewport></div>
                                             <cdk-virtual-scroll-viewport
                                                 itemSize="60"
                                                 scrollViewport
                                             >
-                                                <div class="group-item" *ngFor="let item of groupItems" (dblclick)="selectGrouping(item)">
+                                                <div 
+                                                    class="group-item" 
+                                                    *ngFor="let item of groupItems" 
+                                                    (dblclick)="selectGrouping(item)"
+                                                    [ngx-ctx-menu]="groupedCtxItems"
+                                                    [ngx-ctx-menu-context]="item"
+                                                >
                                                     <div class="photo">
                                                         <img [src]="item.image"/>
                                                     </div>
@@ -75,7 +77,11 @@
                             <div class="resize-observer" #fileViewport></div>
                             <cdk-virtual-scroll-viewport itemSize="54" scrollViewport>
                                 <table class="queue">
-                                    <tr *cdkVirtualFor="let item of queue">
+                                    <tr
+                                        *cdkVirtualFor="let item of queue; let i = index"
+                                        (dblClick)="skipQueue(i)"
+                                        [class.active]="i == queueIndex"
+                                    >
                                         <td>
                                             <img class="img" [src]="getTrackPicture(item) | urlSanitizer" />
                                         </td>
@@ -112,12 +118,12 @@
 
                 <div class="overlay">
                     <div class="nav-controls">
-                        <button mat-icon-button (click)="playPrevious()"><mat-icon>skip_previous</mat-icon></button>
+                        <button mat-icon-button [disabled]="queueIndex <= 0" (click)="playPrevious()"><mat-icon>skip_previous</mat-icon></button>
 
-                        <button mat-icon-button *ngIf="state != 'playing'" (click)="onPlay()"><mat-icon>play_arrow</mat-icon></button>
-                        <button mat-icon-button *ngIf="state == 'playing'" (click)="media.pause()"><mat-icon>pause</mat-icon></button>
+                        <button mat-icon-button [disabled]="queue.length == 0" *ngIf="state != 'playing'" (click)="onPlay()"><mat-icon>play_arrow</mat-icon></button>
+                        <button mat-icon-button [disabled]="queue.length == 0" *ngIf="state == 'playing'" (click)="onPause()"><mat-icon>pause</mat-icon></button>
 
-                        <button mat-icon-button (click)="playNext()"><mat-icon>skip_next</mat-icon></button>
+                        <button mat-icon-button [disabled]="queueIndex >= queue.length" (click)="playNext()"><mat-icon>skip_next</mat-icon></button>
                     </div>
 
                     <div class="seeker">

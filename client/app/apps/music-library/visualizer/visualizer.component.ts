@@ -23,7 +23,10 @@ import { MatSelectModule } from '@angular/material/select';
 })
 export class VisualizerComponent  {
     @ViewChild("canvas") canvasRef: ElementRef<any>;
-    get canvas() { return this.canvasRef?.nativeElement as HTMLCanvasElement }
+    get canvas() { return this.canvasRef?.nativeElement as HTMLCanvasElement; }
+
+    @ViewChild("container") containerRef: ElementRef<any>;
+    get container() { return this.containerRef?.nativeElement as HTMLDivElement; }
 
     @Input() visualization: string = "circular";
 
@@ -425,7 +428,7 @@ export class VisualizerComponent  {
 
         // For the main canvas layer, cannibalize the regular canvas
         this.mbFgCanvas = this.canvas;
-        this.mbFgCanvas.setAttribute('style', 'position: absolute; z-index: 2');
+        this.mbFgCanvas.setAttribute('style', 'position: absolute; z-index: 3');
         this.mbFgCtx = this.ctx;
 
         /*
@@ -433,15 +436,16 @@ export class VisualizerComponent  {
         */
         this.mbMgCanvas = this.mbBgCanvas || document.createElement('canvas');
         this.mbMgCtx = this.mbBgCtx || this.mbMgCanvas.getContext("2d");
-        this.mbMgCanvas.setAttribute('style', 'position: absolute; z-index: 1');
-        this.viewContainer.element.nativeElement.appendChild(this.mbMgCanvas);
+        this.mbMgCanvas.setAttribute('style', 'position: absolute; z-index: 2');
+        this.container.appendChild(this.mbMgCanvas);
 
         /*
             Background Image Layer
         */
         this.mbBgCanvas = this.mbBgCanvas || document.createElement('canvas');
         this.mbBgCtx = this.mbBgCtx || this.mbBgCanvas.getContext("2d");
-        this.viewContainer.element.nativeElement.appendChild(this.mbBgCanvas);
+        this.mbBgCanvas.setAttribute('style', 'position: absolute; z-index: 1');
+        this.container.appendChild(this.mbBgCanvas);
 
         this.makePolygonArray();
         this.makeStarArray();
