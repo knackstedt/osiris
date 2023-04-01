@@ -1,6 +1,7 @@
 :host {
     display: block;
     overflow: hidden;
+    height: 100%;
 }
 
 :host ::ng-deep {
@@ -10,13 +11,16 @@
 }
 
 .resources {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    overflow: hidden;
 
     app-live-graph {
         height: 100%;
         flex: 1;
     }
+}
+
+.tab-contents {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    overflow: hidden;
 }

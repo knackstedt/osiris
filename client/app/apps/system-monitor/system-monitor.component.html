@@ -1,7 +1,4 @@
 <app-window-template [window]="window">
-    <ng-template #toolbar>
-        Checksum information
-    </ng-template>
     <ng-template #content>
         <mat-tab-group style="overflow: hidden; flex: 1" [selectedIndex]="2">
             <mat-tab label="Processes">
@@ -12,9 +9,9 @@
                         [columns]="[
                             { field: 'name', title: 'Process Name' },
                             { field: 'user', title: 'User' },
-                            { field: 'cpu', title: '% CPU' },
+                            { field: 'cpu', title: '% CPU', formatter: cpuFormatter },
                             { field: 'pid', title: 'ID' },
-                            { field: 'memRss', title: 'Memory' },
+                            { field: 'memRss', title: 'Memory', formatter: byteFormatter },
                             { field: 'state', title: 'State' },
                             { field: 'priority', title: 'Priority' }
                         ]"
@@ -41,30 +38,47 @@
             </mat-tab>
             <mat-tab label="Resources">
                 <ng-template matTabContent>
-                    <div class="resources">
-                        <app-live-graph [xaxis]="xaxis" [yaxis]="[{type: 'value',max: 100,min: 0}]" [dataSource]="cpuData"></app-live-graph>
-                        <app-live-graph [xaxis]="xaxis" [dataSource]="memoryData"></app-live-graph>
-                        <app-live-graph [xaxis]="xaxis" [dataSource]="networkData"></app-live-graph>
+                    <div class="resources tab-contents">
+                        <app-live-graph 
+                            #cpuGraph
+                            [xaxis]="xaxis" 
+                            [yaxis]="[{type: 'value', max: 100, min: 0}]" 
+                            [dataSource]="cpuData"
+                        />
+                        <app-live-graph 
+                            #memGraph
+                            [xaxis]="xaxis" 
+                            [yaxis]="{type: 'value', max: metricData?.mem?.total, axisLabel: { formatter: byteFormatterBare }}" 
+                            [dataSource]="memoryData"
+                        />
+                        <app-live-graph 
+                            #networkGraph
+                            [xaxis]="xaxis" 
+                            [yaxis]="{type: 'value', axisLabel: { formatter: byteFormatterBare }}" 
+                            [dataSource]="networkData"
+                        />
                     </div>
-                    <!-- <div *ngFor="let cpu of metricData?.currentLoad?.cpus"></div> -->
-
                 </ng-template>
             </mat-tab>
             <mat-tab label="File Systems">
-
-                <app-tabulator
-                    key="fs"
-                    [dataSource]="_metricData?.fsSize"
-                    [columns]="[
-                        { field: 'fs', title: 'Device' },
-                        { field: 'mount', title: 'Directory' },
-                        { field: 'type', title: 'Type' },
-                        { field: 'size', title: 'Total' },
-                        { field: 'available', title: 'Available' },
-                        { field: 'used', title: 'Used' },
-                        { field: 'peerPort', title: '' }
-                    ]"
-                />
+                <div class="filesystems tab-contents">
+                    <app-tabulator
+                        key="fs"
+                        [dataSource]="_metricData?.fsSize"
+                        [columns]="[
+                            { field: 'fs', title: 'Device' },
+                            { field: 'mount', title: 'Directory' },
+                            { field: 'type', title: 'Type' },
+                            { field: 'size', title: 'Total', formatter: byteFormatter },
+                            { field: 'available', title: 'Available', formatter: byteFormatter },
+                            { field: 'used', title: 'Used', formatter: byteFormatter }
+                        ]"
+                    />
+                    <ngx-lazy-loader
+                        component="filesystem-radial"
+                        [inputs]="{ cwd: '/home/knackstedt/'}"
+                    />
+                </div>
             </mat-tab>
             <mat-tab label="Networks">
                 <app-tabulator [dataSource]="_metricData?.wifiNetworks"

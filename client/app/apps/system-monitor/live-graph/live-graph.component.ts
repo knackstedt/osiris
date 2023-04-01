@@ -1,31 +1,8 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { EChartsOption, graphic, SeriesOption } from 'echarts';
+import { ECharts, EChartsOption, graphic, SeriesOption, TooltipComponentOption } from 'echarts';
 import { NgxEchartsModule, NGX_ECHARTS_CONFIG } from 'ngx-echarts';
-import si from 'systeminformation';
 
 import 'echarts/theme/dark-bold.js';
-
-
-let data = [];
-let now = new Date();
-let oneDay = 1000;
-let value = Math.random() * 1000;
-function randomData() {
-    now = new Date(+now - oneDay);
-    value = value + Math.random() * 21 - 10;
-    return value;
-    return {
-        name: now.toString(),
-        value: [
-            now.toISOString(),
-            Math.round(value)
-        ]
-    };
-} 
-for (var i = 0; i < 60; i++) {
-    data.push(randomData());
-}
-
 
 @Component({
     selector: 'app-live-graph',
@@ -43,15 +20,27 @@ for (var i = 0; i < 60; i++) {
     standalone: true,
 })
 export class LiveGraphComponent {
-    chart: any;
+    chart: ECharts;
 
     @Input() dataSource: {
         label: string,
         color: string,
-        data: number[]
+        data: number[],
+        tooltip
     }[];
+
     @Input() xaxis: any[];
     @Input() yaxis: any = [{ type: "value" }];
+
+    @Input() tooltip: TooltipComponentOption | TooltipComponentOption[] = {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
+    } 
 
     chartOption: EChartsOption;
 
@@ -59,34 +48,18 @@ export class LiveGraphComponent {
         this.chart = ec;
     }
 
+    hasInitializedSeries = false;
     ngOnInit() {
         const colors = this.dataSource.map(s => s.color);
         const labels = this.dataSource.map(s => s.label);
 
-        const series = this.dataSource.map(s => {
-            return {
-                name: s.label,
-                type: 'line',
-                smooth: true,
-                lineStyle: {
-                    width: 1
-                },
-                showSymbol: false,
-                data: s.data
-            } as SeriesOption
-        });
+        const series = this.formatSeries();
+        if (series.length > 0)
+            this.hasInitializedSeries = true;
 
         this.chartOption = {
             color: colors,
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'cross',
-                    label: {
-                        backgroundColor: '#6a7985'
-                    }
-                }
-            },
+            tooltip: this.tooltip,
             legend: {
                 data: labels
             },
@@ -111,19 +84,30 @@ export class LiveGraphComponent {
         };
     }
 
-    refresh() {
-        const series = this.dataSource.map(s => {
+    formatSeries() {
+        return this.dataSource.map(s => {
             return {
                 name: s.label,
                 type: 'line',
                 smooth: true,
                 lineStyle: {
-                    width: 1
+                    width: 2
                 },
                 showSymbol: false,
-                data: s.data
+                ...s
             };
         });
+    }
+
+    refresh() {
+        if (!this.chart) return;
+        const series = this.formatSeries();
+
+        // If we now have a series to work with:
+        if (series.length > 0 && this.hasInitializedSeries == false) {
+            this.hasInitializedSeries = true;
+        }
+
         this.chart.setOption({ series, animation: false });
     }
 }
