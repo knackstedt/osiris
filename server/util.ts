@@ -35,7 +35,7 @@ export const getFilesInFolder:
     = async (folder: string, showHidden = false, recurse = 2) => {
     if (!folder.endsWith('/')) folder += '/';
 
-    const contents = await fs.readdir(folder, { withFileTypes: true });
+    const contents = await fs.readdir(folder, { withFileTypes: true }).catch(e => ([]));
 
     const dirs = await Promise.all(
         contents.filter(f => f.isDirectory())
@@ -52,7 +52,10 @@ export const getFilesInFolder:
         contents.filter(f => f.isFile())
             .filter(f => !f.name.startsWith('.'))
             .map(async p => {
-                let stats = await fs.stat(folder + p.name);
+                let stats = await fs.stat(folder + p.name).catch(e => null);
+
+                if (!stats) return null;
+
                 return {
                     stats: {
                         size: stats.size,
@@ -67,7 +70,7 @@ export const getFilesInFolder:
                     kind: "file" as "file"
                 }
             })
-    );
+    ).then(files => files.filter(e => !!e));
 
     return { dirs, files };
 }
