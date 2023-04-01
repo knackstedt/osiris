@@ -171,11 +171,7 @@ export class Polygon {
      * @param {array} coords
      */
     calculateOffset(coords) {
-        this.analyser.getByteFrequencyData(this.streamData);
-
-
         var angle = Math.atan(coords[1] / coords[0]);
-
 
         /*
             A bit of pythagoras
@@ -232,8 +228,6 @@ export class Star {
 
     drawStar() {
         var distanceFromCentre = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
-        this.analyzer.getByteFrequencyData(this.streamData);
-
         /*
             Calculate an overall volume value
         */

@@ -97,6 +97,9 @@ export class VisualizerComponent  {
     ngOnDestroy() {
         // this.analyzer.disconnect();
         // this.source.disconnect();
+
+        if (this.requestAnimation)
+            cancelAnimationFrame(this.requestAnimation);
     }
 
     onModeSelect(mode: string) {
