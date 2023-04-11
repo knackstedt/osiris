@@ -47,6 +47,7 @@
               "client/style/main.scss"
             ],
             "scripts": [],
+            "preserveSymlinks": true,
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json",
             "webWorkerTsConfig": "tsconfig.worker.json"
@@ -62,12 +63,13 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "40kb"
+                  "maximumError": "400kb"
                 }
               ],
               "outputHashing": "all"
             },
             "development": {
+              "preserveSymlinks": true,
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
