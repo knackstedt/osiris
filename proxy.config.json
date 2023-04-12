@@ -5,6 +5,12 @@
     },
     "/ws": {
         "target": "https://localhost:3000",
-        "secure": false
+        "secure": false,
+        "ws": true
+    },
+    "/app": {
+        "target": "http://localhost",
+        "secure": false,
+        "ws": true
     }
 }
