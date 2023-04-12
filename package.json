@@ -9,7 +9,8 @@
     "dev:mobile": "ng serve --host 192.168.1.246 --port 4500 --ssl --proxy-config ./proxy.config.json",
     "build": "ng build",
     "build:client": "",
-    "build:server": "tsc --project tsconfig.server.json"
+    "build:server": "tsc --project tsconfig.server.json",
+    "postinstall": "echo -e \"@ts-nocheck\n$(cat node_modules/material-icon-theme/src/icons/generator/fileGenerator.ts)\" > node_modules/material-icon-theme/src/icons/generator/fileGenerator.ts"
   },
   "private": true,
   "dependencies": {
