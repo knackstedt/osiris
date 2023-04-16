@@ -5,7 +5,7 @@
     z-index: 1000;
     max-height: 47px;
 
-    color: #cccccc;
+    color: var(--dialog-text-color);
     border-top: 1px solid #434343;
     border-bottom: 1px solid #262626;
     background-color: #363636;
@@ -25,7 +25,7 @@
 
     .container {
         display: flex;
-        color: #ccc;
+        color: var(--dialog-text-color);
         flex: 1;
         width: 100%;
         height: 100%;
@@ -40,7 +40,7 @@
 
     .title {
         font-weight: bold;
-        color: #fff;    
+        color: var(--text-color);
     }
 
     button {
@@ -48,7 +48,7 @@
         background-color: transparent;
 
         &:hover {
-            background-color: #5f5f5f;
+            background-color: var(--gtk-);
         }
     }
 
@@ -87,7 +87,7 @@
     }
 
     &.active {
-        color: #bcbcbc;
+        color: var(--dialog-titlebar-text-color);
         border-bottom: 1px solid #242424;
 
         button {

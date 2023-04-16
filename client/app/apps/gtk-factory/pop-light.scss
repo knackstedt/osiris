@@ -1,32 +1,32 @@
 @import "@fontsource/fira-mono";
 @import "@fontsource/fira-sans";
 
-@mixin pop-dark() {
-    --gtk-text-color: #bcbcbc;
-    --gtk-text-emphasis-color: #fff;
-    --gtk-text-muted-color: #fff;
+@mixin pop-light() {
+    --gtk-text-color: #121212;
+    --gtk-text-emphasis-color: #000;
+    --gtk-text-muted-color: #000;
     --gtk-font-family: 'Fira Sans';
     --gtk-font-size: 14px;
 
-    --gtk-inactive-text-color: #fff;
+    --gtk-inactive-text-color: #000;
 
-    --gtk-text-highlight-color: #fff;
+    --gtk-text-highlight-color: #000;
 
 
-    --gtk-window-toolbar-height: #fff;
+    --gtk-window-toolbar-height: #000;
     --gtk-window-radius: 3px;
-    --gtk-window-background-color: #363636;
+    --gtk-window-background-color: #fff;
 
-    --gtk-button-text-color: #fff;
-    --gtk-button-border-color: #272727;
-    --gtk-button-border-bottom-color: #0d0d0d;
-    --gtk-button-background-color: #404040;
+    --gtk-button-text-color: #000;
+    --gtk-button-border-color: #c6c6c6;
+    --gtk-button-border-bottom-color: #c0c0c0;
+    --gtk-button-background-color: #c0c0c0;
 
     --gtk-list-item-active-text-color: #000;
     --gtk-list-item-background-active-color: #94ebeb;
     --gtk-list-item-background-hover-color: #343434;
 
-    --gtk-input-background-color: #222;
+    --gtk-input-background-color: #ddd;
     --gtk-input-active-border-color: #af8556;
     --gtk-input-radius: 3px;
 

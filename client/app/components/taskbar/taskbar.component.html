@@ -48,7 +48,9 @@
                 <div class="dot" *ngIf="item.windows.length > 4"></div>
             </div>
             <div class="icon">
-                <img [src]="item.windows[0].icon" />
+
+                <mat-icon *ngIf="item.windows[0].matIcon" [fontIcon]="item.windows[0].icon"></mat-icon>
+                <img *ngIf="!item.windows[0].matIcon" [src]="item.windows[0].icon" />
             </div>
             <div class="tooltip">
                 <div>

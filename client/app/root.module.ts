@@ -19,6 +19,7 @@ import { WorkspaceComponent } from 'client/app/components/workspace/workspace.co
 import { BackgroundComponent } from 'client/app/components/background/background.component';
 import { HTMLSanitizer } from 'client/app/pipes/urlsanitizer.pipe';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
     declarations: [
@@ -45,6 +46,7 @@ import { MatDialogModule } from '@angular/material/dialog';
             errorComponent: WindowErrorComponent
         }),
         ToastrModule.forRoot(),
+        MatIconModule,
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,
