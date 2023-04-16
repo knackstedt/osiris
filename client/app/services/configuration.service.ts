@@ -53,6 +53,7 @@ export class ConfigurationService {
     shell: string;
     host: string;
 
+    currentTheme = "dark";
 
     ready = false;
 
@@ -99,11 +100,16 @@ export class ConfigurationService {
     apply() {
         // Clear out any old classes
         [...document.body.classList as any as string[]]
-            .filter(c => c.startsWith("taskbar-"))
+            .filter(c =>
+                c.startsWith("taskbar-") ||
+                c.startsWith("dir-") ||
+                c.startsWith("t-")
+            )
             .forEach(c => document.body.classList.remove(c));
 
 
         document.body.classList.add(`taskbar-${this.taskbarPosition}`);
         document.body.classList.add(`dir-${this.workspaceDirection}`);
+        document.body.classList.add(`t-${this.currentTheme}`);
     }
 }

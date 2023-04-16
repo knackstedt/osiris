@@ -1,6 +1,11 @@
 <app-window-template [window]="window">
     <ng-template #content>
 
+        <div>
+            <span matTooltip="Control which direction the workspaces flow">Workspace Direction: </span>
+            <gtk-dropdown [value]="config.currentTheme" [options]="themeList" (valueChange)="config.currentTheme = $event; config.apply()"></gtk-dropdown>
+        </div>
+
         <div class="workspaces">
             Workspaces
             <div *ngFor="let workspace of config.workspaces; let i = index" class="workspace">

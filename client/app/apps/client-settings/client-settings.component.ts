@@ -31,6 +31,7 @@ export class ClientSettingsComponent implements OnInit {
 
     directionOptions = [ "vertical", "horizontal" ];
     taskbarPositions = [ "top", "right", "bottom", "left" ];
+    themeList = ["light", 'dark'];
 
     constructor(
         public config: ConfigurationService
