@@ -1,0 +1,8 @@
+<app-window-template [window]="window">
+    <ng-template #content>
+        <iframe
+            [src]="url | urlSanitizer"
+            (load)="onLoadComplete()"
+        ></iframe>
+    </ng-template>
+</app-window-template>
