@@ -1,4 +1,4 @@
-import { HostListener, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ManagedWindow, WindowManagerService } from './window-manager.service';
 

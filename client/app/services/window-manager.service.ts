@@ -197,7 +197,7 @@ class WindowInstance {
         Object.keys(config).forEach(k => this[k] = config[k]);
 
         const app = RegisteredApplications.find(a => a.id == config.appId);
-        this.title = app ? app['label'] : config.appId;
+        this.title = config.title || (app ? app['label'] : config.appId);
     }
 
     onInit(instance) {
