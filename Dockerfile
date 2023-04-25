@@ -12,4 +12,4 @@ COPY . /app
 
 EXPOSE 80
 
-CMD ["bash", "docker-wrapper.sh"]
+CMD ["sh", "docker-wrapper.sh"]
