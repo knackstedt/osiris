@@ -1,0 +1,87 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: osiris.dotglitch.dev-ingress
+spec:
+  entryPoints:
+   - web
+  routes:
+    - match: Host(`osiris.dotglitch.dev`)
+      kind: Rule
+      services:
+      - name: osiris-server
+        port: 80
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: osiris.dotglitch.dev-secure-ingress
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`osiris.dotglitch.dev`)
+      services:
+        - name: osiris-server
+          port: 80
+  tls:
+    secretName: osiris.dotglitch.dev-tls
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: osiris-server
+spec:
+  selector:
+    app: osiris-server
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osiris-server
+spec:
+  selector:
+    matchLabels:
+      app: osiris-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: osiris-server
+    spec:
+      containers:
+      - name: osiris
+        image: harbor.dotglitch.dev/library/osiris:latest
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: harbor-key
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: osiris.dotglitch.dev
+spec:
+  commonName: osiris.dotglitch.dev
+  dnsNames:
+    - osiris.dotglitch.dev
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  secretName: osiris.dotglitch.dev-tls
+
+
