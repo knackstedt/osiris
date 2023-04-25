@@ -17,7 +17,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: osiris.dotglitch-secure-ingress
+  name: dev.osiris.dotglitch-secure-ingress
 spec:
   entryPoints:
     - websecure
@@ -28,7 +28,7 @@ spec:
         - name: osiris-server
           port: 80
   tls:
-    secretName: osiris.dotglitch.dev-tls
+    secretName: dev.osiris.dotglitch.dev-tls
 
 ---
 
