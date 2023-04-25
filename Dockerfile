@@ -6,10 +6,9 @@ RUN rm /etc/nginx/conf.d/default.conf
 RUN apk add nodejs npm --no-cache
 RUN npm i -g pm2
 
-WORKDIR /app/server
+WORKDIR /app
 
-COPY dist/osiris /app/web
-COPY dist/server /app/server
+COPY . /app
 
 EXPOSE 80
 

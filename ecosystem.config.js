@@ -1,5 +1,5 @@
 module.exports = [{
-    script: 'dist/main.js',
+    script: 'dist/server/main.js',
     name: 'osiris',
     exec_mode: 'cluster',
     instances: '1',
