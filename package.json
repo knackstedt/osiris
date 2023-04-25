@@ -7,8 +7,8 @@
     "dev:web": "ng serve --port 4500 --ssl --proxy-config ./proxy.config.json",
     "dev:server": "nodemon server/main.ts --watch server",
     "dev:mobile": "ng serve --host 192.168.1.246 --port 4500 --ssl --proxy-config ./proxy.config.json",
-    "build": "ng build",
-    "build:client": "",
+    "build": "npm run build:client; npm run build:server",
+    "build:client": "ng build",
     "build:server": "tsc --project tsconfig.server.json",
     "postinstall": "echo -e \"//@ts-nocheck\n$(cat node_modules/material-icon-theme/src/icons/generator/fileGenerator.ts)\" > node_modules/material-icon-theme/src/icons/generator/fileGenerator.ts"
   },
