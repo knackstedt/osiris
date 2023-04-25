@@ -19,8 +19,7 @@ import { MetricSocketService } from './api/os/metrics';
 
     const server = new SecureServer({
         // Disable SSL termination in kubernetes.
-        // disableSSL: !!process.env['KUBERNETES_PORT'],
-        // sessionHandler: sessionHandler as any,
+        disableSSL: !!process.env['KUBERNETES_PORT'],
         port: environment.port,
         errorHandler: false,
         domain: environment.domain,
@@ -92,7 +91,7 @@ import { MetricSocketService } from './api/os/metrics';
     // Listen on the specified port.
     await server.start();
     const httpserver = server.getServer();
-    // new TerminalSocketService(httpserver);
+    new TerminalSocketService(httpserver);
     new MetricSocketService(httpserver);
 
     app.use((req, res, next) => next(404));

@@ -7,7 +7,7 @@ import fs from "fs-extra";
 import crypto from 'crypto';
 import { secureWipe } from './util';
 import { readZipFolder } from './zip';
-import { parseFile, parseBuffer, IAudioMetadata } from 'music-metadata';
+import { parseFile, IAudioMetadata } from 'music-metadata';
 
 
 const router = express.Router();
@@ -38,6 +38,7 @@ router.use('/download', route(async (req, res, next) => {
 
             const videoStream = fs.createReadStream(file, { start, end });
             videoStream.pipe(res);
+            videoStream.on("end", () => res.end());
         }
         else { // No range was specified so we just stream the response.
             const stream = fs.createReadStream(file);
@@ -45,6 +46,7 @@ router.use('/download', route(async (req, res, next) => {
             res.setHeader("content-length", stats.size);
 
             stream.pipe(res);
+            stream.on("end", () => res.end());
         }
     }
     catch (ex) {
@@ -167,6 +169,34 @@ router.use('/checksum/:type', route(async (req, res, next) => {
 }));
 
 
+router.use('/scandir', route(async (req, res, next) => {
+    let path = req.query['path'] as string;
+
+    if (!path) return next(400);
+
+    // If the file doesn't exist
+    let hasAccess = await access(path, fs.constants.F_OK | fs.constants.W_OK | fs.constants.R_OK)
+        .then(r => true)
+        .catch(e => {
+            next(e);
+        });
+
+    if (!hasAccess) return next(403);
+
+    let stats = await stat(path);
+
+    if (stats.isDirectory()) {
+        let { dirs, files } = await getFilesInFolder(path, true, 20);
+
+        return res.send({ dirs, files });
+    }
+    else {
+        next({
+            status: 400,
+            message: `Must run on directory.`,
+        });
+    }
+}));
 
 router.use('/', route(async (req, res, next) => {
     let { path, showHidden } = req.body;

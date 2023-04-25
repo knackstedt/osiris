@@ -40,6 +40,7 @@ router.use('/scan', route(async (req, res, next) => {
                 picture.type?.includes("front") && "front" ||
                 picture.type?.includes("back") && "back" ||
                 "other";
+                
             let out = file + "_" + type + "." + picture.format.split('/').pop();
             images.push(out);
             await fs.outputFile(out, picture.data);
