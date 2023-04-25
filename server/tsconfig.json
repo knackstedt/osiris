@@ -4,7 +4,7 @@
     "compilerOptions": {
         "baseUrl": "./server",
         "sourceRoot": "./server",
-        "outDir": "./dist/",
+        "outDir": "../dist/",
         "forceConsistentCasingInFileNames": true,
         "strict": false,
         "noImplicitOverride": true,
@@ -22,6 +22,7 @@
         "module": "commonjs",
         "lib": [
             "es2020"
-        ]
+        ],
+        "types": ["node"]
     }
 }
