@@ -12,4 +12,6 @@ COPY . /app
 
 EXPOSE 80
 
-CMD ["sh", "docker-wrapper.sh"]
+RUN pm2 startup
+RUN pm2 start ecosystem.config.js
+
