@@ -4,7 +4,7 @@
     "compilerOptions": {
         "baseUrl": "./server",
         "sourceRoot": "./server",
-        "outDir": "../dist/",
+        "outDir": "../dist/server",
         "forceConsistentCasingInFileNames": true,
         "strict": false,
         "noImplicitOverride": true,
