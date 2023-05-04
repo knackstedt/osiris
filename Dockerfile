@@ -25,4 +25,5 @@ RUN npm run build:server
 
 EXPOSE 80
 
-CMD ["pm2-runtime", "ecosystem.config.js"]
+
+CMD ["/bin/bash", "-c", "service nginx start; pm2-runtime ecosystem.config.js"]
