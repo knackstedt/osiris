@@ -4,7 +4,7 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/conf.d/default.conf
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt install nodejs -y -qq
+RUN apt install nodejs gcc g++ make -y -qq
 RUN npm i -g pm2
 
 WORKDIR /app
