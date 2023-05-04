@@ -5,7 +5,7 @@ RUN apt install curl -y -qq
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt install nginx nodejs gcc g++ make -y -qq
 RUN npm i -g pm2
-RUN service nginx enable
+# RUN service nginx enable
 
 WORKDIR /app
 
