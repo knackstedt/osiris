@@ -7,7 +7,7 @@ version=$(npm version --json | jq '.osiris' | tr -d '"')
 
 # Run the build
 npm i
-npm run build
+npm run build:client
 docker build . -t harbor.dotglitch.dev/library/osiris:$version
 
 # Once built, push the new build number

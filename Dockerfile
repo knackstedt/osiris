@@ -9,10 +9,12 @@ RUN npm i -g pm2
 
 WORKDIR /app
 
-COPY . /app
-# Reinstall
+COPY dist /app
+COPY server /app/server
+COPY package.json /app/package.json
+# Install server deps
 RUN npm i --omit=dev
-
+RUN npm run build:server
 
 EXPOSE 80
 
