@@ -16,5 +16,5 @@ EXPOSE 80
 RUN pm2 startup
 RUN pm2 start /app/ecosystem.config.js
 RUN pm2 save
-RUN pm2 stop all
+# RUN pm2 stop all
 
