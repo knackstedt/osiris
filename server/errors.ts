@@ -8,94 +8,6 @@ export const router = express.Router();
 
 const isProduction = process.env["NODE_ENV"]?.toLowerCase() == "production";
 
-const errorTemplate = readFileSync(__dirname + "/../static/message.html", "utf-8");
-
-function renderStacktrace(stack) {
-    const renderedLines = stack.split("\n").map((text, i) => {
-        return `
-        <div class="error-SourceLine">
-            <a class="error-SourceLine-number error-SourceLine-number--highlight"></a>
-            <div class="error-SourceLine-text error-SourceLine-text--highlight">${text}</div>
-        </div>`;
-    }).join("");
-
-    return `
-    <div class="error-NativeStackTrace">
-        <div class="error-StackFrames">
-            ${renderedLines}
-        </div>
-    </div>
-    `;
-}
-
-function renderCodeFile(stack) {
-
-    const fileRef = stack.match(/at [^(]+?\(([^)]+?)\)/)[1];
-    const fileParts = fileRef.split(":");
-    const filePath = fileParts[0];
-    const lineNo = fileParts[1];
-    const colNo = fileParts[2];
-    const fileText = existsSync(filePath) ? readFileSync(filePath, "utf-8") : "";
-    const fileLines = fileText.split("\n");
-
-    if (!fileText) return "";
-
-    const renderedLines = fileLines
-        .slice(Math.max(lineNo - 4, 0), Math.max(lineNo + 10, fileLines.length)) // Get a subset of ~8 lines of code.
-        .map((text, i) => {
-            // Line numbers show 2 before and 6 after the affected line.
-            // We add 1 here because line numbers in files start at index 1.
-            const lineNumber = (lineNo - 4 + i) + 1;
-            const isCurLine = lineNumber == lineNo;
-            if (isCurLine) {
-
-                const customLine = text.slice(0, colNo - 1) +
-                    `<span class="marker">${text.charAt(Math.min(colNo - 1, text.length))}</span>` +
-                    `<span class="marker-line">${text.slice(Math.min(colNo, text.length))}</span>`;
-
-                return `
-                <div class="error-SourceLine">
-                    <a class="error-SourceLine-number error-SourceLine-number--highlight">${lineNumber}</a>
-                    <div class="error-SourceLine-text error-SourceLine-text--highlight">${customLine}</div>
-                </div>`;
-            }
-            else {
-                return `
-                <div class="error-SourceLine">
-                    <a class="error-SourceLine-number error-SourceLine-number--highlight">${lineNumber}</a>
-                    <div class="error-SourceLine-text error-SourceLine-text--highlight">${text}</div>
-                </div>`;
-            }
-        }).join("");
-
-    return `
-    <div class="error-NativeStackTrace"><a class="error-NativeStackTrace-filename">${fileRef.split("/").pop()}</a>
-        <div class="error-SourceLines">
-            ${renderedLines}
-        </div>
-    </div>
-    `;
-}
-
-function renderTemplate(data) {
-    let substituted = errorTemplate;
-
-    if (data.stack) {
-        let stack = renderStacktrace(data.stack);
-        substituted = substituted.replace("{{stacktrace}}", stack || "");
-
-        let code = renderCodeFile(data.stack);
-        substituted = substituted.replace("{{codeSnippet}}", code || "");
-    }
-
-    substituted = substituted.replace(/\{\{([a-zA-z0-9\-_]*?\.?([a-zA-z0-9\-_]*?))\}\}/g,
-        (match, group1, group2, index) => {
-            return data[group2] || "";
-        });
-
-
-    return substituted;
-}
 
 // Catch-all error handler.
 export const ErrorHandler = (err, req, res, next) => {
@@ -186,17 +98,17 @@ export const ErrorHandler = (err, req, res, next) => {
             console.error(`${jsonResult.name}\n${jsonResult.message}\n${jsonResult.stack}`);
     }
 
-    if (jsonResult.status >= 500) {
-        const log = `[${jsonResult.status}] ` + err.name;
+    // if (jsonResult.status >= 500) {
+    //     const log = `[${jsonResult.status}] ` + err.name;
 
-        const error = err.name?.endsWith('Error') ?
-            err.message + "\n" + err.stack :
-            JSON.stringify(err)
+    //     const error = err.name?.endsWith('Error') ?
+    //         err.message + "\n" + err.stack :
+    //         JSON.stringify(err)
 
-        // The only reason we are using userInfo here is in case there is a failure
-        // During the signon process.
-        const email = req.session?.userInfo?.mail || req.session?.userInfo?.upn || "anonymous";
-    }
+    //     // The only reason we are using userInfo here is in case there is a failure
+    //     // During the signon process.
+    //     const email = req.session?.userInfo?.mail || req.session?.userInfo?.upn || "anonymous";
+    // }
 
     // Remove stacktrace information from the reported error in higher environments
     // Higher-level environments should not have code or stacktraces exposed.
@@ -210,5 +122,5 @@ export const ErrorHandler = (err, req, res, next) => {
     }
 
     res.status(jsonResult.status);
-    res.send(wantsHtml ? renderTemplate(jsonResult) : jsonResult);
+    res.send(jsonResult);
 };
