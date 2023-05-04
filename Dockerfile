@@ -12,6 +12,8 @@ WORKDIR /app
 COPY dist /app
 COPY server /app/server
 COPY package.json /app/package.json
+COPY postinstall.sh /app/postinstall.sh
+
 # Install server deps
 RUN npm i --omit=dev
 RUN npm run build:server
