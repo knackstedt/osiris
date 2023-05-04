@@ -13,7 +13,7 @@ WORKDIR /app
 COPY ./nginx.conf /etc/nginx/nginx.conf
 # RUN rm /etc/nginx/conf.d/default.conf
 
-COPY dist /app
+COPY dist /app/dist
 COPY server /app/server
 COPY package.json /app/package.json
 COPY postinstall.sh /app/postinstall.sh
