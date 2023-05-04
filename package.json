@@ -1,6 +1,6 @@
 {
   "name": "osiris",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "scripts": {
     "ng": "ng",
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
