@@ -10,7 +10,7 @@
     "build": "npm run build:client; npm run build:server",
     "build:client": "ng build",
     "build:server": "tsc --project ./server/tsconfig.json",
-    "postinstall": "sh postinstall.sh"
+    "postinstall": "bash postinstall.sh"
   },
   "private": true,
   "dependencies": {
