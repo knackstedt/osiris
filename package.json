@@ -1,6 +1,6 @@
 {
   "name": "osiris",
-  "version": "0.0.17",
+  "version": "0.0.16",
   "scripts": {
     "ng": "ng",
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
@@ -10,7 +10,7 @@
     "build": "npm run build:client; npm run build:server",
     "build:client": "ng build",
     "build:server": "tsc --project ./server/tsconfig.json",
-    "postinstall": "echo -e \"//@ts-nocheck\n$(cat node_modules/material-icon-theme/src/icons/generator/fileGenerator.ts)\" > node_modules/material-icon-theme/src/icons/generator/fileGenerator.ts"
+    "postinstall": "sh postinstall.sh"
   },
   "private": true,
   "dependencies": {
