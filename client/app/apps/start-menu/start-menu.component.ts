@@ -20,6 +20,10 @@ const charMap = {
     "\\": "\\\\"
 };
 
+const boltons = [
+    {}
+]
+
 @Component({
     selector: 'app-start-menu',
     templateUrl: './start-menu.component.html',
@@ -36,7 +40,8 @@ export class StartMenuComponent {
 
     search = "";
 
-    sysApps = RegisteredApplications;
+    sysApps = RegisteredApplications.filter(a => a['matIcon']);
+
 
     menus: {
         label: string,
@@ -46,7 +51,17 @@ export class StartMenuComponent {
         {
             label: "system",
             icon: "",
-            apps: this.sysApps.filter(a => !!a['iconType'])
+            apps: this.sysApps
+        },
+        {
+            label: "boltons",
+            icon: "",
+            apps: [
+                { id: "iframe", label: "GoCD",          matIcon: "terminal", data: { url: "/app/go/"} },
+                // { id: "iframe", label: "K8s Dashboard", matIcon: "terminal", data: { url: "/app/go/"} },
+                { id: "iframe", label: "Trillium",      matIcon: "terminal", data: { url: "/app/notes/"} },
+                { id: "iframe", label: "VSCode",       matIcon: "terminal", data: { url: "/app/vscode/"} },
+            ]
         }
     ];
 
@@ -113,7 +128,9 @@ export class StartMenuComponent {
     openApp(app: any) {
         this.windowManager.openWindow({
             appId: app.id,
-            workspace: this.config.currentWorkspace
+            workspace: this.config.currentWorkspace,
+            title: app.label,
+            data: app.data
         })
         this.dialog.close()
     }

@@ -46,10 +46,10 @@
 
             <ng-container *ngFor="let app of menu.apps">
                 <div *ngIf="app.id" class="app" (click)="openApp(app)">
-                    <ng-container [ngSwitch]="app.iconType">
-                        <mat-icon *ngSwitchCase="'mat-icon'" [fontIcon]="app.iconSrc" />
+                    <mat-icon [fontIcon]="app.matIcon" />
+                    <!-- <ng-container [ngSwitch]="app.iconType">
                         <img *ngSwitchCase="'src'" [src]="app.iconSrc" />
-                    </ng-container>
+                    </ng-container> -->
                     <p>{{app.label || app.id}}</p>
                 </div>
             </ng-container>
