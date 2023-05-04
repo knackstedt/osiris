@@ -10,6 +10,9 @@ RUN npm i -g pm2
 WORKDIR /app
 
 COPY . /app
+# Reinstall
+RUN npm i --omit=dev
+
 
 EXPOSE 80
 
