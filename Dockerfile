@@ -1,13 +1,15 @@
-FROM nginx:1.23.4
-
-COPY ./nginx.conf /etc/nginx/nginx.conf
-RUN rm /etc/nginx/conf.d/default.conf
+FROM ubuntu:22.04
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt install nodejs gcc g++ make -y -qq
+RUN apt install nginx nodejs gcc g++ make -y -qq
 RUN npm i -g pm2
+RUN service nginx enable
 
 WORKDIR /app
+
+# Pull in nginx configuration
+COPY ./nginx.conf /etc/nginx/nginx.conf
+RUN rm /etc/nginx/conf.d/default.conf
 
 COPY dist /app
 COPY server /app/server
@@ -21,8 +23,4 @@ RUN npm run build:server
 
 EXPOSE 80
 
-RUN pm2 startup
-RUN pm2 start /app/ecosystem.config.js
-RUN pm2 save
-# RUN pm2 stop all
-
+CMD ["pm2-runtime", "ecosystem.config.js"]
