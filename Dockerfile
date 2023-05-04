@@ -11,7 +11,7 @@ WORKDIR /app
 
 # Pull in nginx configuration
 COPY ./nginx.conf /etc/nginx/nginx.conf
-RUN rm /etc/nginx/conf.d/default.conf
+# RUN rm /etc/nginx/conf.d/default.conf
 
 COPY dist /app
 COPY server /app/server
